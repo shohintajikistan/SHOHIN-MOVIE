@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<title>SHOHIN MOVIE</title>
+
+<style>
+/* SHOHIN BRAND COLORS — НЕ МЕНЯТЬ */
+
+:root{
+  --bg:#071c16;
+  --card:#0d3024;
+  --green:#08a56c;
+  --green2:#087b53;
+  --lime:#baf05b;
+  --white:#f4fff9;
+  --muted:#91aaa0;
+  --line:rgba(255,255,255,.08);
+  --danger:#ff5b62;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  background:var(--bg);
+  color:var(--white);
+  font-family:Arial,Helvetica,sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ================= HEADER ================= */
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  height:66px;
+  padding:0 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:rgba(7,28,22,.94);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--line);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.logo{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,var(--green),var(--green2));
+  font-weight:900;
+  font-size:18px;
+  box-shadow:0 8px 25px rgba(8,165,108,.2);
+}
+
+.brand-text{
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:.4px;
+}
+
+.brand-text span{
+  color:var(--lime);
+}
+
+.header-actions{
+  display:flex;
+  gap:8px;
+}
+
+.icon-btn{
+  width:42px;
+  height:42px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:rgba(255,255,255,.04);
+  color:var(--white);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:19px;
+}
+
+/* ================= SEARCH ================= */
+
+.search-wrap{
+  padding:14px 16px 4px;
+}
+
+.search{
+  height:48px;
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 15px;
+  border-radius:15px;
+  background:var(--card);
+  border:1px solid var(--line);
+}
+
+.search span{
+  color:var(--muted);
+  font-size:18px;
+}
+
+.search input{
+  flex:1;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:var(--white);
+  font-size:15px;
+}
+
+.search input::placeholder{
+  color:#6e8980;
+}
+
+/* ================= HERO ================= */
+
+.hero{
+  margin:14px 16px 24px;
+  height:245px;
+  border-radius:24px;
+  overflow:hidden;
+  position:relative;
+  background:
+    linear-gradient(90deg,
+      rgba(7,28,22,1) 0%,
+      rgba(7,28,22,.82) 35%,
+      rgba(7,28,22,.15) 100%),
+    linear-gradient(180deg,
+      rgba(0,0,0,.05),
+      rgba(0,0,0,.55)),
+    url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80")
+    center/cover;
+  box-shadow:0 20px 45px rgba(0,0,0,.25);
+}
+
+.hero-content{
+  position:absolute;
+  inset:0;
+  padding:28px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  max-width:470px;
+}
+
+.hero-label{
+  color:var(--lime);
+  font-size:12px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:1.2px;
+  margin-bottom:9px;
+}
+
+.hero h1{
+  font-size:30px;
+  line-height:1.05;
+  margin-bottom:10px;
+}
+
+.hero p{
+  color:#c0d0ca;
+  font-size:13px;
+  line-height:1.5;
+  margin-bottom:17px;
+}
+
+.hero-btn{
+  width:max-content;
+  border:0;
+  background:var(--green);
+  color:white;
+  border-radius:12px;
+  padding:11px 17px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+/* ================= SECTIONS ================= */
+
+.section{
+  margin:0 0 28px;
+}
+
+.section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px 12px;
+}
+
+.section-title{
+  font-size:19px;
+  font-weight:900;
+}
+
+.section-more{
+  color:var(--lime);
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* ================= MOVIE ROW ================= */
+
+.movie-row{
+  display:flex;
+  gap:13px;
+  overflow-x:auto;
+  padding:0 16px 7px;
+  scrollbar-width:none;
+}
+
+.movie-row::-webkit-scrollbar{
+  display:none;
+}
+
+.movie-card{
+  flex:0 0 145px;
+  cursor:pointer;
+}
+
+.poster{
+  width:145px;
+  height:215px;
+  border-radius:15px;
+  overflow:hidden;
+  background:#102b22;
+  border:1px solid var(--line);
+  position:relative;
+}
+
+.poster img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition:.25s;
+}
+
+.movie-card:hover img{
+  transform:scale(1.04);
+}
+
+.rating{
+  position:absolute;
+  top:8px;
+  right:8px;
+  background:rgba(7,28,22,.88);
+  border:1px solid rgba(255,255,255,.1);
+  padding:5px 7px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:800;
+  color:var(--lime);
+}
+
+.movie-info{
+  padding:8px 2px 0;
+}
+
+.movie-title{
+  font-size:14px;
+  font-weight:800;
+  line-height:1.25;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.movie-meta{
+  margin-top:5px;
+  color:var(--muted);
+  font-size:11px;
+}
+
+/* ================= GRID ================= */
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px 10px;
+  padding:0 16px 110px;
+}
+
+.grid .movie-card{
+  min-width:0;
+}
+
+.grid .poster{
+  width:100%;
+  height:auto;
+  aspect-ratio:2/3;
+}
+
+.grid .movie-title{
+  font-size:12px;
+}
+
+.grid .movie-meta{
+  font-size:10px;
+}
+
+/* ================= DRAWER ================= */
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.62);
+  z-index:200;
+  display:none;
+}
+
+.overlay.show{
+  display:block;
+}
+
+.drawer{
+  position:fixed;
+  top:0;
+  left:0;
+  bottom:0;
+  width:290px;
+  max-width:84%;
+  z-index:210;
+  background:#081f18;
+  transform:translateX(-105%);
+  transition:.3s ease;
+  border-right:1px solid var(--line);
+  padding:20px 15px;
+}
+
+.drawer.show{
+  transform:translateX(0);
+}
+
+.drawer-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:8px 5px 25px;
+}
+
+.drawer-brand{
+  font-size:21px;
+  font-weight:900;
+}
+
+.drawer-brand span{
+  color:var(--lime);
+}
+
+.close{
+  width:38px;
+  height:38px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.04);
+  color:white;
+  border-radius:11px;
+  cursor:pointer;
+}
+
+.menu-item{
+  width:100%;
+  height:50px;
+  border:0;
+  background:transparent;
+  color:#d5e3de;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:0 12px;
+  border-radius:12px;
+  margin-bottom:5px;
+  font-size:14px;
+  cursor:pointer;
+  text-align:left;
+}
+
+.menu-item.active,
+.menu-item:hover{
+  background:rgba(8,165,108,.13);
+  color:white;
+}
+
+.menu-icon{
+  width:27px;
+  text-align:center;
+  color:var(--lime);
+}
+
+/* ================= BOTTOM NAV ================= */
+
+.bottom-nav{
+  position:fixed;
+  left:10px;
+  right:10px;
+  bottom:10px;
+  height:64px;
+  z-index:150;
+  background:rgba(13,48,36,.95);
+  backdrop-filter:blur(18px);
+  border:1px solid var(--line);
+  border-radius:20px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  box-shadow:0 15px 40px rgba(0,0,0,.35);
+}
+
+.nav-item{
+  border:0;
+  background:transparent;
+  color:#7f9990;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  cursor:pointer;
+  font-size:10px;
+}
+
+.nav-item strong{
+  font-size:19px;
+  line-height:1;
+}
+
+.nav-item.active{
+  color:var(--lime);
+}
+
+/* ================= TOAST ================= */
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:88px;
+  transform:translate(-50%,20px);
+  background:#102f25;
+  border:1px solid var(--line);
+  color:white;
+  padding:12px 16px;
+  border-radius:12px;
+  font-size:13px;
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
+  z-index:500;
+  white-space:nowrap;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:380px){
+  .poster{
+    width:130px;
+    height:195px;
+  }
+
+  .movie-card{
+    flex-basis:130px;
+  }
+
+  .hero{
+    height:225px;
+  }
+
+  .hero h1{
+    font-size:26px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="brand">
+    <div class="logo">SH</div>
+    <div class="brand-text">SHOHIN <span>MOVIE</span></div>
+  </div>
+
+  <div class="header-actions">
+    <button class="icon-btn" onclick="openSearch()">⌕</button>
+    <button class="icon-btn" onclick="openDrawer()">☰</button>
+  </div>
+
+</header>
+
+<div class="search-wrap" id="searchBox">
+  <div class="search">
+    <span>⌕</span>
+    <input
+      id="searchInput"
+      type="search"
+      placeholder="Search movies..."
+      onkeydown="searchMovie(event)"
+    >
+  </div>
+</div>
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+  <div class="hero-content">
+
+    <div class="hero-label">SHOHIN MOVIE</div>
+
+    <h1>Discover your next movie.</h1>
+
+    <p>
+      Explore movies, ratings and stories
+      in one simple place.
+    </p>
+
+    <button class="hero-btn" onclick="showToast('TMDB подключим следующим шагом')">
+      Explore now
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- POPULAR -->
+
+<section class="section">
+
+  <div class="section-head">
+    <div class="section-title">Popular</div>
+    <div class="section-more" onclick="showToast('Раздел Popular')">
+      See all
+    </div>
+  </div>
+
+  <div class="movie-row">
+
+    <div class="movie-card">
+      <div class="poster">
+        <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=500&q=80">
+        <div class="rating">8.7</div>
+      </div>
+      <div class="movie-info">
+        <div class="movie-title">The Movie</div>
+        <div class="movie-meta">2026 • Drama</div>
+      </div>
+    </div>
+
+    <div class="movie-card">
+      <div class="poster">
+        <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=500&q=80">
+        <div class="rating">8.4</div>
+      </div>
+      <div class="movie-info">
+        <div class="movie-title">The Journey</div>
+        <div class="movie-meta">2025 • Adventure</div>
+      </div>
+    </div>
+
+    <div class="movie-card">
+      <div class="poster">
+        <img src="https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=500&q=80">
+        <div class="rating">8.2</div>
+      </div>
+      <div class="movie-info">
+        <div class="movie-title">Beyond</div>
+        <div class="movie-meta">2025 • Sci-Fi</div>
+      </div>
+    </div>
+
+    <div class="movie-card">
+      <div class="poster">
+        <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=500&q=80">
+        <div class="rating">8.0</div>
+      </div>
+      <div class="movie-info">
+        <div class="movie-title">The Story</div>
+        <div class="movie-meta">2024 • Thriller</div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- TOP RATED -->
+
+<section class="section">
+
+  <div class="section-head">
+    <div class="section-title">Top Rated</div>
+    <div class="section-more">See all</div>
+  </div>
+
+  <div class="movie-row">
+
+    <div class="movie-card">
+      <div class="poster">
+        <img src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=500&q=80">
+        <div class="rating">9.1</div>
+      </div>
+      <div class="movie-info">
+        <div class="movie-title">The Master</div>
+        <div class="movie-meta">2023 • Drama</div>
+      </div>
+    </div>
+
+    <div class="movie-card">
+      <div class="poster">
+        <img src="https://images.unsplash.com/photo-1512070679279-8988d32161be?auto=format&fit=crop&w=500&q=80">
+        <div class="rating">8.9</div>
+      </div>
+      <div class="movie-info">
+        <div class="movie-title">Night City</div>
+        <div class="movie-meta">2024 • Crime</div>
+      </div>
+    </div>
+
+    <div class="movie-card">
+      <div class="poster">
+        <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=500&q=80">
+        <div class="rating">8.8</div>
+      </div>
+      <div class="movie-info">
+        <div class="movie-title">Final Chapter</div>
+        <div class="movie-meta">2022 • Action</div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- NEW MOVIES -->
+
+<section class="section">
+
+  <div class="section-head">
+    <div class="section-title">New Movies</div>
+    <div class="section-more">See all</div>
+  </div>
+
+  <div class="grid">
+
+    <div class="movie-card">
+      <div class="poster">
+        <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=500&q=80">
+        <div class="rating">7.9</div>
+      </div>
+      <div class="movie-info">
+        <div class="movie-title">Future World</div>
+        <div class="movie-meta">2026</div>
+      </div>
+    </div>
+
+    <div class="movie-card">
+      <div class="poster">
+        <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=500&q=80">
+        <div class="rating">8.1</div>
+      </div>
+      <div class="movie-info">
+        <div class="movie-title">The Signal</div>
+        <div class="movie-meta">2026</div>
+      </div>
+    </div>
+
+    <div class="movie-card">
+      <div class="poster">
+        <img src="https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=500&q=80">
+        <div class="rating">7.8</div>
+      </div>
+      <div class="movie-info">
+        <div class="movie-title">Lost Road</div>
+        <div class="movie-meta">2026</div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- DRAWER -->
+
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+
+<aside class="drawer" id="drawer">
+
+  <div class="drawer-head">
+    <div class="drawer-brand">
+      SHOHIN <span>MOVIE</span>
+    </div>
+
+    <button class="close" onclick="closeDrawer()">×</button>
+  </div>
+
+  <button class="menu-item active" onclick="menuClick('Home')">
+    <span class="menu-icon">⌂</span>
+    Home
+  </button>
+
+  <button class="menu-item" onclick="menuClick('Popular')">
+    <span class="menu-icon">◆</span>
+    Popular
+  </button>
+
+  <button class="menu-item" onclick="menuClick('Top Rated')">
+    <span class="menu-icon">★</span>
+    Top Rated
+  </button>
+
+  <button class="menu-item" onclick="menuClick('Genres')">
+    <span class="menu-icon">▦</span>
+    Genres
+  </button>
+
+  <button class="menu-item" onclick="menuClick('Watchlist')">
+    <span class="menu-icon">♡</span>
+    My Watchlist
+  </button>
+
+  <button class="menu-item" onclick="menuClick('Settings')">
+    <span class="menu-icon">⚙</span>
+    Settings
+  </button>
+
+</aside>
+
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+
+  <button class="nav-item active" onclick="setNav(this,'Home')">
+    <strong>⌂</strong>
+    Home
+  </button>
+
+  <button class="nav-item" onclick="setNav(this,'Search')">
+    <strong>⌕</strong>
+    Search
+  </button>
+
+  <button class="nav-item" onclick="setNav(this,'Watchlist')">
+    <strong>♡</strong>
+    Watchlist
+  </button>
+
+  <button class="nav-item" onclick="openDrawer()">
+    <strong>☰</strong>
+    Menu
+  </button>
+
+</nav>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+function showToast(message){
+
+  const toast=document.getElementById("toast");
+
+  toast.textContent=message;
+  toast.classList.add("show");
+
+  setTimeout(()=>{
+    toast.classList.remove("show");
+  },2200);
+}
+
+
+function openDrawer(){
+
+  document.getElementById("drawer").classList.add("show");
+  document.getElementById("overlay").classList.add("show");
+
+}
+
+
+function closeDrawer(){
+
+  document.getElementById("drawer").classList.remove("show");
+  document.getElementById("overlay").classList.remove("show");
+
+}
+
+
+function openSearch(){
+
+  const input=document.getElementById("searchInput");
+
+  input.focus();
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+function searchMovie(event){
+
+  if(event.key==="Enter"){
+
+    const value=event.target.value.trim();
+
+    if(!value){
+      showToast("Введите название фильма");
+      return;
+    }
+
+    showToast("Поиск: "+value);
+
+  }
+
+}
+
+
+function menuClick(name){
+
+  closeDrawer();
+
+  showToast(name);
+
+}
+
+
+function setNav(button,name){
+
+  document.querySelectorAll(".nav-item")
+    .forEach(item=>item.classList.remove("active"));
+
+  button.classList.add("active");
+
+  if(name==="Search"){
+    openSearch();
+  }else{
+    showToast(name);
+  }
+
+}
+
+</script>
+
+</body>
+</html>
