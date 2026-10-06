@@ -8,58 +8,101 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
   >
 
-  <meta name="theme-color" content="#071c16">
+  <meta
+    name="theme-color"
+    content="#071c16"
+  >
+
+  <meta
+    name="description"
+    content="SHOHIN MOVIE — каталог фильмов и сериалов"
+  >
 
   <title>SHOHIN MOVIE</title>
 
-  <link rel="stylesheet" href="css/style.css">
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
 </head>
 
 <body>
 
-  <!--
-    SHOHIN MOVIE
-    Главный экран:
-    только Header + поиск + Фильмы/Сериалы + карточки
-  -->
+  <!-- ==================================================
+       SHOHIN MOVIE
+       MAIN APPLICATION
+       ================================================== -->
 
-  <!-- =========================
+
+  <!-- ==================================================
        LOADING
-  ========================== -->
+       ================================================== -->
 
-  <div id="loading" class="loading">
+  <div
+    id="loading"
+    class="loading"
+    aria-hidden="true"
+  >
+
     <div class="loading-logo">
-      <div class="loading-sh">SH</div>
-      <div class="loading-name">SHOHIN</div>
+
+      <div class="loading-sh">
+        SH
+      </div>
+
+      <div class="loading-name">
+        SHOHIN
+      </div>
+
+      <div class="loading-movie">
+        MOVIE
+      </div>
+
     </div>
+
   </div>
 
 
-  <!-- =========================
+  <!-- ==================================================
        APP
-  ========================== -->
+       ================================================== -->
 
-  <div id="app" class="app">
+  <div
+    id="app"
+    class="app"
+  >
 
-    <!-- =========================
+
+    <!-- ==================================================
          HEADER
-    ========================== -->
+         ================================================== -->
 
     <header class="topbar">
 
       <div class="brand">
-        <div class="brand-mark">SH</div>
+
+        <div class="brand-mark">
+          SH
+        </div>
 
         <div class="brand-text">
-          <div class="brand-name">SHOHIN</div>
-          <div class="brand-subtitle">MOVIE</div>
+
+          <div class="brand-name">
+            SHOHIN
+          </div>
+
+          <div class="brand-subtitle">
+            MOVIE
+          </div>
+
         </div>
+
       </div>
 
 
       <div class="topbar-actions">
 
-        <!-- SEARCH -->
+        <!-- SEARCH BUTTON -->
 
         <button
           id="searchButton"
@@ -67,6 +110,7 @@
           type="button"
           aria-label="Поиск"
         >
+
           <svg
             viewBox="0 0 24 24"
             width="22"
@@ -76,21 +120,34 @@
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
+            aria-hidden="true"
           >
-            <circle cx="11" cy="11" r="7"></circle>
-            <path d="M20 20l-4-4"></path>
+
+            <circle
+              cx="11"
+              cy="11"
+              r="7"
+            ></circle>
+
+            <path
+              d="M20 20l-4-4"
+            ></path>
+
           </svg>
+
         </button>
 
 
-        <!-- MENU -->
+        <!-- MENU BUTTON -->
 
         <button
           id="menuButton"
           class="icon-button"
           type="button"
-          aria-label="Меню"
+          aria-label="Открыть меню"
+          aria-expanded="false"
         >
+
           <svg
             viewBox="0 0 24 24"
             width="23"
@@ -99,11 +156,15 @@
             stroke="currentColor"
             stroke-width="2"
             stroke-linecap="round"
+            aria-hidden="true"
           >
+
             <path d="M4 7h16"></path>
             <path d="M4 12h16"></path>
             <path d="M4 17h16"></path>
+
           </svg>
+
         </button>
 
       </div>
@@ -111,9 +172,9 @@
     </header>
 
 
-    <!-- =========================
+    <!-- ==================================================
          SEARCH PANEL
-    ========================== -->
+         ================================================== -->
 
     <section
       id="searchPanel"
@@ -134,18 +195,31 @@
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
+            aria-hidden="true"
           >
-            <circle cx="11" cy="11" r="7"></circle>
-            <path d="M20 20l-4-4"></path>
+
+            <circle
+              cx="11"
+              cy="11"
+              r="7"
+            ></circle>
+
+            <path
+              d="M20 20l-4-4"
+            ></path>
+
           </svg>
+
 
           <input
             id="searchInput"
             type="search"
             placeholder="Найти фильм или сериал..."
             autocomplete="off"
+            autocapitalize="off"
             spellcheck="false"
           >
+
 
           <button
             id="closeSearch"
@@ -163,19 +237,22 @@
     </section>
 
 
-    <!-- =========================
+    <!-- ==================================================
          MAIN
-    ========================== -->
+         ================================================== -->
 
     <main class="main-content">
 
-      <!--
-        Только два типа контента.
-        Никаких стран, жанров, годов и рейтингов
-        на главном экране.
-      -->
 
-      <nav class="type-navigation" aria-label="Тип контента">
+      <!-- ==================================================
+           TYPE NAVIGATION
+           ONLY MOVIES / SERIES
+           ================================================== -->
+
+      <nav
+        class="type-navigation"
+        aria-label="Тип контента"
+      >
 
         <button
           class="nav-button active"
@@ -184,6 +261,7 @@
         >
           Фильмы
         </button>
+
 
         <button
           class="nav-button"
@@ -196,27 +274,41 @@
       </nav>
 
 
-      <!-- =========================
+      <!-- ==================================================
            CATALOG
-      ========================== -->
+           ================================================== -->
 
-      <section class="catalog-section">
+      <section
+        class="catalog-section"
+        aria-label="Каталог"
+      >
+
 
         <!--
-          Скрытые служебные элементы.
-          app.js использует их для информации о каталоге.
+          Служебная информация каталога.
+          Она остаётся минимальной.
         -->
 
         <div class="catalog-header">
 
-          <h1 id="catalogTitle">Фильмы 1980</h1>
+          <h1
+            id="catalogTitle"
+            class="catalog-title"
+          >
+            Фильмы
+          </h1>
 
-          <span id="catalogCount"></span>
+          <span
+            id="catalogCount"
+            class="catalog-count"
+          ></span>
 
         </div>
 
 
-        <!-- CARDS -->
+        <!-- ==================================================
+             MOVIE / SERIES CARDS
+             ================================================== -->
 
         <div
           id="movieGrid"
@@ -224,7 +316,9 @@
         ></div>
 
 
-        <!-- EMPTY -->
+        <!-- ==================================================
+             EMPTY STATE
+             ================================================== -->
 
         <div
           id="emptyState"
@@ -235,14 +329,16 @@
 
             <svg
               viewBox="0 0 24 24"
-              width="42"
-              height="42"
+              width="44"
+              height="44"
               fill="none"
               stroke="currentColor"
               stroke-width="1.5"
               stroke-linecap="round"
               stroke-linejoin="round"
+              aria-hidden="true"
             >
+
               <rect
                 x="3"
                 y="4"
@@ -259,11 +355,16 @@
 
               <path d="M3 15h5"></path>
               <path d="M16 15h5"></path>
+
             </svg>
 
           </div>
 
-          <h2>Каталог пуст</h2>
+
+          <h2>
+            Каталог пуст
+          </h2>
+
 
           <p>
             Здесь появятся фильмы и сериалы.
@@ -276,15 +377,20 @@
     </main>
 
 
-    <!-- =========================
-         SIDE MENU
-    ========================== -->
+    <!-- ==================================================
+         MENU OVERLAY
+         ================================================== -->
 
     <div
       id="menuOverlay"
       class="menu-overlay"
+      aria-hidden="true"
     ></div>
 
+
+    <!-- ==================================================
+         SIDE MENU
+         ================================================== -->
 
     <aside
       id="sideMenu"
@@ -292,9 +398,11 @@
       aria-hidden="true"
     >
 
+
       <!-- MENU HEADER -->
 
       <div class="side-menu-header">
+
 
         <div class="side-menu-brand">
 
@@ -302,7 +410,9 @@
             SH
           </div>
 
-          <div>
+
+          <div class="side-menu-brand-text">
+
             <div class="side-menu-title">
               SHOHIN
             </div>
@@ -310,6 +420,7 @@
             <div class="side-menu-subtitle">
               MOVIE
             </div>
+
           </div>
 
         </div>
@@ -327,9 +438,15 @@
       </div>
 
 
-      <!-- MENU -->
+      <!-- ==================================================
+           MENU NAVIGATION
+           ================================================== -->
 
-      <nav class="side-menu-nav">
+      <nav
+        class="side-menu-nav"
+        aria-label="Основное меню"
+      >
+
 
         <!-- HOME -->
 
@@ -350,14 +467,24 @@
               stroke-width="1.8"
               stroke-linecap="round"
               stroke-linejoin="round"
+              aria-hidden="true"
             >
-              <path d="M3 11.5L12 4l9 7.5"></path>
-              <path d="M5 10v10h14V10"></path>
+
+              <path
+                d="M3 11.5L12 4l9 7.5"
+              ></path>
+
+              <path
+                d="M5 10v10h14V10"
+              ></path>
+
             </svg>
 
           </span>
 
-          <span>Главная</span>
+          <span>
+            Главная
+          </span>
 
         </button>
 
@@ -381,7 +508,9 @@
               stroke-width="1.8"
               stroke-linecap="round"
               stroke-linejoin="round"
+              aria-hidden="true"
             >
+
               <rect
                 x="3"
                 y="4"
@@ -392,15 +521,20 @@
 
               <path d="M8 4v16"></path>
               <path d="M16 4v16"></path>
+
               <path d="M3 9h5"></path>
               <path d="M16 9h5"></path>
+
               <path d="M3 15h5"></path>
               <path d="M16 15h5"></path>
+
             </svg>
 
           </span>
 
-          <span>Фильмы</span>
+          <span>
+            Фильмы
+          </span>
 
         </button>
 
@@ -424,7 +558,9 @@
               stroke-width="1.8"
               stroke-linecap="round"
               stroke-linejoin="round"
+              aria-hidden="true"
             >
+
               <rect
                 x="3"
                 y="5"
@@ -439,11 +575,14 @@
               <path d="M8 12h.01"></path>
               <path d="M12 12h.01"></path>
               <path d="M16 12h.01"></path>
+
             </svg>
 
           </span>
 
-          <span>Сериалы</span>
+          <span>
+            Сериалы
+          </span>
 
         </button>
 
@@ -470,7 +609,9 @@
               stroke-width="1.8"
               stroke-linecap="round"
               stroke-linejoin="round"
+              aria-hidden="true"
             >
+
               <circle
                 cx="12"
                 cy="12"
@@ -478,13 +619,22 @@
               ></circle>
 
               <path d="M3 12h18"></path>
-              <path d="M12 3c3 3 3 15 0 18"></path>
-              <path d="M12 3c-3 3-3 15 0 18"></path>
+
+              <path
+                d="M12 3c3 3 3 15 0 18"
+              ></path>
+
+              <path
+                d="M12 3c-3 3-3 15 0 18"
+              ></path>
+
             </svg>
 
           </span>
 
-          <span>Страны</span>
+          <span>
+            Страны
+          </span>
 
         </button>
 
@@ -508,7 +658,9 @@
               stroke-width="1.8"
               stroke-linecap="round"
               stroke-linejoin="round"
+              aria-hidden="true"
             >
+
               <path d="M4 6h16"></path>
               <path d="M4 12h16"></path>
               <path d="M4 18h16"></path>
@@ -530,11 +682,14 @@
                 cy="18"
                 r="2"
               ></circle>
+
             </svg>
 
           </span>
 
-          <span>Жанры</span>
+          <span>
+            Жанры
+          </span>
 
         </button>
 
@@ -558,7 +713,9 @@
               stroke-width="1.8"
               stroke-linecap="round"
               stroke-linejoin="round"
+              aria-hidden="true"
             >
+
               <rect
                 x="3"
                 y="5"
@@ -573,13 +730,17 @@
 
               <path d="M8 14h2"></path>
               <path d="M14 14h2"></path>
+
               <path d="M8 18h2"></path>
               <path d="M14 18h2"></path>
+
             </svg>
 
           </span>
 
-          <span>По годам</span>
+          <span>
+            По годам
+          </span>
 
         </button>
 
@@ -603,15 +764,20 @@
               stroke-width="1.8"
               stroke-linecap="round"
               stroke-linejoin="round"
+              aria-hidden="true"
             >
+
               <path
                 d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9L12 3z"
               ></path>
+
             </svg>
 
           </span>
 
-          <span>Рейтинг</span>
+          <span>
+            Рейтинг
+          </span>
 
         </button>
 
@@ -638,15 +804,20 @@
               stroke-width="1.8"
               stroke-linecap="round"
               stroke-linejoin="round"
+              aria-hidden="true"
             >
+
               <path
                 d="M20.8 8.7c0 5-8.8 10.2-8.8 10.2S3.2 13.7 3.2 8.7A4.7 4.7 0 0 1 12 6.4a4.7 4.7 0 0 1 8.8 2.3z"
               ></path>
+
             </svg>
 
           </span>
 
-          <span>Избранное</span>
+          <span>
+            Избранное
+          </span>
 
         </button>
 
@@ -670,7 +841,9 @@
               stroke-width="1.8"
               stroke-linecap="round"
               stroke-linejoin="round"
+              aria-hidden="true"
             >
+
               <circle
                 cx="12"
                 cy="12"
@@ -678,11 +851,14 @@
               ></circle>
 
               <path d="M12 7v5l3 2"></path>
+
             </svg>
 
           </span>
 
-          <span>Недавно открытые</span>
+          <span>
+            Недавно открытые
+          </span>
 
         </button>
 
@@ -709,7 +885,9 @@
               stroke-width="1.8"
               stroke-linecap="round"
               stroke-linejoin="round"
+              aria-hidden="true"
             >
+
               <circle
                 cx="12"
                 cy="12"
@@ -718,18 +896,23 @@
 
               <path d="M12 10v6"></path>
               <path d="M12 7h.01"></path>
+
             </svg>
 
           </span>
 
-          <span>О SHOHIN MOVIE</span>
+          <span>
+            О SHOHIN MOVIE
+          </span>
 
         </button>
 
       </nav>
 
 
-      <!-- MENU FOOTER -->
+      <!-- ==================================================
+           MENU FOOTER
+           ================================================== -->
 
       <div class="side-menu-footer">
 
@@ -748,15 +931,16 @@
     </aside>
 
 
-    <!-- =========================
+    <!-- ==================================================
          MOVIE MODAL
-    ========================== -->
+         ================================================== -->
 
     <div
       id="movieModal"
       class="movie-modal"
       aria-hidden="true"
     >
+
 
       <div
         id="modalOverlay"
@@ -768,7 +952,11 @@
         class="modal-content"
         role="dialog"
         aria-modal="true"
+        aria-labelledby="modalTitle"
       >
+
+
+        <!-- CLOSE -->
 
         <button
           id="modalClose"
@@ -779,6 +967,8 @@
           ×
         </button>
 
+
+        <!-- POSTER -->
 
         <div class="modal-poster-wrap">
 
@@ -791,6 +981,8 @@
 
         </div>
 
+
+        <!-- INFO -->
 
         <div class="modal-info">
 
@@ -836,53 +1028,25 @@
     </div>
 
 
-    <!-- =========================
-         HIDDEN COMPATIBILITY
-         FOR EXISTING APP.JS
-    ========================== -->
-
-    <div
-      id="yearMenu"
-      style="display:none;"
-      aria-hidden="true"
-    >
-
-      <button
-        type="button"
-        data-year="1980"
-      >
-        1980
-      </button>
-
-    </div>
-
-    <button
-      id="yearButton"
-      type="button"
-      style="display:none;"
-    >
-      1980
-    </button>
-
   </div>
 
 
-  <!-- =========================
+  <!-- ==================================================
        JAVASCRIPT
-  ========================== -->
+       ================================================== -->
 
   <script src="js/cards.js"></script>
   <script src="js/filters.js"></script>
   <script src="js/app.js"></script>
 
 
-  <!-- =========================
-       MENU SCRIPT
-  ========================== -->
+  <!-- ==================================================
+       MENU CONTROL
+       ================================================== -->
 
   <script>
 
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", function () {
 
       const menuButton =
         document.getElementById("menuButton");
@@ -890,11 +1054,11 @@
       const menuClose =
         document.getElementById("menuClose");
 
-      const sideMenu =
-        document.getElementById("sideMenu");
-
       const menuOverlay =
         document.getElementById("menuOverlay");
+
+      const sideMenu =
+        document.getElementById("sideMenu");
 
       const menuItems =
         document.querySelectorAll(".menu-item");
@@ -902,9 +1066,12 @@
 
       function openMenu() {
 
-        if (!sideMenu || !menuOverlay) return;
+        if (!sideMenu || !menuOverlay) {
+          return;
+        }
 
         sideMenu.classList.add("show");
+
         menuOverlay.classList.add("show");
 
         sideMenu.setAttribute(
@@ -912,17 +1079,35 @@
           "false"
         );
 
+        menuOverlay.setAttribute(
+          "aria-hidden",
+          "false"
+        );
+
+        if (menuButton) {
+
+          menuButton.setAttribute(
+            "aria-expanded",
+            "true"
+          );
+
+        }
+
         document.body.classList.add(
           "menu-open"
         );
+
       }
 
 
       function closeMenu() {
 
-        if (!sideMenu || !menuOverlay) return;
+        if (!sideMenu || !menuOverlay) {
+          return;
+        }
 
         sideMenu.classList.remove("show");
+
         menuOverlay.classList.remove("show");
 
         sideMenu.setAttribute(
@@ -930,9 +1115,24 @@
           "true"
         );
 
+        menuOverlay.setAttribute(
+          "aria-hidden",
+          "true"
+        );
+
+        if (menuButton) {
+
+          menuButton.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+
+        }
+
         document.body.classList.remove(
           "menu-open"
         );
+
       }
 
 
@@ -940,7 +1140,21 @@
 
         menuButton.addEventListener(
           "click",
-          openMenu
+          function () {
+
+            if (
+              sideMenu.classList.contains("show")
+            ) {
+
+              closeMenu();
+
+            } else {
+
+              openMenu();
+
+            }
+
+          }
         );
 
       }
@@ -966,19 +1180,19 @@
       }
 
 
-      menuItems.forEach(item => {
+      menuItems.forEach(function (item) {
 
         item.addEventListener(
           "click",
-          () => {
+          function () {
 
             const menu =
               item.dataset.menu;
 
+
             /*
-              Главная / Фильмы / Сериалы
-              работают сразу.
-            */
+             * Главная
+             */
 
             if (menu === "home") {
 
@@ -990,9 +1204,12 @@
               });
 
               return;
-
             }
 
+
+            /*
+             * Фильмы
+             */
 
             if (menu === "movies") {
 
@@ -1006,10 +1223,14 @@
               }
 
               closeMenu();
-              return;
 
+              return;
             }
 
+
+            /*
+             * Сериалы
+             */
 
             if (menu === "series") {
 
@@ -1023,19 +1244,17 @@
               }
 
               closeMenu();
-              return;
 
+              return;
             }
 
 
             /*
-              Остальные разделы пока подготовлены
-              в меню.
-
-              Логику стран, жанров, годов,
-              рейтинга, избранного и истории
-              подключим следующим этапом.
-            */
+             * Остальные разделы
+             *
+             * Их полноценная логика подключается
+             * следующим этапом.
+             */
 
             closeMenu();
 
@@ -1046,12 +1265,12 @@
 
 
       /*
-        ESC — закрыть меню
-      */
+       * ESC
+       */
 
       document.addEventListener(
         "keydown",
-        event => {
+        function (event) {
 
           if (
             event.key === "Escape" &&
