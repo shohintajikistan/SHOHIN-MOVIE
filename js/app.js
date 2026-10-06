@@ -1,4 +1,5 @@
 // SHOHIN MOVIE — MAIN APP
+// SHOHIN BRAND COLORS — НЕ МЕНЯТЬ
 
 const movieGrid = document.getElementById("movieGrid");
 const loading = document.getElementById("loading");
@@ -139,8 +140,10 @@ function renderMovies() {
         ? item.genres.join(" ").toLowerCase()
         : "";
 
-    const country =
-      String(item.country || "").toLowerCase();
+    const countries =
+      getCountries(item)
+        .join(" ")
+        .toLowerCase();
 
     const description =
       String(item.description || "").toLowerCase();
@@ -149,14 +152,16 @@ function renderMovies() {
       title.includes(query) ||
       originalTitle.includes(query) ||
       genres.includes(query) ||
-      country.includes(query) ||
+      countries.includes(query) ||
       description.includes(query)
     );
 
   });
 
 
-  /* FILTER */
+  /* =========================
+     FILTER
+  ========================= */
 
   if (activeFilter === "rating") {
 
@@ -167,6 +172,7 @@ function renderMovies() {
     );
 
   }
+
 
   if (activeFilter === "new") {
 
@@ -180,6 +186,7 @@ function renderMovies() {
 
 
   movieGrid.innerHTML = "";
+
 
   if (!filtered.length) {
 
@@ -195,6 +202,7 @@ function renderMovies() {
     return;
 
   }
+
 
   hideEmpty();
 
@@ -230,14 +238,22 @@ function createMovieCard(item) {
 
   card.className = "movie-card";
 
+
   const poster =
     String(item.poster || "").trim();
 
+
   const title =
-    escapeHTML(item.title || "Без названия");
+    escapeHTML(
+      item.title || "Без названия"
+    );
+
 
   const year =
-    escapeHTML(item.year || SHOHIN_MOVIE.currentYear);
+    escapeHTML(
+      item.year || SHOHIN_MOVIE.currentYear
+    );
+
 
   const rating =
     item.rating !== undefined &&
@@ -246,28 +262,39 @@ function createMovieCard(item) {
       ? Number(item.rating).toFixed(1)
       : "—";
 
+
   const genres =
     Array.isArray(item.genres)
       ? item.genres.slice(0, 3)
       : [];
 
+
   const genreText =
     genres.length
-      ? escapeHTML(genres.join(" • "))
+      ? escapeHTML(
+          genres.join(" • ")
+        )
       : "Жанр не указан";
 
 
   let posterHTML = "";
 
+
   if (poster) {
 
     posterHTML = `
+
       <img
         class="poster"
         src="${escapeAttribute(poster)}"
-        alt="${escapeAttribute(item.title || "")}"
+        alt="${escapeAttribute(
+          item.title || ""
+        )}"
         loading="lazy"
-        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+        onerror="
+          this.style.display='none';
+          this.nextElementSibling.style.display='flex';
+        "
       >
 
       <div
@@ -276,14 +303,17 @@ function createMovieCard(item) {
       >
         Постер недоступен
       </div>
+
     `;
 
   } else {
 
     posterHTML = `
+
       <div class="poster-placeholder">
         Постер пока не добавлен
       </div>
+
     `;
 
   }
@@ -299,6 +329,7 @@ function createMovieCard(item) {
         ${title}
       </div>
 
+
       <div class="movie-meta">
 
         <span class="movie-year">
@@ -311,6 +342,7 @@ function createMovieCard(item) {
 
       </div>
 
+
       <div class="movie-genres">
         ${genreText}
       </div>
@@ -320,14 +352,152 @@ function createMovieCard(item) {
   `;
 
 
-  card.addEventListener("click", () => {
+  card.addEventListener(
+    "click",
+    () => {
 
-    openMovieModal(item);
+      openMovieModal(item);
 
-  });
+    }
+  );
 
 
   return card;
+
+}
+
+
+/* =========================
+   COUNTRIES
+========================= */
+
+function getCountries(item) {
+
+  if (
+    Array.isArray(item.countries)
+  ) {
+
+    return item.countries
+      .filter(Boolean)
+      .map(country =>
+        String(country).trim()
+      );
+
+  }
+
+
+  /*
+     Совместимость со старыми данными.
+     Если где-то ещё останется
+     старое поле country,
+     приложение его тоже поймёт.
+  */
+
+  if (item.country) {
+
+    return [
+      String(item.country).trim()
+    ];
+
+  }
+
+
+  return [];
+
+}
+
+
+/* =========================
+   GENRES
+========================= */
+
+function getGenres(item) {
+
+  if (
+    !Array.isArray(item.genres)
+  ) {
+
+    return [];
+
+  }
+
+  return item.genres
+    .filter(Boolean)
+    .map(genre =>
+      String(genre).trim()
+    );
+
+}
+
+
+/* =========================
+   GET ALL COUNTRIES
+========================= */
+
+function getAllCountries() {
+
+  const countries = new Set();
+
+  const items =
+    SHOHIN_MOVIE.currentItems || [];
+
+  items.forEach(item => {
+
+    getCountries(item)
+      .forEach(country => {
+
+        countries.add(country);
+
+      });
+
+  });
+
+  return [...countries].sort(
+    (a, b) =>
+      a.localeCompare(
+        b,
+        "ru",
+        {
+          sensitivity: "base"
+        }
+      )
+  );
+
+}
+
+
+/* =========================
+   GET ALL GENRES
+========================= */
+
+function getAllGenres() {
+
+  const genres = new Set();
+
+  const items =
+    SHOHIN_MOVIE.currentItems || [];
+
+  items.forEach(item => {
+
+    getGenres(item)
+      .forEach(genre => {
+
+        genres.add(genre);
+
+      });
+
+  });
+
+  return [...genres].sort(
+    (a, b) =>
+      a.localeCompare(
+        b,
+        "ru",
+        {
+          sensitivity: "base"
+        }
+      )
+  );
 
 }
 
@@ -341,18 +511,25 @@ function openMovieModal(item) {
   const poster =
     String(item.poster || "").trim();
 
+
   if (poster) {
 
     modalPoster.src = poster;
+
     modalPoster.alt =
       item.title || "Постер";
 
-    modalPoster.style.display = "block";
+    modalPoster.style.display =
+      "block";
 
   } else {
 
-    modalPoster.removeAttribute("src");
-    modalPoster.style.display = "none";
+    modalPoster.removeAttribute(
+      "src"
+    );
+
+    modalPoster.style.display =
+      "none";
 
   }
 
@@ -360,38 +537,49 @@ function openMovieModal(item) {
   modalYear.textContent =
     item.year || "";
 
+
   modalTitle.textContent =
     item.title || "Без названия";
 
 
   modalRating.textContent =
     item.rating
-      ? `★ ${Number(item.rating).toFixed(1)}`
+      ? `★ ${Number(
+          item.rating
+        ).toFixed(1)}`
       : "★ —";
 
 
+  const countries =
+    getCountries(item);
+
+
   modalCountry.textContent =
-    item.country || "Страна не указана";
+    countries.length
+      ? countries.join(" • ")
+      : "Страна не указана";
 
 
   modalGenres.innerHTML = "";
 
-  if (Array.isArray(item.genres)) {
 
-    item.genres.forEach(genre => {
+  getGenres(item)
+    .forEach(genre => {
 
       const tag =
-        document.createElement("span");
+        document.createElement(
+          "span"
+        );
 
-      tag.className = "genre-tag";
+      tag.className =
+        "genre-tag";
 
-      tag.textContent = genre;
+      tag.textContent =
+        genre;
 
       modalGenres.appendChild(tag);
 
     });
-
-  }
 
 
   modalDescription.textContent =
@@ -399,9 +587,13 @@ function openMovieModal(item) {
     "Описание пока не добавлено.";
 
 
-  movieModal.classList.add("show");
+  movieModal.classList.add(
+    "show"
+  );
 
-  document.body.style.overflow = "hidden";
+
+  document.body.style.overflow =
+    "hidden";
 
 }
 
@@ -412,9 +604,12 @@ function openMovieModal(item) {
 
 function closeMovieModal() {
 
-  movieModal.classList.remove("show");
+  movieModal.classList.remove(
+    "show"
+  );
 
-  document.body.style.overflow = "";
+  document.body.style.overflow =
+    "";
 
 }
 
@@ -426,10 +621,12 @@ function setupModal() {
     closeMovieModal
   );
 
+
   modalOverlay.addEventListener(
     "click",
     closeMovieModal
   );
+
 
   document.addEventListener(
     "keydown",
@@ -437,7 +634,9 @@ function setupModal() {
 
       if (
         event.key === "Escape" &&
-        movieModal.classList.contains("show")
+        movieModal.classList.contains(
+          "show"
+        )
       ) {
 
         closeMovieModal();
@@ -469,16 +668,28 @@ function setupNavigation() {
 
           if (!type) return;
 
+
           document
-            .querySelectorAll(".nav-button")
+            .querySelectorAll(
+              ".nav-button"
+            )
             .forEach(btn => {
-              btn.classList.remove("active");
+
+              btn.classList.remove(
+                "active"
+              );
+
             });
 
-          button.classList.add("active");
+
+          button.classList.add(
+            "active"
+          );
+
 
           SHOHIN_MOVIE.currentType =
             type;
+
 
           loadCatalog();
 
@@ -500,10 +711,15 @@ function setupSearch() {
     "click",
     () => {
 
-      searchPanel.classList.add("show");
+      searchPanel.classList.add(
+        "show"
+      );
+
 
       setTimeout(() => {
+
         searchInput.focus();
+
       }, 50);
 
     }
@@ -514,9 +730,13 @@ function setupSearch() {
     "click",
     () => {
 
-      searchPanel.classList.remove("show");
+      searchPanel.classList.remove(
+        "show"
+      );
+
 
       searchInput.value = "";
+
 
       renderMovies();
 
@@ -546,7 +766,9 @@ function setupYearMenu() {
     "click",
     () => {
 
-      yearMenu.classList.toggle("show");
+      yearMenu.classList.toggle(
+        "show"
+      );
 
     }
   );
@@ -561,19 +783,26 @@ function setupYearMenu() {
         () => {
 
           const year =
-            Number(button.dataset.year);
+            Number(
+              button.dataset.year
+            );
+
 
           if (!year) return;
+
 
           SHOHIN_MOVIE.currentYear =
             year;
 
+
           yearButton.innerHTML =
             `${year} <span>⌄</span>`;
+
 
           yearMenu.classList.remove(
             "show"
           );
+
 
           loadCatalog();
 
@@ -588,8 +817,12 @@ function setupYearMenu() {
     event => {
 
       if (
-        !yearMenu.contains(event.target) &&
-        !yearButton.contains(event.target)
+        !yearMenu.contains(
+          event.target
+        ) &&
+        !yearButton.contains(
+          event.target
+        )
       ) {
 
         yearMenu.classList.remove(
@@ -611,12 +844,16 @@ function setupYearMenu() {
 function updateCatalogTitle() {
 
   const typeName =
-    SHOHIN_MOVIE.currentType === "movies"
+    SHOHIN_MOVIE.currentType ===
+    "movies"
       ? "Фильмы"
       : "Сериалы";
 
+
   catalogTitle.textContent =
-    `${typeName} ${SHOHIN_MOVIE.currentYear}`;
+    `${typeName} ${
+      SHOHIN_MOVIE.currentYear
+    }`;
 
 }
 
@@ -629,11 +866,15 @@ function showLoading(show) {
 
   if (show) {
 
-    loading.classList.add("show");
+    loading.classList.add(
+      "show"
+    );
 
   } else {
 
-    loading.classList.remove("show");
+    loading.classList.remove(
+      "show"
+    );
 
   }
 
@@ -646,13 +887,20 @@ function showLoading(show) {
 
 function showEmpty(message) {
 
-  emptyState.classList.add("show");
+  emptyState.classList.add(
+    "show"
+  );
+
 
   const paragraph =
     emptyState.querySelector("p");
 
+
   if (paragraph) {
-    paragraph.textContent = message;
+
+    paragraph.textContent =
+      message;
+
   }
 
 }
@@ -660,23 +908,40 @@ function showEmpty(message) {
 
 function hideEmpty() {
 
-  emptyState.classList.remove("show");
+  emptyState.classList.remove(
+    "show"
+  );
 
 }
 
 
 /* =========================
-   SECURITY HELPERS
+   SECURITY
 ========================= */
 
 function escapeHTML(value) {
 
   return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 
 }
 
