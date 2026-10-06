@@ -1,69 +1,225 @@
 // SHOHIN MOVIE — MAIN APP
 // SHOHIN BRAND COLORS — НЕ МЕНЯТЬ
 
+let currentModalItem = null;
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
 document.addEventListener("DOMContentLoaded", () => {
 
-  initApp();
+  initSearch();
+  initTypeNavigation();
+  initModal();
+  initFavoriteButton();
+
+  loadCatalog("movies");
 
 });
 
 
-/* ==================================================
-   INIT
-================================================== */
+/* =========================================================
+   SEARCH
+========================================================= */
 
-function initApp() {
+function initSearch() {
 
-  setupSearch();
+  const searchButton =
+    document.getElementById("searchButton");
 
-  setupTypeNavigation();
+  const searchPanel =
+    document.getElementById("searchPanel");
 
-  setupModal();
+  const searchInput =
+    document.getElementById("searchInput");
 
-  loadCatalog();
+  const closeSearch =
+    document.getElementById("closeSearch");
+
+
+  if (searchButton) {
+
+    searchButton.addEventListener(
+      "click",
+      () => {
+
+        if (!searchPanel) return;
+
+        searchPanel.classList.toggle("show");
+
+        if (
+          searchPanel.classList.contains("show") &&
+          searchInput
+        ) {
+
+          setTimeout(() => {
+            searchInput.focus();
+          }, 100);
+
+        }
+
+      }
+    );
+
+  }
+
+
+  if (closeSearch) {
+
+    closeSearch.addEventListener(
+      "click",
+      () => {
+
+        if (searchInput) {
+          searchInput.value = "";
+        }
+
+        if (searchPanel) {
+          searchPanel.classList.remove("show");
+        }
+
+        renderCatalog();
+
+      }
+    );
+
+  }
+
+
+  if (searchInput) {
+
+    searchInput.addEventListener(
+      "input",
+      () => {
+
+        renderCatalog();
+
+      }
+    );
+
+  }
 
 }
 
 
-/* ==================================================
+/* =========================================================
+   TYPE NAVIGATION
+========================================================= */
+
+function initTypeNavigation() {
+
+  document
+    .querySelectorAll(".nav-button")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          document
+            .querySelectorAll(".nav-button")
+            .forEach(item => {
+              item.classList.remove("active");
+            });
+
+          button.classList.add("active");
+
+          const type =
+            button.dataset.type || "movies";
+
+          loadCatalog(type);
+
+        }
+      );
+
+    });
+
+}
+
+
+/* =========================================================
    LOAD CATALOG
-================================================== */
+========================================================= */
 
-async function loadCatalog() {
+async function loadCatalog(type) {
 
-  showLoading(true);
+  const loading =
+    document.getElementById("loading");
 
-  hideEmpty();
+  const grid =
+    document.getElementById("movieGrid");
 
-
-  const type =
-    window.SHOHIN_MOVIE?.currentType || "movies";
-
-  const year =
-    window.SHOHIN_MOVIE?.currentYear || 1980;
+  const emptyState =
+    document.getElementById("emptyState");
 
 
-  const file =
-    `data/${type}/${year}.json`;
+  if (loading) {
+    loading.classList.add("show");
+  }
+
+  if (grid) {
+    grid.innerHTML = "";
+  }
+
+  if (emptyState) {
+    emptyState.hidden = true;
+  }
+
+
+  if (
+    typeof SHOHIN_MOVIE !== "undefined"
+  ) {
+
+    SHOHIN_MOVIE.currentType =
+      type === "series"
+        ? "series"
+        : "movies";
+
+  }
+
+
+  /*
+    Сейчас загружаем тестовый 1980 год.
+    Позже можно будет автоматически
+    подключать все годы.
+  */
+
+  const year = 1980;
+
+
+  if (
+    typeof SHOHIN_MOVIE !== "undefined"
+  ) {
+
+    SHOHIN_MOVIE.currentYear = year;
+
+  }
+
+
+  const folder =
+    type === "series"
+      ? "series"
+      : "movies";
+
+
+  const url =
+    `data/${folder}/${year}.json`;
 
 
   try {
 
     const response =
-      await fetch(
-        file,
-        {
-          cache: "no-cache"
-        }
-      );
+      await fetch(url, {
+        cache: "no-cache"
+      });
 
 
     if (!response.ok) {
-
       throw new Error(
         `HTTP ${response.status}`
       );
-
     }
 
 
@@ -72,23 +228,25 @@ async function loadCatalog() {
 
 
     if (!Array.isArray(data)) {
-
       throw new Error(
-        "JSON должен содержать массив"
+        "JSON должен содержать массив."
       );
-
     }
 
 
-    if (type === "movies") {
+    if (
+      typeof SHOHIN_MOVIE !== "undefined"
+    ) {
 
-      SHOHIN_MOVIE.movies =
-        data;
+      if (type === "series") {
 
-    } else {
+        SHOHIN_MOVIE.series = data;
 
-      SHOHIN_MOVIE.series =
-        data;
+      } else {
+
+        SHOHIN_MOVIE.movies = data;
+
+      }
 
     }
 
@@ -99,405 +257,303 @@ async function loadCatalog() {
   } catch (error) {
 
     console.error(
-      "SHOHIN MOVIE:",
+      "SHOHIN MOVIE LOAD ERROR:",
       error
     );
 
 
-    if (type === "movies") {
-
-      SHOHIN_MOVIE.movies = [];
-
-    } else {
-
-      SHOHIN_MOVIE.series = [];
-
-    }
-
-
-    const grid =
-      document.getElementById(
-        "movieGrid"
-      );
-
-
     if (grid) {
 
-      grid.innerHTML = "";
+      grid.innerHTML = `
+        <div class="load-error">
+
+          <h3>
+            Не удалось загрузить каталог
+          </h3>
+
+          <p>
+            Проверьте файл:
+            <br>
+            <strong>${escapeHTML(url)}</strong>
+          </p>
+
+        </div>
+      `;
 
     }
-
-
-    showEmpty(
-      `Каталог ${year} года пока не загружен.`
-    );
-
 
   } finally {
 
-    showLoading(false);
+    if (loading) {
+      loading.classList.remove("show");
+    }
 
   }
 
 }
 
 
-/* ==================================================
+/* =========================================================
    RENDER CATALOG
-================================================== */
+========================================================= */
 
 function renderCatalog() {
 
   const grid =
-    document.getElementById(
-      "movieGrid"
-    );
+    document.getElementById("movieGrid");
 
-
-  if (!grid) {
-    return;
-  }
-
-
-  const items =
-    Array.isArray(
-      SHOHIN_MOVIE.currentItems
-    )
-      ? [...SHOHIN_MOVIE.currentItems]
-      : [];
-
+  const emptyState =
+    document.getElementById("emptyState");
 
   const searchInput =
-    document.getElementById(
-      "searchInput"
-    );
+    document.getElementById("searchInput");
+
+
+  if (!grid) return;
+
+
+  let items = [];
+
+
+  if (
+    typeof SHOHIN_MOVIE !== "undefined"
+  ) {
+
+    items =
+      Array.isArray(SHOHIN_MOVIE.currentItems)
+        ? SHOHIN_MOVIE.currentItems
+        : [];
+
+  }
 
 
   const query =
     searchInput
-      ? searchInput.value
+      ? String(searchInput.value || "")
           .trim()
           .toLowerCase()
       : "";
 
 
-  let filtered =
-    items.filter(
-      item => {
+  if (query) {
 
-        if (!query) {
-          return true;
-        }
-
-
-        const title =
-          String(
-            item.title || ""
-          ).toLowerCase();
-
-
-        const originalTitle =
-          String(
-            item.originalTitle || ""
-          ).toLowerCase();
-
-
-        const description =
-          String(
-            item.description || ""
-          ).toLowerCase();
-
-
-        const countries =
-          getCountries(item)
-            .join(" ")
-            .toLowerCase();
-
-
-        const genres =
-          getGenres(item)
-            .join(" ")
-            .toLowerCase();
-
-
-        return (
-
-          title.includes(query) ||
-
-          originalTitle.includes(query) ||
-
-          description.includes(query) ||
-
-          countries.includes(query) ||
-
-          genres.includes(query)
-
-        );
-
-      }
-    );
-
-
-  /*
-   * Фильтр по рейтингу,
-   * если его вызовет меню
-   */
-
-  if (
-    window.activeFilter === "rating"
-  ) {
-
-    filtered.sort(
-      (a, b) =>
-        Number(
-          b.rating || 0
-        ) -
-        Number(
-          a.rating || 0
-        )
-    );
+    items =
+      items.filter(item =>
+        searchItem(item, query)
+      );
 
   }
 
 
-  /*
-   * Очистить старые карточки
-   */
-
   grid.innerHTML = "";
 
 
-  /*
-   * Ничего не найдено
-   */
+  if (!items.length) {
 
-  if (!filtered.length) {
-
-    showEmpty(
-      query
-        ? `По запросу «${query}» ничего не найдено.`
-        : "В этом каталоге пока нет карточек."
-    );
+    if (emptyState) {
+      emptyState.hidden = false;
+    }
 
     return;
 
   }
 
 
-  hideEmpty();
+  if (emptyState) {
+    emptyState.hidden = true;
+  }
 
 
-  /*
-   * Создаём карточки
-   */
+  items.forEach(item => {
 
-  filtered.forEach(
-    item => {
+    const card =
+      createMovieCard(item);
 
-      const card =
-        createMovieCard(item);
-
+    if (card) {
       grid.appendChild(card);
-
     }
+
+  });
+
+}
+
+
+/* =========================================================
+   SEARCH ITEM
+========================================================= */
+
+function searchItem(item, query) {
+
+  const title =
+    String(item.title || "")
+      .toLowerCase();
+
+  const originalTitle =
+    String(item.originalTitle || "")
+      .toLowerCase();
+
+  const description =
+    String(item.description || "")
+      .toLowerCase();
+
+
+  const countries =
+    Array.isArray(item.countries)
+      ? item.countries
+      : item.country
+        ? [item.country]
+        : [];
+
+
+  const genres =
+    Array.isArray(item.genres)
+      ? item.genres
+      : item.genre
+        ? [item.genre]
+        : [];
+
+
+  return (
+    title.includes(query) ||
+    originalTitle.includes(query) ||
+    description.includes(query) ||
+    countries.some(country =>
+      String(country)
+        .toLowerCase()
+        .includes(query)
+    ) ||
+    genres.some(genre =>
+      String(genre)
+        .toLowerCase()
+        .includes(query)
+    )
   );
 
 }
 
 
-/* ==================================================
+/* =========================================================
    CREATE CARD
-================================================== */
+========================================================= */
 
 function createMovieCard(item) {
 
+  if (!item) return null;
+
+
   const card =
-    document.createElement(
-      "article"
-    );
+    document.createElement("article");
 
-
-  card.className =
-    "movie-card";
+  card.className = "movie-card";
 
 
   const poster =
-    String(
-      item.poster || ""
-    ).trim();
+    document.createElement("div");
+
+  poster.className = "movie-poster";
 
 
-  const title =
-    escapeHTML(
-      item.title ||
-      "Без названия"
-    );
+  if (item.poster) {
 
+    const image =
+      document.createElement("img");
 
-  const year =
-    escapeHTML(
-      item.year ||
-      ""
-    );
+    image.src = item.poster;
 
+    image.alt =
+      item.title || "SHOHIN MOVIE";
 
-  let rating = "—";
+    image.loading = "lazy";
 
-
-  if (
-    item.rating !== undefined &&
-    item.rating !== null &&
-    item.rating !== ""
-  ) {
-
-    const number =
-      Number(item.rating);
-
-
-    if (!Number.isNaN(number)) {
-
-      rating =
-        number.toFixed(1);
-
-    }
-
-  }
-
-
-  const genres =
-    getGenres(item)
-      .slice(0, 3);
-
-
-  const genreText =
-    genres.length
-      ? escapeHTML(
-          genres.join(" • ")
-        )
-      : "";
-
-
-  let posterHTML;
-
-
-  if (poster) {
-
-    posterHTML = `
-
-      <img
-        class="poster"
-        src="${escapeAttribute(poster)}"
-        alt="${escapeAttribute(
-          item.title || ""
-        )}"
-        loading="lazy"
-      >
-
-      <div
-        class="poster-placeholder"
-        style="display:none;"
-      >
-        Постер недоступен
-      </div>
-
-    `;
-
-  } else {
-
-    posterHTML = `
-
-      <div class="poster-placeholder">
-
-        Постер пока не добавлен
-
-      </div>
-
-    `;
-
-  }
-
-
-  card.innerHTML = `
-
-    ${posterHTML}
-
-    <div class="movie-info">
-
-      <div class="movie-title">
-        ${title}
-      </div>
-
-
-      <div class="movie-meta">
-
-        <span class="movie-year">
-          ${year}
-        </span>
-
-        <span class="movie-rating">
-          ★ ${rating}
-        </span>
-
-      </div>
-
-
-      ${
-        genreText
-          ? `
-            <div class="movie-genres">
-              ${genreText}
-            </div>
-          `
-          : ""
-      }
-
-    </div>
-
-  `;
-
-
-  /*
-   * Если постер не загрузился
-   */
-
-  const image =
-    card.querySelector(
-      ".poster"
-    );
-
-
-  if (image) {
 
     image.addEventListener(
       "error",
-      function () {
+      () => {
 
-        image.style.display =
-          "none";
+        image.remove();
 
+        poster.classList.add(
+          "poster-placeholder"
+        );
 
-        const placeholder =
-          card.querySelector(
-            ".poster-placeholder"
-          );
-
-
-        if (placeholder) {
-
-          placeholder.style.display =
-            "flex";
-
-        }
+        poster.innerHTML =
+          "<span>SH</span>";
 
       }
     );
 
+
+    poster.appendChild(image);
+
+  } else {
+
+    poster.classList.add(
+      "poster-placeholder"
+    );
+
+    poster.innerHTML =
+      "<span>SH</span>";
+
   }
 
 
-  /*
-   * Открытие карточки
-   */
+  const info =
+    document.createElement("div");
+
+  info.className = "movie-card-info";
+
+
+  const title =
+    document.createElement("h3");
+
+  title.className = "movie-card-title";
+
+  title.textContent =
+    item.title || "Без названия";
+
+
+  const meta =
+    document.createElement("div");
+
+  meta.className = "movie-card-meta";
+
+
+  if (item.year) {
+
+    const year =
+      document.createElement("span");
+
+    year.textContent =
+      String(item.year);
+
+    meta.appendChild(year);
+
+  }
+
+
+  if (item.rating !== undefined) {
+
+    const rating =
+      document.createElement("span");
+
+    rating.className =
+      "movie-card-rating";
+
+    rating.textContent =
+      `★ ${Number(item.rating || 0).toFixed(1)}`;
+
+    meta.appendChild(rating);
+
+  }
+
+
+  info.appendChild(title);
+  info.appendChild(meta);
+
+
+  card.appendChild(poster);
+  card.appendChild(info);
+
 
   card.addEventListener(
     "click",
@@ -516,428 +572,29 @@ function createMovieCard(item) {
 }
 
 
-/* ==================================================
-   COUNTRIES
-================================================== */
-
-function getCountries(item) {
-
-  if (
-    Array.isArray(
-      item.countries
-    )
-  ) {
-
-    return item.countries
-      .filter(Boolean)
-      .map(
-        country =>
-          String(country).trim()
-      )
-      .filter(Boolean);
-
-  }
-
-
-  if (item.country) {
-
-    return [
-      String(
-        item.country
-      ).trim()
-    ];
-
-  }
-
-
-  return [];
-
-}
-
-
-/* ==================================================
-   GENRES
-================================================== */
-
-function getGenres(item) {
-
-  if (
-    !Array.isArray(
-      item.genres
-    )
-  ) {
-
-    return [];
-
-  }
-
-
-  return item.genres
-    .filter(Boolean)
-    .map(
-      genre =>
-        String(
-          genre
-        ).trim()
-    )
-    .filter(Boolean);
-
-}
-
-
-/* ==================================================
-   ALL COUNTRIES
-================================================== */
-
-function getAllCountries() {
-
-  const countries =
-    new Set();
-
-
-  const items =
-    SHOHIN_MOVIE.currentItems ||
-    [];
-
-
-  items.forEach(
-    item => {
-
-      getCountries(item)
-        .forEach(
-          country =>
-            countries.add(
-              country
-            )
-        );
-
-    }
-  );
-
-
-  return [...countries]
-    .sort(
-      (a, b) =>
-        a.localeCompare(
-          b,
-          "ru",
-          {
-            sensitivity:
-              "base"
-          }
-        )
-    );
-
-}
-
-
-/* ==================================================
-   ALL GENRES
-================================================== */
-
-function getAllGenres() {
-
-  const genres =
-    new Set();
-
-
-  const items =
-    SHOHIN_MOVIE.currentItems ||
-    [];
-
-
-  items.forEach(
-    item => {
-
-      getGenres(item)
-        .forEach(
-          genre =>
-            genres.add(
-              genre
-            )
-        );
-
-    }
-  );
-
-
-  return [...genres]
-    .sort(
-      (a, b) =>
-        a.localeCompare(
-          b,
-          "ru",
-          {
-            sensitivity:
-              "base"
-          }
-        )
-    );
-
-}
-
-
-/* ==================================================
-   TYPE NAVIGATION
-================================================== */
-
-function setupTypeNavigation() {
-
-  const buttons =
-    document.querySelectorAll(
-      ".nav-button"
-    );
-
-
-  buttons.forEach(
-    button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          const type =
-            button.dataset.type;
-
-
-          if (
-            !type ||
-            !window.SHOHIN_MOVIE
-          ) {
-
-            return;
-
-          }
-
-
-          buttons.forEach(
-            item =>
-              item.classList.remove(
-                "active"
-              )
-          );
-
-
-          button.classList.add(
-            "active"
-          );
-
-
-          SHOHIN_MOVIE.currentType =
-            type;
-
-
-          /*
-           * Сбрасываем поиск
-           */
-
-          const input =
-            document.getElementById(
-              "searchInput"
-            );
-
-
-          if (input) {
-
-            input.value = "";
-
-          }
-
-
-          loadCatalog();
-
-        }
-      );
-
-    }
-  );
-
-}
-
-
-/* ==================================================
-   SEARCH
-================================================== */
-
-function setupSearch() {
-
-  const searchButton =
-    document.getElementById(
-      "searchButton"
-    );
-
-
-  const searchPanel =
-    document.getElementById(
-      "searchPanel"
-    );
-
-
-  const searchInput =
-    document.getElementById(
-      "searchInput"
-    );
-
-
-  const closeSearch =
-    document.getElementById(
-      "closeSearch"
-    );
-
-
-  if (
-    !searchButton ||
-    !searchPanel ||
-    !searchInput
-  ) {
-
-    return;
-
-  }
-
-
-  /*
-   * Открыть поиск
-   */
-
-  searchButton.addEventListener(
-    "click",
-    () => {
-
-      searchPanel.classList.add(
-        "show"
-      );
-
-
-      searchPanel.setAttribute(
-        "aria-hidden",
-        "false"
-      );
-
-
-      setTimeout(
-        () => {
-
-          searchInput.focus();
-
-        },
-        80
-      );
-
-    }
-  );
-
-
-  /*
-   * Закрыть поиск
-   */
-
-  if (closeSearch) {
-
-    closeSearch.addEventListener(
-      "click",
-      () => {
-
-        searchPanel.classList.remove(
-          "show"
-        );
-
-
-        searchPanel.setAttribute(
-          "aria-hidden",
-          "true"
-        );
-
-
-        searchInput.value = "";
-
-
-        renderCatalog();
-
-      }
-    );
-
-  }
-
-
-  /*
-   * Поиск в реальном времени
-   */
-
-  searchInput.addEventListener(
-    "input",
-    () => {
-
-      renderCatalog();
-
-    }
-  );
-
-
-  /*
-   * ESC
-   */
-
-  document.addEventListener(
-    "keydown",
-    event => {
-
-      if (
-        event.key === "Escape"
-      ) {
-
-        if (
-          searchPanel.classList.contains(
-            "show"
-          )
-        ) {
-
-          searchPanel.classList.remove(
-            "show"
-          );
-
-
-          searchPanel.setAttribute(
-            "aria-hidden",
-            "true"
-          );
-
-        }
-
-      }
-
-    }
-  );
-
-}
-
-
-/* ==================================================
-   MOVIE MODAL
-================================================== */
-
-function setupModal() {
+/* =========================================================
+   MODAL
+========================================================= */
+
+function initModal() {
 
   const modal =
-    document.getElementById(
-      "movieModal"
-    );
-
+    document.getElementById("movieModal");
 
   const overlay =
-    document.getElementById(
-      "modalOverlay"
-    );
-
+    document.getElementById("modalOverlay");
 
   const close =
-    document.getElementById(
-      "modalClose"
+    document.getElementById("modalClose");
+
+
+  if (overlay) {
+
+    overlay.addEventListener(
+      "click",
+      closeMovieModal
     );
 
-
-  if (!modal) {
-    return;
   }
 
 
@@ -951,25 +608,14 @@ function setupModal() {
   }
 
 
-  if (overlay) {
-
-    overlay.addEventListener(
-      "click",
-      closeMovieModal
-    );
-
-  }
-
-
   document.addEventListener(
     "keydown",
     event => {
 
       if (
         event.key === "Escape" &&
-        modal.classList.contains(
-          "show"
-        )
+        modal &&
+        modal.classList.contains("show")
       ) {
 
         closeMovieModal();
@@ -982,272 +628,204 @@ function setupModal() {
 }
 
 
-/* ==================================================
-   OPEN MOVIE
-================================================== */
+/* =========================================================
+   OPEN MODAL
+========================================================= */
 
 function openMovieModal(item) {
 
-  const modal =
-    document.getElementById(
-      "movieModal"
-    );
+  if (!item) return;
 
+
+  currentModalItem = item;
+
+
+  const modal =
+    document.getElementById("movieModal");
 
   const modalPoster =
-    document.getElementById(
-      "modalPoster"
-    );
-
+    document.getElementById("modalPoster");
 
   const modalYear =
-    document.getElementById(
-      "modalYear"
-    );
-
+    document.getElementById("modalYear");
 
   const modalTitle =
-    document.getElementById(
-      "modalTitle"
-    );
-
+    document.getElementById("modalTitle");
 
   const modalRating =
-    document.getElementById(
-      "modalRating"
-    );
-
+    document.getElementById("modalRating");
 
   const modalCountry =
-    document.getElementById(
-      "modalCountry"
-    );
-
+    document.getElementById("modalCountry");
 
   const modalGenres =
-    document.getElementById(
-      "modalGenres"
-    );
-
+    document.getElementById("modalGenres");
 
   const modalDescription =
-    document.getElementById(
-      "modalDescription"
-    );
+    document.getElementById("modalDescription");
 
 
-  if (!modal) {
-    return;
-  }
+  if (modalPoster) {
 
+    if (item.poster) {
 
-  const poster =
-    String(
-      item.poster || ""
-    ).trim();
+      modalPoster.src =
+        item.poster;
 
+      modalPoster.alt =
+        item.title || "";
 
-  /*
-   * POSTER
-   */
-
-  if (
-    modalPoster &&
-    poster
-  ) {
-
-    modalPoster.src =
-      poster;
-
-    modalPoster.alt =
-      item.title ||
-      "Постер";
-
-    modalPoster.style.display =
-      "block";
-
-  } else if (modalPoster) {
-
-    modalPoster.removeAttribute(
-      "src"
-    );
-
-    modalPoster.alt = "";
-
-    modalPoster.style.display =
-      "none";
-
-  }
-
-
-  /*
-   * YEAR
-   */
-
-  if (modalYear) {
-
-    modalYear.textContent =
-      item.year ||
-      "";
-
-  }
-
-
-  /*
-   * TITLE
-   */
-
-  if (modalTitle) {
-
-    modalTitle.textContent =
-      item.title ||
-      "Без названия";
-
-  }
-
-
-  /*
-   * RATING
-   */
-
-  if (modalRating) {
-
-    if (
-      item.rating !== undefined &&
-      item.rating !== null &&
-      item.rating !== ""
-    ) {
-
-      modalRating.textContent =
-        `★ ${Number(
-          item.rating
-        ).toFixed(1)}`;
+      modalPoster.style.display =
+        "block";
 
     } else {
 
-      modalRating.textContent =
-        "★ —";
+      modalPoster.removeAttribute(
+        "src"
+      );
+
+      modalPoster.alt = "";
+
+      modalPoster.style.display =
+        "none";
 
     }
 
   }
 
 
-  /*
-   * COUNTRY
-   */
+  if (modalYear) {
+
+    modalYear.textContent =
+      item.year
+        ? String(item.year)
+        : "";
+
+  }
+
+
+  if (modalTitle) {
+
+    modalTitle.textContent =
+      item.title || "Без названия";
+
+  }
+
+
+  if (modalRating) {
+
+    if (
+      item.rating !== undefined &&
+      item.rating !== null
+    ) {
+
+      modalRating.textContent =
+        `★ ${Number(item.rating).toFixed(1)}`;
+
+    } else {
+
+      modalRating.textContent =
+        "";
+
+    }
+
+  }
+
+
+  /* COUNTRY */
 
   if (modalCountry) {
 
     const countries =
-      getCountries(item);
+      Array.isArray(item.countries)
+        ? item.countries
+        : item.country
+          ? [item.country]
+          : [];
 
 
     modalCountry.textContent =
       countries.length
         ? countries.join(" • ")
-        : "Страна не указана";
+        : "";
 
   }
 
 
-  /*
-   * GENRES
-   */
+  /* GENRES */
 
   if (modalGenres) {
 
-    modalGenres.innerHTML = "";
+    const genres =
+      Array.isArray(item.genres)
+        ? item.genres
+        : item.genre
+          ? [item.genre]
+          : [];
 
 
-    getGenres(item)
-      .forEach(
-        genre => {
-
-          const tag =
-            document.createElement(
-              "span"
-            );
-
-
-          tag.className =
-            "genre-tag";
-
-
-          tag.textContent =
-            genre;
-
-
-          modalGenres.appendChild(
-            tag
-          );
-
-        }
-      );
+    modalGenres.textContent =
+      genres.length
+        ? genres.join(" • ")
+        : "";
 
   }
 
-
-  /*
-   * DESCRIPTION
-   */
 
   if (modalDescription) {
 
     modalDescription.textContent =
       item.description ||
-      "Описание пока не добавлено.";
+      "Описание пока отсутствует.";
 
   }
 
 
   /*
-   * SHOW
-   */
+    Обновляем состояние кнопки
+    🔖 Сохранить / Сохранено
+  */
 
-  modal.classList.add(
-    "show"
-  );
-
-
-  modal.setAttribute(
-    "aria-hidden",
-    "false"
-  );
+  updateFavoriteButton(item);
 
 
-  document.body.style.overflow =
-    "hidden";
+  if (modal) {
+
+    modal.classList.add("show");
+
+    modal.setAttribute(
+      "aria-hidden",
+      "false"
+    );
+
+    document.body.style.overflow =
+      "hidden";
+
+  }
 
 }
 
 
-/* ==================================================
+/* =========================================================
    CLOSE MODAL
-================================================== */
+========================================================= */
 
 function closeMovieModal() {
 
   const modal =
-    document.getElementById(
-      "movieModal"
+    document.getElementById("movieModal");
+
+
+  if (modal) {
+
+    modal.classList.remove("show");
+
+    modal.setAttribute(
+      "aria-hidden",
+      "true"
     );
 
-
-  if (!modal) {
-    return;
   }
-
-
-  modal.classList.remove(
-    "show"
-  );
-
-
-  modal.setAttribute(
-    "aria-hidden",
-    "true"
-  );
 
 
   document.body.style.overflow =
@@ -1256,11 +834,335 @@ function closeMovieModal() {
 }
 
 
-/* ==================================================
+/* =========================================================
+   FAVORITES
+========================================================= */
+
+const FAVORITES_KEY =
+  "SHOHIN_MOVIE_FAVORITES";
+
+
+function getFavorites() {
+
+  try {
+
+    const saved =
+      localStorage.getItem(
+        FAVORITES_KEY
+      );
+
+
+    if (!saved) {
+      return [];
+    }
+
+
+    const favorites =
+      JSON.parse(saved);
+
+
+    return Array.isArray(favorites)
+      ? favorites
+      : [];
+
+
+  } catch (error) {
+
+    console.warn(
+      "SHOHIN MOVIE FAVORITES:",
+      error
+    );
+
+    return [];
+
+  }
+
+}
+
+
+/* =========================================================
+   SAVE FAVORITES
+========================================================= */
+
+function saveFavorites(favorites) {
+
+  try {
+
+    localStorage.setItem(
+      FAVORITES_KEY,
+      JSON.stringify(
+        Array.isArray(favorites)
+          ? favorites
+          : []
+      )
+    );
+
+
+  } catch (error) {
+
+    console.warn(
+      "SHOHIN MOVIE FAVORITES SAVE:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   IS FAVORITE
+========================================================= */
+
+function isFavorite(item) {
+
+  if (!item) return false;
+
+
+  const favorites =
+    getFavorites();
+
+
+  return favorites.some(
+    favorite =>
+      String(favorite.id) ===
+      String(item.id)
+  );
+
+}
+
+
+/* =========================================================
+   TOGGLE FAVORITE
+========================================================= */
+
+function toggleFavorite(item) {
+
+  if (!item) return false;
+
+
+  let favorites =
+    getFavorites();
+
+
+  const index =
+    favorites.findIndex(
+      favorite =>
+        String(favorite.id) ===
+        String(item.id)
+    );
+
+
+  if (index >= 0) {
+
+    /*
+      Уже сохранён —
+      удаляем
+    */
+
+    favorites.splice(
+      index,
+      1
+    );
+
+
+    saveFavorites(
+      favorites
+    );
+
+
+    return false;
+
+  }
+
+
+  /*
+    Ещё не сохранён —
+    добавляем в начало
+  */
+
+  favorites.unshift(item);
+
+
+  /*
+    Чтобы localStorage
+    не рос бесконечно
+  */
+
+  favorites =
+    favorites.slice(0, 500);
+
+
+  saveFavorites(
+    favorites
+  );
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   FAVORITE BUTTON
+========================================================= */
+
+function initFavoriteButton() {
+
+  const button =
+    document.getElementById(
+      "favoriteButton"
+    );
+
+
+  if (!button) return;
+
+
+  button.addEventListener(
+    "click",
+    event => {
+
+      event.preventDefault();
+
+      event.stopPropagation();
+
+
+      if (!currentModalItem) {
+        return;
+      }
+
+
+      const saved =
+        toggleFavorite(
+          currentModalItem
+        );
+
+
+      updateFavoriteButton(
+        currentModalItem
+      );
+
+
+      /*
+        Небольшая визуальная
+        обратная связь
+      */
+
+      button.classList.remove(
+        "favorite-pulse"
+      );
+
+
+      void button.offsetWidth;
+
+
+      button.classList.add(
+        "favorite-pulse"
+      );
+
+
+      console.log(
+        saved
+          ? "SHOHIN MOVIE: добавлено в избранное"
+          : "SHOHIN MOVIE: удалено из избранного"
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   UPDATE FAVORITE BUTTON
+========================================================= */
+
+function updateFavoriteButton(item) {
+
+  const button =
+    document.getElementById(
+      "favoriteButton"
+    );
+
+
+  if (!button || !item) {
+    return;
+  }
+
+
+  const icon =
+    button.querySelector(
+      ".favorite-icon"
+    );
+
+  const text =
+    button.querySelector(
+      ".favorite-text"
+    );
+
+
+  const saved =
+    isFavorite(item);
+
+
+  if (saved) {
+
+    button.classList.add(
+      "active"
+    );
+
+    button.setAttribute(
+      "aria-label",
+      "Удалить из избранного"
+    );
+
+
+    if (icon) {
+      icon.textContent = "🔖";
+    }
+
+
+    if (text) {
+      text.textContent =
+        "Сохранено";
+    }
+
+
+  } else {
+
+    button.classList.remove(
+      "active"
+    );
+
+    button.setAttribute(
+      "aria-label",
+      "Добавить в избранное"
+    );
+
+
+    if (icon) {
+      icon.textContent = "🔖";
+    }
+
+
+    if (text) {
+      text.textContent =
+        "Сохранить";
+    }
+
+  }
+
+}
+
+
+/* =========================================================
    RECENT
-================================================== */
+========================================================= */
 
 function saveRecent(item) {
+
+  if (!item) return;
+
 
   try {
 
@@ -1270,40 +1172,35 @@ function saveRecent(item) {
 
     let recent =
       JSON.parse(
-        localStorage.getItem(
-          key
-        ) || "[]"
+        localStorage.getItem(key) ||
+        "[]"
       );
+
+
+    recent =
+      Array.isArray(recent)
+        ? recent
+        : [];
 
 
     recent =
       recent.filter(
         movie =>
-          movie.id !== item.id
+          String(movie.id) !==
+          String(item.id)
       );
 
 
-    recent.unshift(
-      item
-    );
+    recent.unshift(item);
 
-
-    /*
-     * Максимум 30
-     */
 
     recent =
-      recent.slice(
-        0,
-        30
-      );
+      recent.slice(0, 30);
 
 
     localStorage.setItem(
       key,
-      JSON.stringify(
-        recent
-      )
+      JSON.stringify(recent)
     );
 
 
@@ -1319,295 +1216,333 @@ function saveRecent(item) {
 }
 
 
-/* ==================================================
+/* =========================================================
+   COUNTRIES
+========================================================= */
+
+function getAllCountries() {
+
+  const items =
+    typeof SHOHIN_MOVIE !== "undefined"
+      ? SHOHIN_MOVIE.currentItems || []
+      : [];
+
+
+  const countries =
+    new Set();
+
+
+  items.forEach(item => {
+
+    const list =
+      Array.isArray(item.countries)
+        ? item.countries
+        : item.country
+          ? [item.country]
+          : [];
+
+
+    list.forEach(country => {
+
+      if (country) {
+        countries.add(
+          String(country)
+        );
+      }
+
+    });
+
+  });
+
+
+  return [...countries]
+    .sort((a, b) =>
+      a.localeCompare(
+        b,
+        "ru",
+        {
+          sensitivity: "base"
+        }
+      )
+    );
+
+}
+
+
+/* =========================================================
+   GENRES
+========================================================= */
+
+function getAllGenres() {
+
+  const items =
+    typeof SHOHIN_MOVIE !== "undefined"
+      ? SHOHIN_MOVIE.currentItems || []
+      : [];
+
+
+  const genres =
+    new Set();
+
+
+  items.forEach(item => {
+
+    const list =
+      Array.isArray(item.genres)
+        ? item.genres
+        : item.genre
+          ? [item.genre]
+          : [];
+
+
+    list.forEach(genre => {
+
+      if (genre) {
+        genres.add(
+          String(genre)
+        );
+      }
+
+    });
+
+  });
+
+
+  return [...genres]
+    .sort((a, b) =>
+      a.localeCompare(
+        b,
+        "ru",
+        {
+          sensitivity: "base"
+        }
+      )
+    );
+
+}
+
+
+/* =========================================================
    FILTER BY COUNTRY
-================================================== */
+========================================================= */
 
-function filterByCountry(
-  country
-) {
+function filterByCountry(country) {
 
   const items =
-    SHOHIN_MOVIE.currentItems ||
-    [];
+    typeof SHOHIN_MOVIE !== "undefined"
+      ? SHOHIN_MOVIE.currentItems || []
+      : [];
 
 
-  if (
-    !country ||
-    country === "all"
-  ) {
+  if (!country) {
 
-    renderCatalog();
+    renderFilteredItems(
+      items
+    );
 
-    return;
+    return items;
 
   }
 
 
   const filtered =
-    items.filter(
-      item =>
-        getCountries(item)
-          .some(
-            itemCountry =>
-              itemCountry
-                .toLowerCase() ===
-              country
-                .toLowerCase()
-          )
-    );
+    items.filter(item => {
+
+      const countries =
+        Array.isArray(item.countries)
+          ? item.countries
+          : item.country
+            ? [item.country]
+            : [];
+
+
+      return countries.some(
+        value =>
+          String(value).toLowerCase() ===
+          String(country).toLowerCase()
+      );
+
+    });
 
 
   renderFilteredItems(
     filtered
   );
 
+
+  return filtered;
+
 }
 
 
-/* ==================================================
+/* =========================================================
    FILTER BY GENRE
-================================================== */
+========================================================= */
 
-function filterByGenre(
-  genre
-) {
+function filterByGenre(genre) {
 
   const items =
-    SHOHIN_MOVIE.currentItems ||
-    [];
+    typeof SHOHIN_MOVIE !== "undefined"
+      ? SHOHIN_MOVIE.currentItems || []
+      : [];
 
 
-  if (
-    !genre ||
-    genre === "all"
-  ) {
+  if (!genre) {
 
-    renderCatalog();
+    renderFilteredItems(
+      items
+    );
 
-    return;
+    return items;
 
   }
 
 
   const filtered =
-    items.filter(
-      item =>
-        getGenres(item)
-          .some(
-            itemGenre =>
-              itemGenre
-                .toLowerCase() ===
-              genre
-                .toLowerCase()
-          )
-    );
+    items.filter(item => {
+
+      const genres =
+        Array.isArray(item.genres)
+          ? item.genres
+          : item.genre
+            ? [item.genre]
+            : [];
+
+
+      return genres.some(
+        value =>
+          String(value).toLowerCase() ===
+          String(genre).toLowerCase()
+      );
+
+    });
 
 
   renderFilteredItems(
     filtered
   );
 
+
+  return filtered;
+
 }
 
 
-/* ==================================================
+/* =========================================================
    RENDER FILTERED
-================================================== */
+========================================================= */
 
-function renderFilteredItems(
-  items
-) {
+function renderFilteredItems(items) {
 
   const grid =
     document.getElementById(
       "movieGrid"
     );
 
+  const emptyState =
+    document.getElementById(
+      "emptyState"
+    );
 
-  if (!grid) {
-    return;
-  }
+
+  if (!grid) return;
 
 
   grid.innerHTML = "";
 
 
-  if (!items.length) {
+  if (!items || !items.length) {
 
-    showEmpty(
-      "По выбранному фильтру ничего не найдено."
-    );
-
-    return;
-
-  }
-
-
-  hideEmpty();
-
-
-  items.forEach(
-    item => {
-
-      grid.appendChild(
-        createMovieCard(item)
-      );
-
+    if (emptyState) {
+      emptyState.hidden = false;
     }
-  );
 
-}
-
-
-/* ==================================================
-   LOADING
-================================================== */
-
-function showLoading(
-  show
-) {
-
-  const loading =
-    document.getElementById(
-      "loading"
-    );
-
-
-  if (!loading) {
     return;
+
+  }
+
+
+  if (emptyState) {
+    emptyState.hidden = true;
   }
 
 
-  if (show) {
+  items.forEach(item => {
 
-    loading.classList.add(
-      "show"
-    );
+    const card =
+      createMovieCard(item);
 
-  } else {
+    if (card) {
+      grid.appendChild(card);
+    }
 
-    loading.classList.remove(
-      "show"
-    );
-
-  }
+  });
 
 }
 
 
-/* ==================================================
-   EMPTY
-================================================== */
+/* =========================================================
+   AVAILABLE YEARS
+========================================================= */
 
-function showEmpty(
-  message
-) {
+function getAvailableYears(items) {
 
-  const empty =
-    document.getElementById(
-      "emptyState"
-    );
-
-
-  if (!empty) {
-    return;
+  if (!Array.isArray(items)) {
+    return [];
   }
 
 
-  const paragraph =
-    empty.querySelector(
-      "p"
+  const years =
+    new Set();
+
+
+  items.forEach(item => {
+
+    const year =
+      Number(item.year);
+
+
+    if (year) {
+      years.add(year);
+    }
+
+  });
+
+
+  return [...years]
+    .sort(
+      (a, b) => b - a
     );
-
-
-  if (paragraph) {
-
-    paragraph.textContent =
-      message;
-
-  }
-
-
-  empty.classList.add(
-    "show"
-  );
 
 }
 
 
-/* ==================================================
-   HIDE EMPTY
-================================================== */
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
 
-function hideEmpty() {
+function escapeHTML(value) {
 
-  const empty =
-    document.getElementById(
-      "emptyState"
-    );
-
-
-  if (!empty) {
-    return;
-  }
-
-
-  empty.classList.remove(
-    "show"
-  );
-
-}
-
-
-/* ==================================================
-   HTML ESCAPE
-================================================== */
-
-function escapeHTML(
-  value
-) {
-
-  return String(value)
-
-    .replaceAll(
-      "&",
+  return String(value ?? "")
+    .replace(
+      /&/g,
       "&amp;"
     )
-
-    .replaceAll(
-      "<",
+    .replace(
+      /</g,
       "&lt;"
     )
-
-    .replaceAll(
-      ">",
+    .replace(
+      />/g,
       "&gt;"
     )
-
-    .replaceAll(
-      '"',
+    .replace(
+      /"/g,
       "&quot;"
     )
-
-    .replaceAll(
-      "'",
+    .replace(
+      /'/g,
       "&#039;"
     );
-
-}
-
-
-/* ==================================================
-   ATTRIBUTE ESCAPE
-================================================== */
-
-function escapeAttribute(
-  value
-) {
-
-  return escapeHTML(
-    value
-  );
 
 }
