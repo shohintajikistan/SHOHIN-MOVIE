@@ -4,14 +4,16 @@
     "title": "The Empire Strikes Back",
     "originalTitle": "The Empire Strikes Back",
     "year": 1980,
-    "country": "USA",
+    "countries": [
+      "USA"
+    ],
     "genres": [
       "Science Fiction",
       "Adventure",
       "Action"
     ],
     "rating": 8.7,
-    "description": "Тестовая карточка SHOHIN MOVIE. Позже здесь будет полноценное описание фильма.",
+    "description": "Тестовая карточка SHOHIN MOVIE. Здесь будет полноценное описание фильма.",
     "poster": ""
   }
 ]
