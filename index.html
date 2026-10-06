@@ -2,7 +2,12 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+
   <meta name="theme-color" content="#071c16">
 
   <title>SHOHIN MOVIE</title>
@@ -12,257 +17,165 @@
 
 <body>
 
-  <!-- SHOHIN BRAND COLORS — НЕ МЕНЯТЬ -->
+  <!--
+    SHOHIN MOVIE
+    Главный экран:
+    только Header + поиск + Фильмы/Сериалы + карточки
+  -->
 
-  <!-- ================= HEADER ================= -->
+  <!-- =========================
+       LOADING
+  ========================== -->
 
-  <header class="topbar">
+  <div id="loading" class="loading">
+    <div class="loading-logo">
+      <div class="loading-sh">SH</div>
+      <div class="loading-name">SHOHIN</div>
+    </div>
+  </div>
 
-    <div class="brand">
-      <div class="brand-logo">SH</div>
 
-      <div class="brand-text">
-        <strong>SHOHIN</strong>
-        <span>MOVIE</span>
+  <!-- =========================
+       APP
+  ========================== -->
+
+  <div id="app" class="app">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <header class="topbar">
+
+      <div class="brand">
+        <div class="brand-mark">SH</div>
+
+        <div class="brand-text">
+          <div class="brand-name">SHOHIN</div>
+          <div class="brand-subtitle">MOVIE</div>
+        </div>
       </div>
-    </div>
-
-    <div class="header-actions">
-
-      <button
-        class="icon-button search-button"
-        id="searchButton"
-        type="button"
-        aria-label="Поиск"
-      >
-        ⌕
-      </button>
-
-      <button
-        class="icon-button menu-button"
-        id="menuButton"
-        type="button"
-        aria-label="Меню"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-    </div>
-
-  </header>
 
 
-  <!-- ================= SIDE MENU ================= -->
+      <div class="topbar-actions">
 
-  <div
-    class="side-menu-overlay"
-    id="sideMenuOverlay"
-  ></div>
+        <!-- SEARCH -->
 
-  <aside
-    class="side-menu"
-    id="sideMenu"
-  >
+        <button
+          id="searchButton"
+          class="icon-button"
+          type="button"
+          aria-label="Поиск"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M20 20l-4-4"></path>
+          </svg>
+        </button>
 
-    <div class="side-menu-header">
 
-      <div class="side-menu-brand">
+        <!-- MENU -->
 
-        <div class="side-menu-logo">
-          SH
+        <button
+          id="menuButton"
+          class="icon-button"
+          type="button"
+          aria-label="Меню"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="23"
+            height="23"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <path d="M4 7h16"></path>
+            <path d="M4 12h16"></path>
+            <path d="M4 17h16"></path>
+          </svg>
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <!-- =========================
+         SEARCH PANEL
+    ========================== -->
+
+    <section
+      id="searchPanel"
+      class="search-panel"
+      aria-hidden="true"
+    >
+
+      <div class="search-panel-inner">
+
+        <div class="search-input-wrap">
+
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M20 20l-4-4"></path>
+          </svg>
+
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="Найти фильм или сериал..."
+            autocomplete="off"
+            spellcheck="false"
+          >
+
+          <button
+            id="closeSearch"
+            class="search-close"
+            type="button"
+            aria-label="Закрыть поиск"
+          >
+            ×
+          </button>
+
         </div>
 
-        <div>
-          <strong>SHOHIN</strong>
-          <span>MOVIE</span>
-        </div>
-
       </div>
 
-      <button
-        class="side-menu-close"
-        id="sideMenuClose"
-        type="button"
-      >
-        ×
-      </button>
-
-    </div>
+    </section>
 
 
-    <div class="side-menu-content">
+    <!-- =========================
+         MAIN
+    ========================== -->
 
-      <div class="menu-group">
+    <main class="main-content">
 
-        <div class="menu-group-title">
-          ОСНОВНОЕ
-        </div>
+      <!--
+        Только два типа контента.
+        Никаких стран, жанров, годов и рейтингов
+        на главном экране.
+      -->
 
-        <button
-          class="menu-item active"
-          data-menu="home"
-          type="button"
-        >
-          <span class="menu-icon">⌂</span>
-          <span>Главная</span>
-        </button>
-
-        <button
-          class="menu-item"
-          data-menu="movies"
-          type="button"
-        >
-          <span class="menu-icon">▶</span>
-          <span>Фильмы</span>
-        </button>
-
-        <button
-          class="menu-item"
-          data-menu="series"
-          type="button"
-        >
-          <span class="menu-icon">▣</span>
-          <span>Сериалы</span>
-        </button>
-
-      </div>
-
-
-      <div class="menu-group">
-
-        <div class="menu-group-title">
-          КАТАЛОГ
-        </div>
-
-        <button
-          class="menu-item"
-          data-menu="countries"
-          type="button"
-        >
-          <span class="menu-icon">◎</span>
-          <span>Страны</span>
-        </button>
-
-        <button
-          class="menu-item"
-          data-menu="genres"
-          type="button"
-        >
-          <span class="menu-icon">◆</span>
-          <span>Жанры</span>
-        </button>
-
-        <button
-          class="menu-item"
-          data-menu="years"
-          type="button"
-        >
-          <span class="menu-icon">▤</span>
-          <span>По годам</span>
-        </button>
-
-        <button
-          class="menu-item"
-          data-menu="rating"
-          type="button"
-        >
-          <span class="menu-icon">★</span>
-          <span>Рейтинг</span>
-        </button>
-
-      </div>
-
-
-      <div class="menu-group">
-
-        <div class="menu-group-title">
-          МОЯ КОЛЛЕКЦИЯ
-        </div>
-
-        <button
-          class="menu-item"
-          data-menu="favorites"
-          type="button"
-        >
-          <span class="menu-icon">♡</span>
-          <span>Избранное</span>
-        </button>
-
-        <button
-          class="menu-item"
-          data-menu="recent"
-          type="button"
-        >
-          <span class="menu-icon">◷</span>
-          <span>Недавно открытые</span>
-        </button>
-
-      </div>
-
-
-      <div class="menu-group">
-
-        <button
-          class="menu-item"
-          data-menu="about"
-          type="button"
-        >
-          <span class="menu-icon">i</span>
-          <span>О SHOHIN MOVIE</span>
-        </button>
-
-      </div>
-
-    </div>
-
-
-    <div class="side-menu-footer">
-      SHOHIN MOVIE
-      <span>© 2026</span>
-    </div>
-
-  </aside>
-
-
-  <!-- ================= SEARCH ================= -->
-
-  <section
-    class="search-panel"
-    id="searchPanel"
-  >
-
-    <div class="search-inner">
-
-      <input
-        id="searchInput"
-        type="search"
-        placeholder="Название, страна, жанр..."
-        autocomplete="off"
-      >
-
-      <button
-        id="closeSearch"
-        type="button"
-      >
-        ×
-      </button>
-
-    </div>
-
-  </section>
-
-
-  <!-- ================= MAIN ================= -->
-
-  <main>
-
-    <section class="catalog-section">
-
-      <!-- ТОЛЬКО ДВА ТИПА -->
-
-      <div class="catalog-nav">
+      <nav class="type-navigation" aria-label="Тип контента">
 
         <button
           class="nav-button active"
@@ -280,275 +193,880 @@
           Сериалы
         </button>
 
-      </div>
+      </nav>
 
 
-      <!-- ================= CATALOG ================= -->
+      <!-- =========================
+           CATALOG
+      ========================== -->
 
-      <div class="catalog-header">
+      <section class="catalog-section">
 
-        <div>
+        <!--
+          Скрытые служебные элементы.
+          app.js использует их для информации о каталоге.
+        -->
 
-          <h2 id="catalogTitle">
-            Фильмы 1980
-          </h2>
+        <div class="catalog-header">
 
-          <p id="catalogCount">
-            Загрузка...
+          <h1 id="catalogTitle">Фильмы 1980</h1>
+
+          <span id="catalogCount"></span>
+
+        </div>
+
+
+        <!-- CARDS -->
+
+        <div
+          id="movieGrid"
+          class="movie-grid"
+        ></div>
+
+
+        <!-- EMPTY -->
+
+        <div
+          id="emptyState"
+          class="empty-state"
+        >
+
+          <div class="empty-icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              width="42"
+              height="42"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect
+                x="3"
+                y="4"
+                width="18"
+                height="16"
+                rx="2"
+              ></rect>
+
+              <path d="M8 4v16"></path>
+              <path d="M16 4v16"></path>
+
+              <path d="M3 9h5"></path>
+              <path d="M16 9h5"></path>
+
+              <path d="M3 15h5"></path>
+              <path d="M16 15h5"></path>
+            </svg>
+
+          </div>
+
+          <h2>Каталог пуст</h2>
+
+          <p>
+            Здесь появятся фильмы и сериалы.
           </p>
 
         </div>
 
+      </section>
+
+    </main>
+
+
+    <!-- =========================
+         SIDE MENU
+    ========================== -->
+
+    <div
+      id="menuOverlay"
+      class="menu-overlay"
+    ></div>
+
+
+    <aside
+      id="sideMenu"
+      class="side-menu"
+      aria-hidden="true"
+    >
+
+      <!-- MENU HEADER -->
+
+      <div class="side-menu-header">
+
+        <div class="side-menu-brand">
+
+          <div class="side-menu-mark">
+            SH
+          </div>
+
+          <div>
+            <div class="side-menu-title">
+              SHOHIN
+            </div>
+
+            <div class="side-menu-subtitle">
+              MOVIE
+            </div>
+          </div>
+
+        </div>
+
+
+        <button
+          id="menuClose"
+          class="menu-close"
+          type="button"
+          aria-label="Закрыть меню"
+        >
+          ×
+        </button>
+
       </div>
 
 
-      <!-- ================= MOVIE CARDS ================= -->
+      <!-- MENU -->
+
+      <nav class="side-menu-nav">
+
+        <!-- HOME -->
+
+        <button
+          class="menu-item active"
+          data-menu="home"
+          type="button"
+        >
+
+          <span class="menu-item-icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M3 11.5L12 4l9 7.5"></path>
+              <path d="M5 10v10h14V10"></path>
+            </svg>
+
+          </span>
+
+          <span>Главная</span>
+
+        </button>
+
+
+        <!-- MOVIES -->
+
+        <button
+          class="menu-item"
+          data-menu="movies"
+          type="button"
+        >
+
+          <span class="menu-item-icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect
+                x="3"
+                y="4"
+                width="18"
+                height="16"
+                rx="2"
+              ></rect>
+
+              <path d="M8 4v16"></path>
+              <path d="M16 4v16"></path>
+              <path d="M3 9h5"></path>
+              <path d="M16 9h5"></path>
+              <path d="M3 15h5"></path>
+              <path d="M16 15h5"></path>
+            </svg>
+
+          </span>
+
+          <span>Фильмы</span>
+
+        </button>
+
+
+        <!-- SERIES -->
+
+        <button
+          class="menu-item"
+          data-menu="series"
+          type="button"
+        >
+
+          <span class="menu-item-icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect
+                x="3"
+                y="5"
+                width="18"
+                height="14"
+                rx="2"
+              ></rect>
+
+              <path d="M8 5l2-3"></path>
+              <path d="M16 5l2-3"></path>
+
+              <path d="M8 12h.01"></path>
+              <path d="M12 12h.01"></path>
+              <path d="M16 12h.01"></path>
+            </svg>
+
+          </span>
+
+          <span>Сериалы</span>
+
+        </button>
+
+
+        <div class="menu-divider"></div>
+
+
+        <!-- COUNTRIES -->
+
+        <button
+          class="menu-item"
+          data-menu="countries"
+          type="button"
+        >
+
+          <span class="menu-item-icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="9"
+              ></circle>
+
+              <path d="M3 12h18"></path>
+              <path d="M12 3c3 3 3 15 0 18"></path>
+              <path d="M12 3c-3 3-3 15 0 18"></path>
+            </svg>
+
+          </span>
+
+          <span>Страны</span>
+
+        </button>
+
+
+        <!-- GENRES -->
+
+        <button
+          class="menu-item"
+          data-menu="genres"
+          type="button"
+        >
+
+          <span class="menu-item-icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M4 6h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 18h16"></path>
+
+              <circle
+                cx="9"
+                cy="6"
+                r="2"
+              ></circle>
+
+              <circle
+                cx="15"
+                cy="12"
+                r="2"
+              ></circle>
+
+              <circle
+                cx="10"
+                cy="18"
+                r="2"
+              ></circle>
+            </svg>
+
+          </span>
+
+          <span>Жанры</span>
+
+        </button>
+
+
+        <!-- YEARS -->
+
+        <button
+          class="menu-item"
+          data-menu="years"
+          type="button"
+        >
+
+          <span class="menu-item-icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect
+                x="3"
+                y="5"
+                width="18"
+                height="16"
+                rx="2"
+              ></rect>
+
+              <path d="M7 3v4"></path>
+              <path d="M17 3v4"></path>
+              <path d="M3 10h18"></path>
+
+              <path d="M8 14h2"></path>
+              <path d="M14 14h2"></path>
+              <path d="M8 18h2"></path>
+              <path d="M14 18h2"></path>
+            </svg>
+
+          </span>
+
+          <span>По годам</span>
+
+        </button>
+
+
+        <!-- RATING -->
+
+        <button
+          class="menu-item"
+          data-menu="rating"
+          type="button"
+        >
+
+          <span class="menu-item-icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9L12 3z"
+              ></path>
+            </svg>
+
+          </span>
+
+          <span>Рейтинг</span>
+
+        </button>
+
+
+        <div class="menu-divider"></div>
+
+
+        <!-- FAVORITES -->
+
+        <button
+          class="menu-item"
+          data-menu="favorites"
+          type="button"
+        >
+
+          <span class="menu-item-icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M20.8 8.7c0 5-8.8 10.2-8.8 10.2S3.2 13.7 3.2 8.7A4.7 4.7 0 0 1 12 6.4a4.7 4.7 0 0 1 8.8 2.3z"
+              ></path>
+            </svg>
+
+          </span>
+
+          <span>Избранное</span>
+
+        </button>
+
+
+        <!-- RECENT -->
+
+        <button
+          class="menu-item"
+          data-menu="recent"
+          type="button"
+        >
+
+          <span class="menu-item-icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="9"
+              ></circle>
+
+              <path d="M12 7v5l3 2"></path>
+            </svg>
+
+          </span>
+
+          <span>Недавно открытые</span>
+
+        </button>
+
+
+        <div class="menu-divider"></div>
+
+
+        <!-- ABOUT -->
+
+        <button
+          class="menu-item"
+          data-menu="about"
+          type="button"
+        >
+
+          <span class="menu-item-icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="9"
+              ></circle>
+
+              <path d="M12 10v6"></path>
+              <path d="M12 7h.01"></path>
+            </svg>
+
+          </span>
+
+          <span>О SHOHIN MOVIE</span>
+
+        </button>
+
+      </nav>
+
+
+      <!-- MENU FOOTER -->
+
+      <div class="side-menu-footer">
+
+        <div class="side-menu-line"></div>
+
+        <div class="side-menu-footer-text">
+          SHOHIN MOVIE
+        </div>
+
+        <div class="side-menu-footer-small">
+          Learn. Discover. Enjoy.
+        </div>
+
+      </div>
+
+    </aside>
+
+
+    <!-- =========================
+         MOVIE MODAL
+    ========================== -->
+
+    <div
+      id="movieModal"
+      class="movie-modal"
+      aria-hidden="true"
+    >
 
       <div
-        class="movie-grid"
-        id="movieGrid"
+        id="modalOverlay"
+        class="modal-overlay"
       ></div>
 
 
-      <!-- ================= EMPTY ================= -->
-
       <div
-        class="empty-state"
-        id="emptyState"
+        class="modal-content"
+        role="dialog"
+        aria-modal="true"
       >
 
-        <div class="empty-icon">
-          ◌
+        <button
+          id="modalClose"
+          class="modal-close"
+          type="button"
+          aria-label="Закрыть"
+        >
+          ×
+        </button>
+
+
+        <div class="modal-poster-wrap">
+
+          <img
+            id="modalPoster"
+            class="modal-poster"
+            src=""
+            alt=""
+          >
+
         </div>
 
-        <h3>
-          Каталог пуст
-        </h3>
 
-        <p>
-          Здесь пока нет фильмов.
-        </p>
+        <div class="modal-info">
+
+          <div
+            id="modalYear"
+            class="modal-year"
+          ></div>
+
+
+          <h2
+            id="modalTitle"
+            class="modal-title"
+          ></h2>
+
+
+          <div
+            id="modalRating"
+            class="modal-rating"
+          ></div>
+
+
+          <div
+            id="modalCountry"
+            class="modal-country"
+          ></div>
+
+
+          <div
+            id="modalGenres"
+            class="modal-genres"
+          ></div>
+
+
+          <p
+            id="modalDescription"
+            class="modal-description"
+          ></p>
+
+        </div>
 
       </div>
 
-    </section>
-
-  </main>
-
-
-  <!-- ================= LOADER ================= -->
-
-  <div
-    class="shohin-loader"
-    id="loading"
-  >
-
-    <div class="loader-logo">
-      SH
     </div>
 
-    <div class="loader-line"></div>
 
-    <strong>
-      SHOHIN
-    </strong>
-
-    <span>
-      MOVIE
-    </span>
-
-  </div>
-
-
-  <!-- ================= MOVIE MODAL ================= -->
-
-  <div
-    class="movie-modal"
-    id="movieModal"
-  >
+    <!-- =========================
+         HIDDEN COMPATIBILITY
+         FOR EXISTING APP.JS
+    ========================== -->
 
     <div
-      class="modal-overlay"
-      id="modalOverlay"
-    ></div>
-
-    <div class="modal-card">
+      id="yearMenu"
+      style="display:none;"
+      aria-hidden="true"
+    >
 
       <button
-        class="modal-close"
-        id="modalClose"
         type="button"
+        data-year="1980"
       >
-        ×
+        1980
       </button>
 
-      <div class="modal-poster-wrap">
-
-        <img
-          id="modalPoster"
-          src=""
-          alt=""
-        >
-
-      </div>
-
-      <div class="modal-content">
-
-        <div
-          class="modal-year"
-          id="modalYear"
-        ></div>
-
-        <h2 id="modalTitle">
-          Фильм
-        </h2>
-
-        <div class="modal-main-meta">
-
-          <span id="modalRating">
-            ★ —
-          </span>
-
-          <span id="modalCountry">
-            Страна не указана
-          </span>
-
-        </div>
-
-        <div
-          class="modal-genres"
-          id="modalGenres"
-        ></div>
-
-        <p
-          class="modal-description"
-          id="modalDescription"
-        >
-          Описание пока не добавлено.
-        </p>
-
-      </div>
-
     </div>
+
+    <button
+      id="yearButton"
+      type="button"
+      style="display:none;"
+    >
+      1980
+    </button>
 
   </div>
 
 
-  <!-- ================= FOOTER ================= -->
-
-  <footer class="footer">
-
-    <strong>
-      SHOHIN MOVIE
-    </strong>
-
-    <span>
-      Learn. Discover. Enjoy.
-    </span>
-
-  </footer>
-
-
-  <!-- ================= SCRIPTS ================= -->
+  <!-- =========================
+       JAVASCRIPT
+  ========================== -->
 
   <script src="js/cards.js"></script>
   <script src="js/filters.js"></script>
   <script src="js/app.js"></script>
 
 
-  <!-- ================= MENU ================= -->
+  <!-- =========================
+       MENU SCRIPT
+  ========================== -->
 
   <script>
 
-    const menuButton =
-      document.getElementById("menuButton");
+    document.addEventListener("DOMContentLoaded", () => {
 
-    const sideMenu =
-      document.getElementById("sideMenu");
+      const menuButton =
+        document.getElementById("menuButton");
 
-    const sideMenuOverlay =
-      document.getElementById("sideMenuOverlay");
+      const menuClose =
+        document.getElementById("menuClose");
 
-    const sideMenuClose =
-      document.getElementById("sideMenuClose");
+      const sideMenu =
+        document.getElementById("sideMenu");
 
+      const menuOverlay =
+        document.getElementById("menuOverlay");
 
-    function openSideMenu() {
-
-      sideMenu.classList.add("show");
-
-      sideMenuOverlay.classList.add("show");
-
-      document.body.style.overflow = "hidden";
-
-    }
+      const menuItems =
+        document.querySelectorAll(".menu-item");
 
 
-    function closeSideMenu() {
+      function openMenu() {
 
-      sideMenu.classList.remove("show");
+        if (!sideMenu || !menuOverlay) return;
 
-      sideMenuOverlay.classList.remove("show");
+        sideMenu.classList.add("show");
+        menuOverlay.classList.add("show");
 
-      document.body.style.overflow = "";
+        sideMenu.setAttribute(
+          "aria-hidden",
+          "false"
+        );
 
-    }
-
-
-    menuButton.addEventListener(
-      "click",
-      openSideMenu
-    );
-
-
-    sideMenuClose.addEventListener(
-      "click",
-      closeSideMenu
-    );
+        document.body.classList.add(
+          "menu-open"
+        );
+      }
 
 
-    sideMenuOverlay.addEventListener(
-      "click",
-      closeSideMenu
-    );
+      function closeMenu() {
+
+        if (!sideMenu || !menuOverlay) return;
+
+        sideMenu.classList.remove("show");
+        menuOverlay.classList.remove("show");
+
+        sideMenu.setAttribute(
+          "aria-hidden",
+          "true"
+        );
+
+        document.body.classList.remove(
+          "menu-open"
+        );
+      }
 
 
-    document.addEventListener(
-      "keydown",
-      event => {
+      if (menuButton) {
 
-        if (event.key === "Escape") {
-          closeSideMenu();
-        }
+        menuButton.addEventListener(
+          "click",
+          openMenu
+        );
 
       }
-    );
 
 
-    document
-      .querySelectorAll(".menu-item")
-      .forEach(item => {
+      if (menuClose) {
+
+        menuClose.addEventListener(
+          "click",
+          closeMenu
+        );
+
+      }
+
+
+      if (menuOverlay) {
+
+        menuOverlay.addEventListener(
+          "click",
+          closeMenu
+        );
+
+      }
+
+
+      menuItems.forEach(item => {
 
         item.addEventListener(
           "click",
           () => {
 
-            document
-              .querySelectorAll(".menu-item")
-              .forEach(button => {
+            const menu =
+              item.dataset.menu;
 
-                button.classList.remove("active");
+            /*
+              Главная / Фильмы / Сериалы
+              работают сразу.
+            */
 
+            if (menu === "home") {
+
+              closeMenu();
+
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth"
               });
 
-            item.classList.add("active");
+              return;
 
-            closeSideMenu();
+            }
+
+
+            if (menu === "movies") {
+
+              const button =
+                document.querySelector(
+                  '.nav-button[data-type="movies"]'
+                );
+
+              if (button) {
+                button.click();
+              }
+
+              closeMenu();
+              return;
+
+            }
+
+
+            if (menu === "series") {
+
+              const button =
+                document.querySelector(
+                  '.nav-button[data-type="series"]'
+                );
+
+              if (button) {
+                button.click();
+              }
+
+              closeMenu();
+              return;
+
+            }
+
+
+            /*
+              Остальные разделы пока подготовлены
+              в меню.
+
+              Логику стран, жанров, годов,
+              рейтинга, избранного и истории
+              подключим следующим этапом.
+            */
+
+            closeMenu();
 
           }
         );
 
       });
+
+
+      /*
+        ESC — закрыть меню
+      */
+
+      document.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key === "Escape" &&
+            sideMenu &&
+            sideMenu.classList.contains("show")
+          ) {
+
+            closeMenu();
+
+          }
+
+        }
+      );
+
+    });
 
   </script>
 
