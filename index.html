@@ -2,30 +2,19 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-  >
-
-  <meta
-    name="theme-color"
-    content="#071c16"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#071c16">
 
   <title>SHOHIN MOVIE</title>
 
-  <link
-    rel="stylesheet"
-    href="css/style.css"
-  >
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-  <!-- =====================================================
-       HEADER
-  ====================================================== -->
+  <!-- SHOHIN BRAND COLORS — НЕ МЕНЯТЬ -->
+
+  <!-- ================= HEADER ================= -->
 
   <header class="topbar">
 
@@ -38,24 +27,22 @@
       </div>
     </div>
 
-
     <div class="header-actions">
 
       <button
         class="icon-button search-button"
         id="searchButton"
-        aria-label="Поиск"
         type="button"
+        aria-label="Поиск"
       >
-        <span>⌕</span>
+        ⌕
       </button>
-
 
       <button
         class="icon-button menu-button"
         id="menuButton"
-        aria-label="Меню"
         type="button"
+        aria-label="Меню"
       >
         <span></span>
         <span></span>
@@ -67,15 +54,12 @@
   </header>
 
 
-  <!-- =====================================================
-       SIDE MENU
-  ====================================================== -->
+  <!-- ================= SIDE MENU ================= -->
 
   <div
     class="side-menu-overlay"
     id="sideMenuOverlay"
   ></div>
-
 
   <aside
     class="side-menu"
@@ -97,7 +81,6 @@
 
       </div>
 
-
       <button
         class="side-menu-close"
         id="sideMenuClose"
@@ -117,7 +100,6 @@
           ОСНОВНОЕ
         </div>
 
-
         <button
           class="menu-item active"
           data-menu="home"
@@ -127,7 +109,6 @@
           <span>Главная</span>
         </button>
 
-
         <button
           class="menu-item"
           data-menu="movies"
@@ -136,7 +117,6 @@
           <span class="menu-icon">▶</span>
           <span>Фильмы</span>
         </button>
-
 
         <button
           class="menu-item"
@@ -156,7 +136,6 @@
           КАТАЛОГ
         </div>
 
-
         <button
           class="menu-item"
           data-menu="countries"
@@ -165,7 +144,6 @@
           <span class="menu-icon">◎</span>
           <span>Страны</span>
         </button>
-
 
         <button
           class="menu-item"
@@ -176,7 +154,6 @@
           <span>Жанры</span>
         </button>
 
-
         <button
           class="menu-item"
           data-menu="years"
@@ -185,7 +162,6 @@
           <span class="menu-icon">▤</span>
           <span>По годам</span>
         </button>
-
 
         <button
           class="menu-item"
@@ -205,7 +181,6 @@
           МОЯ КОЛЛЕКЦИЯ
         </div>
 
-
         <button
           class="menu-item"
           data-menu="favorites"
@@ -214,7 +189,6 @@
           <span class="menu-icon">♡</span>
           <span>Избранное</span>
         </button>
-
 
         <button
           class="menu-item"
@@ -252,9 +226,7 @@
   </aside>
 
 
-  <!-- =====================================================
-       SEARCH
-  ====================================================== -->
+  <!-- ================= SEARCH ================= -->
 
   <section
     class="search-panel"
@@ -282,42 +254,13 @@
   </section>
 
 
-  <!-- =====================================================
-       MAIN
-  ====================================================== -->
+  <!-- ================= MAIN ================= -->
 
   <main>
 
-    <!-- HERO -->
-
-    <section class="hero">
-
-      <div class="hero-content">
-
-        <div class="hero-label">
-          SHOHIN MOVIE
-        </div>
-
-        <h1>
-          Мир кино
-          <span>в одном месте.</span>
-        </h1>
-
-        <p>
-          Фильмы и сериалы со всего мира.
-          Удобный каталог без лишнего.
-        </p>
-
-      </div>
-
-    </section>
-
-
-    <!-- =================================================
-         MOVIE / SERIES NAVIGATION
-    ================================================== -->
-
     <section class="catalog-section">
+
+      <!-- ТОЛЬКО ДВА ТИПА -->
 
       <div class="catalog-nav">
 
@@ -328,7 +271,6 @@
         >
           Фильмы
         </button>
-
 
         <button
           class="nav-button"
@@ -341,9 +283,7 @@
       </div>
 
 
-      <!-- ===============================================
-           CATALOG HEADER
-      ================================================ -->
+      <!-- ================= CATALOG ================= -->
 
       <div class="catalog-header">
 
@@ -359,221 +299,10 @@
 
         </div>
 
-
-        <div class="year-selector">
-
-          <button
-            id="yearButton"
-            type="button"
-          >
-            1980
-            <span>⌄</span>
-          </button>
-
-
-          <div
-            class="year-menu"
-            id="yearMenu"
-          >
-
-            <button
-              data-year="1980"
-              type="button"
-            >
-              1980
-            </button>
-
-            <button
-              data-year="1981"
-              type="button"
-            >
-              1981
-            </button>
-
-            <button
-              data-year="1982"
-              type="button"
-            >
-              1982
-            </button>
-
-            <button
-              data-year="1983"
-              type="button"
-            >
-              1983
-            </button>
-
-            <button
-              data-year="1984"
-              type="button"
-            >
-              1984
-            </button>
-
-            <button
-              data-year="1985"
-              type="button"
-            >
-              1985
-            </button>
-
-            <button
-              data-year="1986"
-              type="button"
-            >
-              1986
-            </button>
-
-            <button
-              data-year="1987"
-              type="button"
-            >
-              1987
-            </button>
-
-            <button
-              data-year="1988"
-              type="button"
-            >
-              1988
-            </button>
-
-            <button
-              data-year="1989"
-              type="button"
-            >
-              1989
-            </button>
-
-            <button
-              data-year="1990"
-              type="button"
-            >
-              1990
-            </button>
-
-          </div>
-
-        </div>
-
       </div>
 
 
-      <!-- ===============================================
-           BASIC FILTERS
-      ================================================ -->
-
-      <div class="filters">
-
-        <button
-          class="filter-button active"
-          data-filter="all"
-          type="button"
-        >
-          Все
-        </button>
-
-
-        <button
-          class="filter-button"
-          data-filter="new"
-          type="button"
-        >
-          Новые
-        </button>
-
-
-        <button
-          class="filter-button"
-          data-filter="rating"
-          type="button"
-        >
-          Рейтинг
-        </button>
-
-      </div>
-
-
-      <!-- ===============================================
-           COUNTRIES
-           СОЗДАЁТСЯ АВТОМАТИЧЕСКИ ИЗ JSON
-      ================================================ -->
-
-      <section class="catalog-filter-section">
-
-        <div class="catalog-filter-title">
-
-          <div>
-            <strong>Страны</strong>
-
-            <span>
-              Выберите страну
-            </span>
-          </div>
-
-        </div>
-
-
-        <div
-          class="dynamic-filter-list"
-          id="countryFilters"
-        >
-
-          <button
-            class="dynamic-filter active"
-            data-country="all"
-            type="button"
-          >
-            Все страны
-          </button>
-
-        </div>
-
-      </section>
-
-
-      <!-- ===============================================
-           GENRES
-           СОЗДАЁТСЯ АВТОМАТИЧЕСКИ ИЗ JSON
-      ================================================ -->
-
-      <section class="catalog-filter-section">
-
-        <div class="catalog-filter-title">
-
-          <div>
-            <strong>Жанры</strong>
-
-            <span>
-              Выберите жанр
-            </span>
-          </div>
-
-        </div>
-
-
-        <div
-          class="dynamic-filter-list"
-          id="genreFilters"
-        >
-
-          <button
-            class="dynamic-filter active"
-            data-genre="all"
-            type="button"
-          >
-            Все жанры
-          </button>
-
-        </div>
-
-      </section>
-
-
-      <!-- ===============================================
-           MOVIE GRID
-      ================================================ -->
+      <!-- ================= MOVIE CARDS ================= -->
 
       <div
         class="movie-grid"
@@ -581,9 +310,7 @@
       ></div>
 
 
-      <!-- ===============================================
-           EMPTY
-      ================================================ -->
+      <!-- ================= EMPTY ================= -->
 
       <div
         class="empty-state"
@@ -599,7 +326,7 @@
         </h3>
 
         <p>
-          Здесь пока нет подходящих фильмов.
+          Здесь пока нет фильмов.
         </p>
 
       </div>
@@ -609,9 +336,7 @@
   </main>
 
 
-  <!-- =====================================================
-       LOADING
-  ====================================================== -->
+  <!-- ================= LOADER ================= -->
 
   <div
     class="shohin-loader"
@@ -635,9 +360,7 @@
   </div>
 
 
-  <!-- =====================================================
-       MOVIE MODAL
-  ====================================================== -->
+  <!-- ================= MOVIE MODAL ================= -->
 
   <div
     class="movie-modal"
@@ -649,7 +372,6 @@
       id="modalOverlay"
     ></div>
 
-
     <div class="modal-card">
 
       <button
@@ -659,7 +381,6 @@
       >
         ×
       </button>
-
 
       <div class="modal-poster-wrap">
 
@@ -671,7 +392,6 @@
 
       </div>
 
-
       <div class="modal-content">
 
         <div
@@ -679,36 +399,26 @@
           id="modalYear"
         ></div>
 
-
-        <h2
-          id="modalTitle"
-        >
+        <h2 id="modalTitle">
           Фильм
         </h2>
 
-
         <div class="modal-main-meta">
 
-          <span
-            id="modalRating"
-          >
+          <span id="modalRating">
             ★ —
           </span>
 
-          <span
-            id="modalCountry"
-          >
+          <span id="modalCountry">
             Страна не указана
           </span>
 
         </div>
 
-
         <div
           class="modal-genres"
           id="modalGenres"
         ></div>
-
 
         <p
           class="modal-description"
@@ -724,9 +434,7 @@
   </div>
 
 
-  <!-- =====================================================
-       FOOTER
-  ====================================================== -->
+  <!-- ================= FOOTER ================= -->
 
   <footer class="footer">
 
@@ -741,20 +449,14 @@
   </footer>
 
 
-  <!-- =====================================================
-       SCRIPTS
-  ====================================================== -->
+  <!-- ================= SCRIPTS ================= -->
 
   <script src="js/cards.js"></script>
-
   <script src="js/filters.js"></script>
-
   <script src="js/app.js"></script>
 
 
-  <!-- =====================================================
-       MENU SCRIPT
-  ====================================================== -->
+  <!-- ================= MENU ================= -->
 
   <script>
 
@@ -765,14 +467,10 @@
       document.getElementById("sideMenu");
 
     const sideMenuOverlay =
-      document.getElementById(
-        "sideMenuOverlay"
-      );
+      document.getElementById("sideMenuOverlay");
 
     const sideMenuClose =
-      document.getElementById(
-        "sideMenuClose"
-      );
+      document.getElementById("sideMenuClose");
 
 
     function openSideMenu() {
@@ -781,8 +479,8 @@
 
       sideMenuOverlay.classList.add("show");
 
-      document.body.style.overflow =
-        "hidden";
+      document.body.style.overflow = "hidden";
+
     }
 
 
@@ -790,12 +488,10 @@
 
       sideMenu.classList.remove("show");
 
-      sideMenuOverlay.classList.remove(
-        "show"
-      );
+      sideMenuOverlay.classList.remove("show");
 
-      document.body.style.overflow =
-        "";
+      document.body.style.overflow = "";
+
     }
 
 
@@ -821,21 +517,13 @@
       "keydown",
       event => {
 
-        if (
-          event.key === "Escape"
-        ) {
-
+        if (event.key === "Escape") {
           closeSideMenu();
-
         }
 
       }
     );
 
-
-    /* ================================================
-       MENU ITEMS
-    ================================================= */
 
     document
       .querySelectorAll(".menu-item")
@@ -846,22 +534,14 @@
           () => {
 
             document
-              .querySelectorAll(
-                ".menu-item"
-              )
+              .querySelectorAll(".menu-item")
               .forEach(button => {
 
-                button.classList.remove(
-                  "active"
-                );
+                button.classList.remove("active");
 
               });
 
-
-            item.classList.add(
-              "active"
-            );
-
+            item.classList.add("active");
 
             closeSideMenu();
 
@@ -869,355 +549,6 @@
         );
 
       });
-
-
-    /* ================================================
-       DYNAMIC COUNTRY FILTERS
-    ================================================= */
-
-    function buildCountryFilters() {
-
-      const container =
-        document.getElementById(
-          "countryFilters"
-        );
-
-
-      if (!container) return;
-
-
-      container.innerHTML = "";
-
-
-      const allButton =
-        document.createElement(
-          "button"
-        );
-
-
-      allButton.className =
-        "dynamic-filter active";
-
-
-      allButton.dataset.country =
-        "all";
-
-
-      allButton.type =
-        "button";
-
-
-      allButton.textContent =
-        "Все страны";
-
-
-      container.appendChild(
-        allButton
-      );
-
-
-      if (
-        typeof getAllCountries !==
-        "function"
-      ) {
-        return;
-      }
-
-
-      const countries =
-        getAllCountries();
-
-
-      countries.forEach(
-        country => {
-
-          const button =
-            document.createElement(
-              "button"
-            );
-
-
-          button.className =
-            "dynamic-filter";
-
-
-          button.dataset.country =
-            country;
-
-
-          button.type =
-            "button";
-
-
-          button.textContent =
-            country;
-
-
-          container.appendChild(
-            button
-          );
-
-        }
-      );
-
-
-      container
-        .querySelectorAll(
-          ".dynamic-filter"
-        )
-        .forEach(button => {
-
-          button.addEventListener(
-            "click",
-            () => {
-
-              container
-                .querySelectorAll(
-                  ".dynamic-filter"
-                )
-                .forEach(
-                  item =>
-                    item.classList.remove(
-                      "active"
-                    )
-                );
-
-
-              button.classList.add(
-                "active"
-              );
-
-
-              const country =
-                button.dataset.country;
-
-
-              if (
-                country === "all"
-              ) {
-
-                renderMovies();
-
-              } else {
-
-                filterByCountry(
-                  country
-                );
-
-              }
-
-            }
-          );
-
-        });
-
-    }
-
-
-    /* ================================================
-       DYNAMIC GENRE FILTERS
-    ================================================= */
-
-    function buildGenreFilters() {
-
-      const container =
-        document.getElementById(
-          "genreFilters"
-        );
-
-
-      if (!container) return;
-
-
-      container.innerHTML = "";
-
-
-      const allButton =
-        document.createElement(
-          "button"
-        );
-
-
-      allButton.className =
-        "dynamic-filter active";
-
-
-      allButton.dataset.genre =
-        "all";
-
-
-      allButton.type =
-        "button";
-
-
-      allButton.textContent =
-        "Все жанры";
-
-
-      container.appendChild(
-        allButton
-      );
-
-
-      if (
-        typeof getAllGenres !==
-        "function"
-      ) {
-        return;
-      }
-
-
-      const genres =
-        getAllGenres();
-
-
-      genres.forEach(
-        genre => {
-
-          const button =
-            document.createElement(
-              "button"
-            );
-
-
-          button.className =
-            "dynamic-filter";
-
-
-          button.dataset.genre =
-            genre;
-
-
-          button.type =
-            "button";
-
-
-          button.textContent =
-            genre;
-
-
-          container.appendChild(
-            button
-          );
-
-        }
-      );
-
-
-      container
-        .querySelectorAll(
-          ".dynamic-filter"
-        )
-        .forEach(button => {
-
-          button.addEventListener(
-            "click",
-            () => {
-
-              container
-                .querySelectorAll(
-                  ".dynamic-filter"
-                )
-                .forEach(
-                  item =>
-                    item.classList.remove(
-                      "active"
-                    )
-                );
-
-
-              button.classList.add(
-                "active"
-              );
-
-
-              const genre =
-                button.dataset.genre;
-
-
-              if (
-                genre === "all"
-              ) {
-
-                renderMovies();
-
-              } else {
-
-                filterByGenre(
-                  genre
-                );
-
-              }
-
-            }
-          );
-
-        });
-
-    }
-
-
-    /* ================================================
-       WAIT FOR CATALOG
-    ================================================= */
-
-    function refreshDynamicFilters() {
-
-      setTimeout(
-        () => {
-
-          buildCountryFilters();
-
-          buildGenreFilters();
-
-        },
-        100
-      );
-
-    }
-
-
-    /*
-      Первоначальное построение.
-    */
-
-    document.addEventListener(
-      "DOMContentLoaded",
-      () => {
-
-        refreshDynamicFilters();
-
-      }
-    );
-
-
-    /*
-      Следим за загрузкой каталога.
-      Когда app.js меняет данные,
-      фильтры перестраиваются автоматически.
-    */
-
-    const originalLoadCatalog =
-      window.loadCatalog;
-
-
-    if (
-      typeof originalLoadCatalog ===
-      "function"
-    ) {
-
-      window.loadCatalog =
-        async function() {
-
-          await originalLoadCatalog();
-
-          buildCountryFilters();
-
-          buildGenreFilters();
-
-        };
-
-    }
 
   </script>
 
