@@ -1,43 +1,380 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
 
   <title>SHOHIN MOVIE</title>
 
-  <meta name="description" content="SHOHIN MOVIE — каталог фильмов и сериалов.">
-  <meta name="theme-color" content="#071c16">
+  <meta
+    name="description"
+    content="SHOHIN MOVIE — каталог фильмов и сериалов."
+  >
 
-  <link rel="stylesheet" href="css/style.css">
+  <meta
+    name="theme-color"
+    content="#071c16"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
 </head>
+
 
 <body>
 
-  <!-- HEADER -->
+
+  <!-- =========================
+       SHOHIN HEADER
+  ========================== -->
+
   <header class="topbar">
 
     <div class="brand">
-      <div class="brand-logo">SH</div>
+
+      <div class="brand-logo">
+        SH
+      </div>
 
       <div class="brand-text">
-        <strong>SHOHIN</strong>
-        <span>MOVIE</span>
+
+        <strong>
+          SHOHIN
+        </strong>
+
+        <span>
+          MOVIE
+        </span>
+
       </div>
+
     </div>
 
-    <button class="search-button" id="searchButton" aria-label="Поиск">
-      <span>⌕</span>
-    </button>
+
+    <div class="header-actions">
+
+      <button
+        class="search-button"
+        id="searchButton"
+        aria-label="Поиск"
+      >
+        <span>⌕</span>
+      </button>
+
+
+      <button
+        class="menu-button"
+        id="menuButton"
+        aria-label="Меню"
+        aria-expanded="false"
+      >
+
+        <span></span>
+        <span></span>
+        <span></span>
+
+      </button>
+
+    </div>
 
   </header>
 
 
-  <!-- SEARCH -->
-  <section class="search-panel" id="searchPanel">
+
+  <!-- =========================
+       SIDE MENU
+  ========================== -->
+
+  <div
+    class="side-menu-overlay"
+    id="sideMenuOverlay"
+  ></div>
+
+
+  <aside
+    class="side-menu"
+    id="sideMenu"
+    aria-hidden="true"
+  >
+
+    <div class="side-menu-header">
+
+      <div class="side-menu-brand">
+
+        <div class="side-menu-logo">
+          SH
+        </div>
+
+        <div>
+
+          <strong>
+            SHOHIN
+          </strong>
+
+          <span>
+            MOVIE
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <button
+        class="side-menu-close"
+        id="sideMenuClose"
+        aria-label="Закрыть меню"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="side-menu-content">
+
+
+      <div class="menu-group">
+
+        <div class="menu-group-title">
+          ОСНОВНОЕ
+        </div>
+
+
+        <button
+          class="menu-item active"
+          data-menu="home"
+        >
+
+          <span class="menu-icon">
+            ◆
+          </span>
+
+          <span>
+            Главная
+          </span>
+
+        </button>
+
+
+        <button
+          class="menu-item"
+          data-menu="movies"
+        >
+
+          <span class="menu-icon">
+            ▷
+          </span>
+
+          <span>
+            Фильмы
+          </span>
+
+        </button>
+
+
+        <button
+          class="menu-item"
+          data-menu="series"
+        >
+
+          <span class="menu-icon">
+            ▷
+          </span>
+
+          <span>
+            Сериалы
+          </span>
+
+        </button>
+
+      </div>
+
+
+
+      <div class="menu-group">
+
+        <div class="menu-group-title">
+          КАТАЛОГ
+        </div>
+
+
+        <button
+          class="menu-item"
+          data-menu="countries"
+        >
+
+          <span class="menu-icon">
+            ◎
+          </span>
+
+          <span>
+            Страны
+          </span>
+
+        </button>
+
+
+        <button
+          class="menu-item"
+          data-menu="genres"
+        >
+
+          <span class="menu-icon">
+            ◈
+          </span>
+
+          <span>
+            Жанры
+          </span>
+
+        </button>
+
+
+        <button
+          class="menu-item"
+          data-menu="years"
+        >
+
+          <span class="menu-icon">
+            №
+          </span>
+
+          <span>
+            По годам
+          </span>
+
+        </button>
+
+
+        <button
+          class="menu-item"
+          data-menu="rating"
+        >
+
+          <span class="menu-icon">
+            ★
+          </span>
+
+          <span>
+            Рейтинг
+          </span>
+
+        </button>
+
+      </div>
+
+
+
+      <div class="menu-group">
+
+        <div class="menu-group-title">
+          МОЁ
+        </div>
+
+
+        <button
+          class="menu-item"
+          data-menu="favorites"
+        >
+
+          <span class="menu-icon">
+            ♡
+          </span>
+
+          <span>
+            Избранное
+          </span>
+
+        </button>
+
+
+        <button
+          class="menu-item"
+          data-menu="recent"
+        >
+
+          <span class="menu-icon">
+            ◷
+          </span>
+
+          <span>
+            Недавно открытые
+          </span>
+
+        </button>
+
+      </div>
+
+
+
+      <div class="menu-group">
+
+        <div class="menu-group-title">
+          SHOHIN
+        </div>
+
+
+        <button
+          class="menu-item"
+          data-menu="about"
+        >
+
+          <span class="menu-icon">
+            i
+          </span>
+
+          <span>
+            О SHOHIN MOVIE
+          </span>
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="side-menu-footer">
+
+      <span>
+        SHOHIN MOVIE
+      </span>
+
+      <small>
+        © 2026 SHOHIN
+      </small>
+
+    </div>
+
+  </aside>
+
+
+
+  <!-- =========================
+       SEARCH
+  ========================== -->
+
+  <section
+    class="search-panel"
+    id="searchPanel"
+  >
 
     <div class="search-box">
-      <span>⌕</span>
+
+      <span>
+        ⌕
+      </span>
+
 
       <input
         type="search"
@@ -46,76 +383,12 @@
         autocomplete="off"
       >
 
-      <button id="closeSearch" aria-label="Закрыть">×</button>
-    </div>
 
-  </section>
-
-
-  <!-- HERO -->
-  <section class="hero">
-
-    <div class="hero-content">
-
-      <span class="hero-label">SHOHIN MOVIE</span>
-
-      <h1>Мир кино<br>в одном месте</h1>
-
-      <p>
-        Фильмы и сериалы по годам,
-        жанрам и рейтингу.
-      </p>
-
-    </div>
-
-  </section>
-
-
-  <!-- NAVIGATION -->
-  <nav class="main-nav">
-
-    <button class="nav-button active" data-type="movies">
-      Фильмы
-    </button>
-
-    <button class="nav-button" data-type="series">
-      Сериалы
-    </button>
-
-  </nav>
-
-
-  <!-- FILTERS -->
-  <section class="filters">
-
-    <button class="filter-button active" data-filter="all">
-      Все
-    </button>
-
-    <button class="filter-button" data-filter="new">
-      Новые
-    </button>
-
-    <button class="filter-button" data-filter="rating">
-      Рейтинг
-    </button>
-
-  </section>
-
-
-  <!-- YEAR -->
-  <section class="year-section">
-
-    <div class="section-heading">
-
-      <div>
-        <span class="small-label">КАТАЛОГ</span>
-        <h2 id="catalogTitle">Фильмы 1980</h2>
-      </div>
-
-      <button class="year-button" id="yearButton">
-        1980
-        <span>⌄</span>
+      <button
+        id="closeSearch"
+        aria-label="Закрыть"
+      >
+        ×
       </button>
 
     </div>
@@ -123,68 +396,294 @@
   </section>
 
 
-  <!-- YEAR MENU -->
-  <div class="year-menu" id="yearMenu">
 
-    <button data-year="1980">1980</button>
-    <button data-year="1981">1981</button>
-    <button data-year="1982">1982</button>
-    <button data-year="1983">1983</button>
-    <button data-year="1984">1984</button>
-    <button data-year="1985">1985</button>
-    <button data-year="1986">1986</button>
-    <button data-year="1987">1987</button>
-    <button data-year="1988">1988</button>
-    <button data-year="1989">1989</button>
-    <button data-year="1990">1990</button>
+  <!-- =========================
+       HERO
+  ========================== -->
 
-  </div>
+  <section class="hero">
+
+    <div class="hero-content">
+
+      <span class="hero-label">
+        SHOHIN MOVIE
+      </span>
 
 
-  <!-- STATUS -->
-  <section class="catalog-status">
+      <h1>
+        Мир кино<br>
+        в одном месте
+      </h1>
 
-    <span id="catalogCount">Загрузка...</span>
+
+      <p>
+        Фильмы и сериалы по годам,
+        странам, жанрам и рейтингу.
+      </p>
+
+    </div>
 
   </section>
 
 
-  <!-- MOVIE GRID -->
-  <main class="movie-grid" id="movieGrid">
 
-    <!-- Карточки загружаются автоматически -->
+  <!-- =========================
+       MAIN NAVIGATION
+  ========================== -->
 
-  </main>
+  <nav class="main-nav">
+
+    <button
+      class="nav-button active"
+      data-type="movies"
+    >
+      Фильмы
+    </button>
 
 
-  <!-- LOADING -->
-  <div class="loading" id="loading">
+    <button
+      class="nav-button"
+      data-type="series"
+    >
+      Сериалы
+    </button>
 
-    <div class="loading-spinner"></div>
+  </nav>
 
-    <span>Загрузка каталога...</span>
+
+
+  <!-- =========================
+       FILTERS
+  ========================== -->
+
+  <section class="filters">
+
+    <button
+      class="filter-button active"
+      data-filter="all"
+    >
+      Все
+    </button>
+
+
+    <button
+      class="filter-button"
+      data-filter="new"
+    >
+      Новые
+    </button>
+
+
+    <button
+      class="filter-button"
+      data-filter="rating"
+    >
+      Рейтинг
+    </button>
+
+  </section>
+
+
+
+  <!-- =========================
+       CATALOG
+  ========================== -->
+
+  <section class="year-section">
+
+    <div class="section-heading">
+
+      <div>
+
+        <span class="small-label">
+          КАТАЛОГ
+        </span>
+
+
+        <h2 id="catalogTitle">
+          Фильмы 1980
+        </h2>
+
+      </div>
+
+
+      <button
+        class="year-button"
+        id="yearButton"
+      >
+
+        1980
+
+        <span>
+          ⌄
+        </span>
+
+      </button>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================
+       YEAR MENU
+  ========================== -->
+
+  <div
+    class="year-menu"
+    id="yearMenu"
+  >
+
+    <button data-year="1980">
+      1980
+    </button>
+
+    <button data-year="1981">
+      1981
+    </button>
+
+    <button data-year="1982">
+      1982
+    </button>
+
+    <button data-year="1983">
+      1983
+    </button>
+
+    <button data-year="1984">
+      1984
+    </button>
+
+    <button data-year="1985">
+      1985
+    </button>
+
+    <button data-year="1986">
+      1986
+    </button>
+
+    <button data-year="1987">
+      1987
+    </button>
+
+    <button data-year="1988">
+      1988
+    </button>
+
+    <button data-year="1989">
+      1989
+    </button>
+
+    <button data-year="1990">
+      1990
+    </button>
 
   </div>
 
 
-  <!-- EMPTY -->
-  <div class="empty-state" id="emptyState">
 
-    <div class="empty-icon">◌</div>
+  <!-- =========================
+       CATALOG STATUS
+  ========================== -->
 
-    <h3>Ничего не найдено</h3>
+  <section class="catalog-status">
+
+    <span id="catalogCount">
+      Загрузка...
+    </span>
+
+  </section>
+
+
+
+  <!-- =========================
+       MOVIE GRID
+  ========================== -->
+
+  <main
+    class="movie-grid"
+    id="movieGrid"
+  >
+
+    <!--
+      Карточки загружаются
+      автоматически из JSON
+    -->
+
+  </main>
+
+
+
+  <!-- =========================
+       SHOHIN LOADER
+  ========================== -->
+
+  <div
+    class="loading"
+    id="loading"
+  >
+
+    <div class="shohin-loader">
+
+      <div class="loader-logo">
+        SH
+      </div>
+
+      <div class="loader-line"></div>
+
+      <span>
+        SHOHIN
+      </span>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- =========================
+       EMPTY
+  ========================== -->
+
+  <div
+    class="empty-state"
+    id="emptyState"
+  >
+
+    <div class="empty-icon">
+      ◌
+    </div>
+
+
+    <h3>
+      Ничего не найдено
+    </h3>
+
 
     <p>
-      Попробуйте изменить поиск или выбрать другой год.
+      Попробуйте изменить поиск
+      или выбрать другой год.
     </p>
 
   </div>
 
 
-  <!-- MOVIE MODAL -->
-  <div class="movie-modal" id="movieModal">
 
-    <div class="modal-overlay" id="modalOverlay"></div>
+  <!-- =========================
+       MOVIE MODAL
+  ========================== -->
+
+  <div
+    class="movie-modal"
+    id="movieModal"
+  >
+
+    <div
+      class="modal-overlay"
+      id="modalOverlay"
+    ></div>
+
 
     <div class="modal-card">
 
@@ -196,6 +695,7 @@
         ×
       </button>
 
+
       <div class="modal-poster-wrap">
 
         <img
@@ -206,11 +706,17 @@
 
       </div>
 
+
       <div class="modal-content">
 
-        <span class="modal-year" id="modalYear"></span>
+        <span
+          class="modal-year"
+          id="modalYear"
+        ></span>
+
 
         <h2 id="modalTitle"></h2>
+
 
         <div class="modal-meta">
 
@@ -220,7 +726,12 @@
 
         </div>
 
-        <div class="modal-genres" id="modalGenres"></div>
+
+        <div
+          class="modal-genres"
+          id="modalGenres"
+        ></div>
+
 
         <p id="modalDescription"></p>
 
@@ -231,16 +742,22 @@
   </div>
 
 
-  <!-- FOOTER -->
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+
   <footer class="footer">
 
     <div class="footer-logo">
       SHOHIN MOVIE
     </div>
 
+
     <p>
       Каталог фильмов и сериалов
     </p>
+
 
     <span>
       © 2026 SHOHIN
@@ -249,9 +766,192 @@
   </footer>
 
 
+
+  <!-- =========================
+       SCRIPTS
+  ========================== -->
+
   <script src="js/cards.js"></script>
+
   <script src="js/filters.js"></script>
+
   <script src="js/app.js"></script>
 
+
+  <!-- =========================
+       MENU SCRIPT
+  ========================== -->
+
+  <script>
+
+    const menuButton =
+      document.getElementById(
+        "menuButton"
+      );
+
+    const sideMenu =
+      document.getElementById(
+        "sideMenu"
+      );
+
+    const sideMenuOverlay =
+      document.getElementById(
+        "sideMenuOverlay"
+      );
+
+    const sideMenuClose =
+      document.getElementById(
+        "sideMenuClose"
+      );
+
+
+    function openSideMenu() {
+
+      sideMenu.classList.add(
+        "show"
+      );
+
+      sideMenuOverlay.classList.add(
+        "show"
+      );
+
+      menuButton.classList.add(
+        "active"
+      );
+
+      menuButton.setAttribute(
+        "aria-expanded",
+        "true"
+      );
+
+      sideMenu.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+      document.body.style.overflow =
+        "hidden";
+
+    }
+
+
+    function closeSideMenu() {
+
+      sideMenu.classList.remove(
+        "show"
+      );
+
+      sideMenuOverlay.classList.remove(
+        "show"
+      );
+
+      menuButton.classList.remove(
+        "active"
+      );
+
+      menuButton.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+      sideMenu.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+      document.body.style.overflow =
+        "";
+
+    }
+
+
+    menuButton.addEventListener(
+      "click",
+      () => {
+
+        if (
+          sideMenu.classList.contains(
+            "show"
+          )
+        ) {
+
+          closeSideMenu();
+
+        } else {
+
+          openSideMenu();
+
+        }
+
+      }
+    );
+
+
+    sideMenuClose.addEventListener(
+      "click",
+      closeSideMenu
+    );
+
+
+    sideMenuOverlay.addEventListener(
+      "click",
+      closeSideMenu
+    );
+
+
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key === "Escape"
+        ) {
+
+          closeSideMenu();
+
+        }
+
+      }
+    );
+
+
+    document
+      .querySelectorAll(
+        ".menu-item"
+      )
+      .forEach(item => {
+
+        item.addEventListener(
+          "click",
+          () => {
+
+            document
+              .querySelectorAll(
+                ".menu-item"
+              )
+              .forEach(
+                button =>
+                  button.classList.remove(
+                    "active"
+                  )
+              );
+
+
+            item.classList.add(
+              "active"
+            );
+
+
+            closeSideMenu();
+
+          }
+        );
+
+      });
+
+  </script>
+
+
 </body>
+
 </html>
