@@ -1,1 +1,17 @@
-р
+[
+  {
+    "id": "movie-1980-001",
+    "title": "The Empire Strikes Back",
+    "originalTitle": "The Empire Strikes Back",
+    "year": 1980,
+    "country": "USA",
+    "genres": [
+      "Science Fiction",
+      "Adventure",
+      "Action"
+    ],
+    "rating": 8.7,
+    "description": "Тестовая карточка SHOHIN MOVIE. Позже здесь будет полноценное описание фильма.",
+    "poster": ""
+  }
+]
