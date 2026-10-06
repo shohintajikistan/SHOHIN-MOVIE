@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -8,235 +10,132 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
   >
 
-  <meta name="theme-color" content="#071c16">
+  <meta
+    name="theme-color"
+    content="#071c16"
+  >
 
   <meta
     name="description"
-    content="SHOHIN MOVIE — фильмы и сериалы"
+    content="SHOHIN MOVIE — каталог фильмов и сериалов."
   >
 
   <title>SHOHIN MOVIE</title>
 
-  <link rel="stylesheet" href="css/style.css">
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
 </head>
+
 
 <body>
 
-  <!--
-    SHOHIN MOVIE
-    SHOHIN BRAND COLORS — НЕ МЕНЯТЬ
-  -->
+
+<div id="app">
 
 
-  <!-- ==============================
-       LOADING
-  =============================== -->
+  <!-- ==================================================
+       TOPBAR
+  ================================================== -->
 
-  <div id="loading" class="loading">
+  <header class="topbar">
 
-    <div class="loading-logo">
+    <div class="brand">
 
-      <div class="loading-sh">
+      <div class="brand-mark">
         SH
       </div>
 
-      <div class="loading-name">
-        SHOHIN
-      </div>
+      <div class="brand-text">
 
-      <div class="loading-movie">
-        MOVIE
+        <div class="brand-title">
+          SHOHIN MOVIE
+        </div>
+
+        <div class="brand-subtitle">
+          MOVIES & SERIES
+        </div>
+
       </div>
 
     </div>
 
-  </div>
+
+    <div class="top-actions">
+
+      <button
+        id="searchButton"
+        class="icon-button"
+        type="button"
+        aria-label="Поиск"
+      >
+        ⌕
+      </button>
 
 
-  <!-- ==============================
-       APP
-  =============================== -->
+      <button
+        id="menuButton"
+        class="icon-button"
+        type="button"
+        aria-label="Меню"
+      >
+        ☰
+      </button>
 
-  <div id="app" class="app">
+    </div>
 
-
-    <!-- ==============================
-         HEADER
-    =============================== -->
-
-    <header class="topbar">
-
-      <div class="brand">
-
-        <div class="brand-mark">
-          SH
-        </div>
-
-        <div class="brand-text">
-
-          <div class="brand-name">
-            SHOHIN
-          </div>
-
-          <div class="brand-subtitle">
-            MOVIE
-          </div>
-
-        </div>
-
-      </div>
+  </header>
 
 
-      <div class="topbar-actions">
+  <!-- ==================================================
+       MAIN VIEW
+  ================================================== -->
 
-        <!-- SEARCH -->
+  <main id="mainView">
 
-        <button
-          id="searchButton"
-          class="icon-button"
-          type="button"
-          aria-label="Поиск"
-        >
-
-          <svg
-            viewBox="0 0 24 24"
-            width="22"
-            height="22"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-
-            <circle
-              cx="11"
-              cy="11"
-              r="7"
-            ></circle>
-
-            <path
-              d="M20 20l-4-4"
-            ></path>
-
-          </svg>
-
-        </button>
+    <div class="main-container">
 
 
-        <!-- MENU -->
+      <!-- SEARCH -->
 
-        <button
-          id="menuButton"
-          class="icon-button"
-          type="button"
-          aria-label="Меню"
-          aria-expanded="false"
-        >
-
-          <svg
-            viewBox="0 0 24 24"
-            width="23"
-            height="23"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-          >
-
-            <path d="M4 7h16"></path>
-            <path d="M4 12h16"></path>
-            <path d="M4 17h16"></path>
-
-          </svg>
-
-        </button>
-
-      </div>
-
-    </header>
-
-
-    <!-- ==============================
-         SEARCH PANEL
-    =============================== -->
-
-    <section
-      id="searchPanel"
-      class="search-panel"
-      aria-hidden="true"
-    >
-
-      <div class="search-panel-inner">
+      <div
+        id="searchPanel"
+        class="search-panel"
+        aria-hidden="true"
+      >
 
         <div class="search-input-wrap">
 
-          <svg
-            viewBox="0 0 24 24"
-            width="20"
-            height="20"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-
-            <circle
-              cx="11"
-              cy="11"
-              r="7"
-            ></circle>
-
-            <path
-              d="M20 20l-4-4"
-            ></path>
-
-          </svg>
-
-
           <input
             id="searchInput"
+            class="search-input"
             type="search"
             placeholder="Найти фильм или сериал..."
             autocomplete="off"
-            autocapitalize="off"
-            spellcheck="false"
           >
-
-
-          <button
-            id="closeSearch"
-            class="search-close"
-            type="button"
-            aria-label="Закрыть поиск"
-          >
-            ×
-          </button>
 
         </div>
 
+
+        <button
+          id="closeSearch"
+          class="search-close"
+          type="button"
+          aria-label="Закрыть поиск"
+        >
+          ×
+        </button>
+
       </div>
-
-    </section>
-
-
-    <!-- ==============================
-         MAIN
-         ТОЛЬКО:
-         ПОИСК
-         ФИЛЬМЫ / СЕРИАЛЫ
-         КАРТОЧКИ
-    =============================== -->
-
-    <main id="mainView" class="main-content">
 
 
       <!-- FILMS / SERIES -->
 
       <nav
         class="type-navigation"
-        aria-label="Тип контента"
+        aria-label="Тип"
       >
 
         <button
@@ -262,1205 +161,917 @@
       <!-- CARDS -->
 
       <section
-        class="catalog-section"
-        aria-label="Каталог"
+        id="movieGrid"
+        class="movie-grid"
+      ></section>
+
+
+      <!-- EMPTY -->
+
+      <section
+        id="emptyState"
+        class="empty-state"
       >
 
-        <div
-          id="movieGrid"
-          class="movie-grid"
-        ></div>
+        <h3>
+          Пока ничего нет
+        </h3>
 
-
-        <div
-          id="emptyState"
-          class="empty-state"
-        >
-
-          <div class="empty-icon">
-
-            <svg
-              viewBox="0 0 24 24"
-              width="44"
-              height="44"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-
-              <rect
-                x="3"
-                y="4"
-                width="18"
-                height="16"
-                rx="2"
-              ></rect>
-
-              <path d="M8 4v16"></path>
-              <path d="M16 4v16"></path>
-
-              <path d="M3 9h5"></path>
-              <path d="M16 9h5"></path>
-
-              <path d="M3 15h5"></path>
-              <path d="M16 15h5"></path>
-
-            </svg>
-
-          </div>
-
-          <h2>
-            Каталог пуст
-          </h2>
-
-          <p>
-            Здесь появятся фильмы и сериалы.
-          </p>
-
-        </div>
+        <p>
+          Каталог пока пуст.
+        </p>
 
       </section>
 
-    </main>
+    </div>
+
+  </main>
 
 
-    <!-- ==============================
-         MENU OVERLAY
-    =============================== -->
+  <!-- ==================================================
+       MENU VIEW
+  ================================================== -->
 
-    <div
-      id="menuOverlay"
-      class="menu-overlay"
-      aria-hidden="true"
-    ></div>
+  <section
+    id="menuView"
+  >
 
+    <div class="menu-view-header">
 
-    <!-- ==============================
-         SIDE MENU
-    =============================== -->
-
-    <aside
-      id="sideMenu"
-      class="side-menu"
-      aria-hidden="true"
-    >
-
-
-      <!-- MENU HEADER -->
-
-      <div class="side-menu-header">
-
-        <div class="side-menu-brand">
-
-          <div class="side-menu-mark">
-            SH
-          </div>
-
-          <div class="side-menu-brand-text">
-
-            <div class="side-menu-title">
-              SHOHIN
-            </div>
-
-            <div class="side-menu-subtitle">
-              MOVIE
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <button
-          id="menuClose"
-          class="menu-close"
-          type="button"
-          aria-label="Закрыть меню"
-        >
-          ×
-        </button>
-
-      </div>
-
-
-      <!-- ==============================
-           MENU
-      =============================== -->
-
-      <nav
-        class="side-menu-nav"
-        aria-label="Основное меню"
+      <button
+        id="menuBack"
+        class="menu-back"
+        type="button"
+        aria-label="Назад"
       >
+        ←
+      </button>
 
 
-        <!-- ГЛАВНАЯ -->
-
-        <button
-          class="menu-item active"
-          data-menu="home"
-          type="button"
-        >
-
-          <span class="menu-item-icon">
-
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-
-              <path d="M3 11.5L12 4l9 7.5"></path>
-              <path d="M5 10v10h14V10"></path>
-
-            </svg>
-
-          </span>
-
-          <span>
-            Главная
-          </span>
-
-        </button>
-
-
-        <!-- ФИЛЬМЫ -->
-
-        <button
-          class="menu-item"
-          data-menu="movies"
-          type="button"
-        >
-
-          <span class="menu-item-icon">
-
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-
-              <rect
-                x="3"
-                y="4"
-                width="18"
-                height="16"
-                rx="2"
-              ></rect>
-
-              <path d="M8 4v16"></path>
-              <path d="M16 4v16"></path>
-
-              <path d="M3 9h5"></path>
-              <path d="M16 9h5"></path>
-
-              <path d="M3 15h5"></path>
-              <path d="M16 15h5"></path>
-
-            </svg>
-
-          </span>
-
-          <span>
-            Фильмы
-          </span>
-
-        </button>
-
-
-        <!-- СЕРИАЛЫ -->
-
-        <button
-          class="menu-item"
-          data-menu="series"
-          type="button"
-        >
-
-          <span class="menu-item-icon">
-
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-
-              <rect
-                x="3"
-                y="5"
-                width="18"
-                height="14"
-                rx="2"
-              ></rect>
-
-              <path d="M8 5l2-3"></path>
-              <path d="M16 5l2-3"></path>
-
-              <path d="M8 12h.01"></path>
-              <path d="M12 12h.01"></path>
-              <path d="M16 12h.01"></path>
-
-            </svg>
-
-          </span>
-
-          <span>
-            Сериалы
-          </span>
-
-        </button>
-
-
-        <div class="menu-divider"></div>
-
-
-        <!-- СТРАНЫ -->
-
-        <button
-          class="menu-item"
-          data-menu="countries"
-          type="button"
-        >
-
-          <span class="menu-item-icon">
-
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-
-              <circle
-                cx="12"
-                cy="12"
-                r="9"
-              ></circle>
-
-              <path d="M3 12h18"></path>
-
-              <path
-                d="M12 3c3 3 3 15 0 18"
-              ></path>
-
-              <path
-                d="M12 3c-3 3-3 15 0 18"
-              ></path>
-
-            </svg>
-
-          </span>
-
-          <span>
-            Страны
-          </span>
-
-        </button>
-
-
-        <!-- ЖАНРЫ -->
-
-        <button
-          class="menu-item"
-          data-menu="genres"
-          type="button"
-        >
-
-          <span class="menu-item-icon">
-
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-
-              <path d="M4 6h16"></path>
-              <path d="M4 12h16"></path>
-              <path d="M4 18h16"></path>
-
-              <circle
-                cx="9"
-                cy="6"
-                r="2"
-              ></circle>
-
-              <circle
-                cx="15"
-                cy="12"
-                r="2"
-              ></circle>
-
-              <circle
-                cx="10"
-                cy="18"
-                r="2"
-              ></circle>
-
-            </svg>
-
-          </span>
-
-          <span>
-            Жанры
-          </span>
-
-        </button>
-
-
-        <!-- ПО ГОДАМ -->
-
-        <button
-          class="menu-item"
-          data-menu="years"
-          type="button"
-        >
-
-          <span class="menu-item-icon">
-
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-
-              <rect
-                x="3"
-                y="5"
-                width="18"
-                height="16"
-                rx="2"
-              ></rect>
-
-              <path d="M7 3v4"></path>
-              <path d="M17 3v4"></path>
-              <path d="M3 10h18"></path>
-
-              <path d="M8 14h2"></path>
-              <path d="M14 14h2"></path>
-
-              <path d="M8 18h2"></path>
-              <path d="M14 18h2"></path>
-
-            </svg>
-
-          </span>
-
-          <span>
-            По годам
-          </span>
-
-        </button>
-
-
-        <!-- РЕЙТИНГ -->
-
-        <button
-          class="menu-item"
-          data-menu="rating"
-          type="button"
-        >
-
-          <span class="menu-item-icon">
-
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-
-              <path
-                d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9L12 3z"
-              ></path>
-
-            </svg>
-
-          </span>
-
-          <span>
-            Рейтинг
-          </span>
-
-        </button>
-
-
-        <div class="menu-divider"></div>
-
-
-        <!-- ИЗБРАННОЕ -->
-
-        <button
-          class="menu-item"
-          data-menu="favorites"
-          type="button"
-        >
-
-          <span class="menu-item-icon">
-
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-
-              <path
-                d="M20.8 8.7c0 5-8.8 10.2-8.8 10.2S3.2 13.7 3.2 8.7A4.7 4.7 0 0 1 12 6.4a4.7 4.7 0 0 1 8.8 2.3z"
-              ></path>
-
-            </svg>
-
-          </span>
-
-          <span>
-            Избранное
-          </span>
-
-        </button>
-
-
-        <!-- НЕДАВНО ОТКРЫТЫЕ -->
-
-        <button
-          class="menu-item"
-          data-menu="recent"
-          type="button"
-        >
-
-          <span class="menu-item-icon">
-
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-
-              <circle
-                cx="12"
-                cy="12"
-                r="9"
-              ></circle>
-
-              <path d="M12 7v5l3 2"></path>
-
-            </svg>
-
-          </span>
-
-          <span>
-            Недавно открытые
-          </span>
-
-        </button>
-
-
-        <div class="menu-divider"></div>
-
-
-        <!-- О SHOHIN MOVIE -->
-
-        <button
-          class="menu-item"
-          data-menu="about"
-          type="button"
-        >
-
-          <span class="menu-item-icon">
-
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-
-              <circle
-                cx="12"
-                cy="12"
-                r="9"
-              ></circle>
-
-              <path d="M12 10v6"></path>
-              <path d="M12 7h.01"></path>
-
-            </svg>
-
-          </span>
-
-          <span>
-            О SHOHIN MOVIE
-          </span>
-
-        </button>
-
-      </nav>
-
-
-      <!-- MENU FOOTER -->
-
-      <div class="side-menu-footer">
-
-        <div class="side-menu-line"></div>
-
-        <div class="side-menu-footer-text">
-          SHOHIN MOVIE
-        </div>
-
-        <div class="side-menu-footer-small">
-          Learn. Discover. Enjoy.
-        </div>
-
-      </div>
-
-    </aside>
-
-
-    <!-- ==================================================
-         SEPARATE MENU VIEWS
-         ================================================== -->
-
-    <section
-      id="menuView"
-      class="menu-view"
-      aria-hidden="true"
-    >
-
-      <div class="menu-view-header">
-
-        <button
-          id="menuBack"
-          class="menu-back"
-          type="button"
-          aria-label="Назад"
-        >
-          ‹
-        </button>
-
-        <h1 id="menuViewTitle">
-          Раздел
-        </h1>
-
-      </div>
-
-
-      <div
-        id="menuViewContent"
-        class="menu-view-content"
-      ></div>
-
-    </section>
-
-
-    <!-- ==================================================
-         MOVIE MODAL
-    ================================================== -->
-
-    <div
-      id="movieModal"
-      class="movie-modal"
-      aria-hidden="true"
-    >
-
-      <div
-        id="modalOverlay"
-        class="modal-overlay"
-      ></div>
-
-
-      <div
-        class="modal-content"
-        role="dialog"
-        aria-modal="true"
-      >
-
-        <button
-          id="modalClose"
-          class="modal-close"
-          type="button"
-          aria-label="Закрыть"
-        >
-          ×
-        </button>
-
-
-        <div class="modal-poster-wrap">
-
-          <img
-            id="modalPoster"
-            class="modal-poster"
-            src=""
-            alt=""
-          >
-
-        </div>
-
-
-        <div class="modal-info">
-
-          <div
-            id="modalYear"
-            class="modal-year"
-          ></div>
-
-
-          <h2
-            id="modalTitle"
-            class="modal-title"
-          ></h2>
-
-
-          <div
-            id="modalRating"
-            class="modal-rating"
-          ></div>
-
-
-          <div
-            id="modalCountry"
-            class="modal-country"
-          ></div>
-
-
-          <div
-            id="modalGenres"
-            class="modal-genres"
-          ></div>
-
-
-          <p
-            id="modalDescription"
-            class="modal-description"
-          ></p>
-
-        </div>
-
-      </div>
+      <h1 id="menuViewTitle">
+        Раздел
+      </h1>
 
     </div>
 
 
-    <!-- ==================================================
-         COMPATIBILITY ELEMENTS
-         НЕ ОТОБРАЖАЮТСЯ
-    ================================================== -->
+    <div id="menuViewContent"></div>
 
-    <button
-      id="yearButton"
-      type="button"
-      hidden
-    >
-      1980
-    </button>
+  </section>
 
-    <div
-      id="yearMenu"
-      hidden
-    >
+
+  <!-- ==================================================
+       SIDE MENU
+  ================================================== -->
+
+  <aside
+    id="sideMenu"
+    aria-hidden="true"
+  >
+
+    <div class="menu-header">
+
+      <div class="menu-brand">
+
+        <strong>
+          SHOHIN MOVIE
+        </strong>
+
+        <span>
+          MAIN MENU
+        </span>
+
+      </div>
+
 
       <button
+        id="menuClose"
+        class="menu-close"
         type="button"
-        data-year="1980"
+        aria-label="Закрыть меню"
       >
-        1980
+        ×
       </button>
 
     </div>
 
 
+    <nav class="menu-list">
+
+
+      <button
+        class="menu-item"
+        data-section="home"
+        type="button"
+      >
+        Главная
+      </button>
+
+
+      <button
+        class="menu-item"
+        data-section="movies"
+        type="button"
+      >
+        Фильмы
+      </button>
+
+
+      <button
+        class="menu-item"
+        data-section="series"
+        type="button"
+      >
+        Сериалы
+      </button>
+
+
+      <button
+        class="menu-item"
+        data-section="countries"
+        type="button"
+      >
+        Страны
+      </button>
+
+
+      <button
+        class="menu-item"
+        data-section="genres"
+        type="button"
+      >
+        Жанры
+      </button>
+
+
+      <button
+        class="menu-item"
+        data-section="years"
+        type="button"
+      >
+        По годам
+      </button>
+
+
+      <button
+        class="menu-item"
+        data-section="rating"
+        type="button"
+      >
+        Рейтинг
+      </button>
+
+
+      <button
+        class="menu-item"
+        data-section="favorites"
+        type="button"
+      >
+        Избранное
+      </button>
+
+
+      <button
+        class="menu-item"
+        data-section="recent"
+        type="button"
+      >
+        Недавно открытые
+      </button>
+
+
+      <button
+        class="menu-item"
+        data-section="about"
+        type="button"
+      >
+        О SHOHIN MOVIE
+      </button>
+
+
+    </nav>
+
+  </aside>
+
+
+  <!-- MENU OVERLAY -->
+
+  <div
+    id="menuOverlay"
+  ></div>
+
+
+  <!-- ==================================================
+       MOVIE MODAL
+  ================================================== -->
+
+  <div
+    id="movieModal"
+    aria-hidden="true"
+  >
+
+    <div
+      id="modalOverlay"
+    ></div>
+
+
+    <div class="modal-content">
+
+
+      <button
+        id="modalClose"
+        type="button"
+        aria-label="Закрыть"
+      >
+        ×
+      </button>
+
+
+      <div class="modal-body">
+
+
+        <img
+          id="modalPoster"
+          src=""
+          alt=""
+        >
+
+
+        <div class="modal-info">
+
+          <div id="modalYear"></div>
+
+          <h2 id="modalTitle">
+            Без названия
+          </h2>
+
+          <div id="modalRating">
+            ★ —
+          </div>
+
+          <div id="modalCountry">
+            Страна не указана
+          </div>
+
+          <div id="modalGenres"></div>
+
+        </div>
+
+      </div>
+
+
+      <div id="modalDescription">
+        Описание пока не добавлено.
+      </div>
+
+
+    </div>
+
   </div>
 
 
   <!-- ==================================================
-       EXISTING SHOHIN JAVASCRIPT
+       LOADING
   ================================================== -->
 
-  <script src="js/cards.js"></script>
+  <div id="loading">
 
-  <script src="js/filters.js"></script>
+    <div class="loading-box">
 
-  <script src="js/app.js"></script>
+      <div class="loading-spinner"></div>
 
+    </div>
 
-  <!-- ==================================================
-       MENU NAVIGATION
-  ================================================== -->
-
-  <script>
-
-    document.addEventListener(
-      "DOMContentLoaded",
-      function () {
-
-        const menuButton =
-          document.getElementById("menuButton");
-
-        const menuClose =
-          document.getElementById("menuClose");
-
-        const menuOverlay =
-          document.getElementById("menuOverlay");
-
-        const sideMenu =
-          document.getElementById("sideMenu");
-
-        const menuView =
-          document.getElementById("menuView");
-
-        const menuBack =
-          document.getElementById("menuBack");
-
-        const menuViewTitle =
-          document.getElementById("menuViewTitle");
-
-        const menuViewContent =
-          document.getElementById("menuViewContent");
-
-        const mainView =
-          document.getElementById("mainView");
-
-        const menuItems =
-          document.querySelectorAll(".menu-item");
+  </div>
 
 
-        /* ==========================================
-           OPEN MENU
-        ========================================== */
+</div>
 
-        function openMenu() {
 
-          sideMenu.classList.add("show");
+<!-- ==================================================
+     DATA / APP
+================================================== -->
 
-          menuOverlay.classList.add("show");
+<script src="js/cards.js"></script>
 
-          sideMenu.setAttribute(
-            "aria-hidden",
-            "false"
+<script src="js/filters.js"></script>
+
+<script src="js/app.js"></script>
+
+
+<!-- ==================================================
+     MENU SYSTEM
+================================================== -->
+
+<script>
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    const menuButton =
+      document.getElementById(
+        "menuButton"
+      );
+
+    const menuClose =
+      document.getElementById(
+        "menuClose"
+      );
+
+    const sideMenu =
+      document.getElementById(
+        "sideMenu"
+      );
+
+    const menuOverlay =
+      document.getElementById(
+        "menuOverlay"
+      );
+
+    const mainView =
+      document.getElementById(
+        "mainView"
+      );
+
+    const menuView =
+      document.getElementById(
+        "menuView"
+      );
+
+    const menuBack =
+      document.getElementById(
+        "menuBack"
+      );
+
+    const menuTitle =
+      document.getElementById(
+        "menuViewTitle"
+      );
+
+    const menuContent =
+      document.getElementById(
+        "menuViewContent"
+      );
+
+
+    /* ================================================
+       OPEN MENU
+    ================================================ */
+
+    function openMenu() {
+
+      sideMenu.classList.add(
+        "show"
+      );
+
+      menuOverlay.classList.add(
+        "show"
+      );
+
+      sideMenu.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+    }
+
+
+    /* ================================================
+       CLOSE MENU
+    ================================================ */
+
+    function closeMenu() {
+
+      sideMenu.classList.remove(
+        "show"
+      );
+
+      menuOverlay.classList.remove(
+        "show"
+      );
+
+      sideMenu.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+    }
+
+
+    /* ================================================
+       SHOW MAIN
+    ================================================ */
+
+    function showMain() {
+
+      mainView.style.display =
+        "block";
+
+      menuView.classList.remove(
+        "show"
+      );
+
+    }
+
+
+    /* ================================================
+       SHOW MENU VIEW
+    ================================================ */
+
+    function showMenuView(
+      title,
+      content
+    ) {
+
+      mainView.style.display =
+        "none";
+
+      menuView.classList.add(
+        "show"
+      );
+
+      menuTitle.textContent =
+        title;
+
+      menuContent.innerHTML =
+        content;
+
+    }
+
+
+    /* ================================================
+       MENU SECTION
+    ================================================ */
+
+    function openSection(
+      section
+    ) {
+
+      closeMenu();
+
+
+      /*
+       * Главная
+       */
+
+      if (
+        section === "home"
+      ) {
+
+        showMain();
+
+        return;
+
+      }
+
+
+      /*
+       * Фильмы
+       */
+
+      if (
+        section === "movies"
+      ) {
+
+        showMain();
+
+
+        const button =
+          document.querySelector(
+            '.nav-button[data-type="movies"]'
           );
 
-          menuOverlay.setAttribute(
-            "aria-hidden",
-            "false"
-          );
 
-          menuButton.setAttribute(
-            "aria-expanded",
-            "true"
-          );
+        if (button) {
 
-          document.body.classList.add(
-            "menu-open"
-          );
+          button.click();
 
         }
 
 
-        /* ==========================================
-           CLOSE MENU
-        ========================================== */
+        return;
 
-        function closeMenu() {
+      }
 
-          sideMenu.classList.remove("show");
 
-          menuOverlay.classList.remove("show");
+      /*
+       * Сериалы
+       */
 
-          sideMenu.setAttribute(
-            "aria-hidden",
-            "true"
+      if (
+        section === "series"
+      ) {
+
+        showMain();
+
+
+        const button =
+          document.querySelector(
+            '.nav-button[data-type="series"]'
           );
 
-          menuOverlay.setAttribute(
-            "aria-hidden",
-            "true"
-          );
 
-          menuButton.setAttribute(
-            "aria-expanded",
-            "false"
-          );
+        if (button) {
 
-          document.body.classList.remove(
-            "menu-open"
-          );
+          button.click();
 
         }
 
 
-        /* ==========================================
-           OPEN MENU SECTION
-        ========================================== */
+        return;
 
-        function openSection(type) {
+      }
 
-          closeMenu();
 
+      /* ============================================
+         СТРАНЫ
+      ============================================ */
 
-          /*
-           * Главная
-           */
+      if (
+        section === "countries"
+      ) {
 
-          if (type === "home") {
+        const countries =
+          typeof getAllCountries ===
+          "function"
+            ? getAllCountries()
+            : [];
 
-            menuView.classList.remove("show");
 
-            mainView.style.display = "";
+        if (!countries.length) {
 
-            return;
+          showMenuView(
+            "Страны",
+            `
+              <div class="menu-section-empty">
 
-          }
+                <h3>
+                  Страны
+                </h3>
 
+                <p>
+                  Страны появятся автоматически
+                  после добавления фильмов
+                  в каталог.
+                </p>
 
-          /*
-           * Фильмы
-           */
-
-          if (type === "movies") {
-
-            menuView.classList.remove("show");
-
-            mainView.style.display = "";
-
-            const movieButton =
-              document.querySelector(
-                '.nav-button[data-type="movies"]'
-              );
-
-            if (movieButton) {
-              movieButton.click();
-            }
-
-            window.scrollTo({
-              top: 0,
-              behavior: "smooth"
-            });
-
-            return;
-
-          }
-
-
-          /*
-           * Сериалы
-           */
-
-          if (type === "series") {
-
-            menuView.classList.remove("show");
-
-            mainView.style.display = "";
-
-            const seriesButton =
-              document.querySelector(
-                '.nav-button[data-type="series"]'
-              );
-
-            if (seriesButton) {
-              seriesButton.click();
-            }
-
-            window.scrollTo({
-              top: 0,
-              behavior: "smooth"
-            });
-
-            return;
-
-          }
-
-
-          /*
-           * Остальные разделы
-           */
-
-          mainView.style.display = "none";
-
-          menuView.classList.add("show");
-
-          menuView.setAttribute(
-            "aria-hidden",
-            "false"
-          );
-
-
-          const titles = {
-
-            countries: "Страны",
-
-            genres: "Жанры",
-
-            years: "По годам",
-
-            rating: "Рейтинг",
-
-            favorites: "Избранное",
-
-            recent: "Недавно открытые",
-
-            about: "О SHOHIN MOVIE"
-
-          };
-
-
-          menuViewTitle.textContent =
-            titles[type] || "Раздел";
-
-
-          renderMenuSection(type);
-
-        }
-
-
-        /* ==========================================
-           RENDER MENU SECTION
-        ========================================== */
-
-        function renderMenuSection(type) {
-
-          menuViewContent.innerHTML = "";
-
-
-          /*
-           * СТРАНЫ
-           */
-
-          if (type === "countries") {
-
-            const title =
-              document.createElement("div");
-
-            title.className =
-              "menu-section-empty";
-
-            title.innerHTML = `
-              <div class="menu-section-icon">🌍</div>
-
-              <h2>Страны</h2>
-
-              <p>
-                Здесь будут все страны,
-                представленные в каталоге.
-              </p>
-            `;
-
-            menuViewContent.appendChild(title);
-
-            return;
-
-          }
-
-
-          /*
-           * ЖАНРЫ
-           */
-
-          if (type === "genres") {
-
-            const title =
-              document.createElement("div");
-
-            title.className =
-              "menu-section-empty";
-
-            title.innerHTML = `
-              <div class="menu-section-icon">◈</div>
-
-              <h2>Жанры</h2>
-
-              <p>
-                Здесь будут все жанры
-                фильмов и сериалов.
-              </p>
-            `;
-
-            menuViewContent.appendChild(title);
-
-            return;
-
-          }
-
-
-          /*
-           * ГОДЫ
-           */
-
-          if (type === "years") {
-
-            const title =
-              document.createElement("div");
-
-            title.className =
-              "menu-section-empty";
-
-            title.innerHTML = `
-              <div class="menu-section-icon">▣</div>
-
-              <h2>По годам</h2>
-
-              <p>
-                Здесь появится каталог
-                по годам выпуска.
-              </p>
-            `;
-
-            menuViewContent.appendChild(title);
-
-            return;
-
-          }
-
-
-          /*
-           * РЕЙТИНГ
-           */
-
-          if (type === "rating") {
-
-            const title =
-              document.createElement("div");
-
-            title.className =
-              "menu-section-empty";
-
-            title.innerHTML = `
-              <div class="menu-section-icon">★</div>
-
-              <h2>Рейтинг</h2>
-
-              <p>
-                Здесь будут фильмы и сериалы
-                с сортировкой по рейтингу.
-              </p>
-            `;
-
-            menuViewContent.appendChild(title);
-
-            return;
-
-          }
-
-
-          /*
-           * ИЗБРАННОЕ
-           */
-
-          if (type === "favorites") {
-
-            const title =
-              document.createElement("div");
-
-            title.className =
-              "menu-section-empty";
-
-            title.innerHTML = `
-              <div class="menu-section-icon">♡</div>
-
-              <h2>Избранное</h2>
-
-              <p>
-                Здесь будут сохранённые
-                фильмы и сериалы.
-              </p>
-            `;
-
-            menuViewContent.appendChild(title);
-
-            return;
-
-          }
-
-
-          /*
-           * НЕДАВНО ОТКРЫТЫЕ
-           */
-
-          if (type === "recent") {
-
-            const title =
-              document.createElement("div");
-
-            title.className =
-              "menu-section-empty";
-
-            title.innerHTML = `
-              <div class="menu-section-icon">◷</div>
-
-              <h2>Недавно открытые</h2>
-
-              <p>
-                Здесь появится история
-                недавно открытых карточек.
-              </p>
-            `;
-
-            menuViewContent.appendChild(title);
-
-            return;
-
-          }
-
-
-          /*
-           * О SHOHIN MOVIE
-           */
-
-          if (type === "about") {
-
-            const about =
-              document.createElement("div");
-
-            about.className =
-              "about-shohin";
-
-            about.innerHTML = `
-              <div class="about-logo">
-                SH
               </div>
+            `
+          );
+
+          return;
+
+        }
+
+
+        showMenuView(
+          "Страны",
+          `
+            <div class="menu-section-empty">
+
+              <h3>
+                Доступные страны
+              </h3>
+
+              <p>
+                ${countries
+                  .map(
+                    country =>
+                      `<span>${escapeHTML(country)}</span>`
+                  )
+                  .join(" • ")}
+              </p>
+
+            </div>
+          `
+        );
+
+        return;
+
+      }
+
+
+      /* ============================================
+         ЖАНРЫ
+      ============================================ */
+
+      if (
+        section === "genres"
+      ) {
+
+        const genres =
+          typeof getAllGenres ===
+          "function"
+            ? getAllGenres()
+            : [];
+
+
+        if (!genres.length) {
+
+          showMenuView(
+            "Жанры",
+            `
+              <div class="menu-section-empty">
+
+                <h3>
+                  Жанры
+                </h3>
+
+                <p>
+                  Жанры появятся автоматически
+                  после добавления фильмов
+                  в каталог.
+                </p>
+
+              </div>
+            `
+          );
+
+          return;
+
+        }
+
+
+        showMenuView(
+          "Жанры",
+          `
+            <div class="menu-section-empty">
+
+              <h3>
+                Доступные жанры
+              </h3>
+
+              <p>
+                ${genres
+                  .map(
+                    genre =>
+                      `<span>${escapeHTML(genre)}</span>`
+                  )
+                  .join(" • ")}
+              </p>
+
+            </div>
+          `
+        );
+
+        return;
+
+      }
+
+
+      /* ============================================
+         ПО ГОДАМ
+      ============================================ */
+
+      if (
+        section === "years"
+      ) {
+
+        const items =
+          SHOHIN_MOVIE.currentItems ||
+          [];
+
+
+        const years =
+          typeof getAvailableYears ===
+          "function"
+            ? getAvailableYears(items)
+            : [];
+
+
+        showMenuView(
+          "По годам",
+          `
+            <div class="menu-section-empty">
+
+              <h3>
+                Годы каталога
+              </h3>
+
+              <p>
+                ${
+                  years.length
+                    ? years.join(" • ")
+                    : "Годы появятся после добавления каталога."
+                }
+              </p>
+
+            </div>
+          `
+        );
+
+        return;
+
+      }
+
+
+      /* ============================================
+         РЕЙТИНГ
+      ============================================ */
+
+      if (
+        section === "rating"
+      ) {
+
+        const items =
+          SHOHIN_MOVIE.currentItems ||
+          [];
+
+
+        const sorted =
+          typeof sortByRating ===
+          "function"
+            ? sortByRating(items)
+            : [];
+
+
+        const top =
+          sorted.slice(
+            0,
+            10
+          );
+
+
+        if (!top.length) {
+
+          showMenuView(
+            "Рейтинг",
+            `
+              <div class="menu-section-empty">
+
+                <h3>
+                  Рейтинг
+                </h3>
+
+                <p>
+                  Фильмы с рейтингом появятся
+                  после добавления каталога.
+                </p>
+
+              </div>
+            `
+          );
+
+          return;
+
+        }
+
+
+        showMenuView(
+          "Рейтинг",
+          `
+            <div class="menu-section-empty">
+
+              <h3>
+                Лучшие фильмы
+              </h3>
+
+              <p>
+                ${top
+                  .map(
+                    (item, index) =>
+                      `${index + 1}. ${escapeHTML(item.title || "Без названия")} — ★ ${Number(item.rating || 0).toFixed(1)}`
+                  )
+                  .join("<br><br>")}
+              </p>
+
+            </div>
+          `
+        );
+
+        return;
+
+      }
+
+
+      /* ============================================
+         ИЗБРАННОЕ
+      ============================================ */
+
+      if (
+        section === "favorites"
+      ) {
+
+        showMenuView(
+          "Избранное",
+          `
+            <div class="menu-section-empty">
+
+              <h3>
+                Избранное
+              </h3>
+
+              <p>
+                Раздел подготовлен.
+                Систему добавления фильмов
+                в избранное подключим следующим
+                этапом.
+              </p>
+
+            </div>
+          `
+        );
+
+        return;
+
+      }
+
+
+      /* ============================================
+         НЕДАВНО ОТКРЫТЫЕ
+      ============================================ */
+
+      if (
+        section === "recent"
+      ) {
+
+        let recent = [];
+
+
+        try {
+
+          recent =
+            JSON.parse(
+              localStorage.getItem(
+                "SHOHIN_MOVIE_RECENT"
+              ) || "[]"
+            );
+
+        } catch (
+          error
+        ) {
+
+          recent = [];
+
+        }
+
+
+        if (!recent.length) {
+
+          showMenuView(
+            "Недавно открытые",
+            `
+              <div class="menu-section-empty">
+
+                <h3>
+                  Пока пусто
+                </h3>
+
+                <p>
+                  Открой любой фильм —
+                  он появится здесь.
+                </p>
+
+              </div>
+            `
+          );
+
+          return;
+
+        }
+
+
+        showMenuView(
+          "Недавно открытые",
+          `
+            <div class="menu-section-empty">
+
+              <h3>
+                Последние фильмы
+              </h3>
+
+              <p>
+                ${recent
+                  .slice(0, 10)
+                  .map(
+                    item =>
+                      `${escapeHTML(item.title || "Без названия")} — ${escapeHTML(item.year || "")}`
+                  )
+                  .join("<br><br>")}
+              </p>
+
+            </div>
+          `
+        );
+
+        return;
+
+      }
+
+
+      /* ============================================
+         О SHOHIN MOVIE
+      ============================================ */
+
+      if (
+        section === "about"
+      ) {
+
+        showMenuView(
+          "О SHOHIN MOVIE",
+          `
+            <div class="about-shohin">
 
               <h2>
                 SHOHIN MOVIE
@@ -1472,173 +1083,176 @@
               </p>
 
               <p>
-                Здесь пользователи смогут
-                находить фильмы, сериалы,
-                страны, жанры, годы и рейтинги
-                в одном удобном месте.
+                Здесь можно находить фильмы,
+                смотреть информацию о них,
+                искать по каталогу и
+                постепенно расширять
+                коллекцию.
               </p>
-            `;
 
-            menuViewContent.appendChild(
-              about
-            );
+              <p>
+                SHOHIN MOVIE создан как
+                простой и удобный каталог
+                без лишних элементов
+                на главном экране.
+              </p>
 
-          }
+            </div>
+          `
+        );
+
+      }
+
+    }
+
+
+    /* ================================================
+       MENU BUTTON
+    ================================================ */
+
+    if (menuButton) {
+
+      menuButton.addEventListener(
+        "click",
+        openMenu
+      );
+
+    }
+
+
+    /* ================================================
+       CLOSE BUTTON
+    ================================================ */
+
+    if (menuClose) {
+
+      menuClose.addEventListener(
+        "click",
+        closeMenu
+      );
+
+    }
+
+
+    /* ================================================
+       OVERLAY
+    ================================================ */
+
+    if (menuOverlay) {
+
+      menuOverlay.addEventListener(
+        "click",
+        closeMenu
+      );
+
+    }
+
+
+    /* ================================================
+       MENU ITEMS
+    ================================================ */
+
+    document
+      .querySelectorAll(
+        ".menu-item"
+      )
+      .forEach(
+        item => {
+
+          item.addEventListener(
+            "click",
+            () => {
+
+              openSection(
+                item.dataset.section
+              );
+
+            }
+          );
+
+        }
+      );
+
+
+    /* ================================================
+       BACK
+    ================================================ */
+
+    if (menuBack) {
+
+      menuBack.addEventListener(
+        "click",
+        showMain
+      );
+
+    }
+
+
+    /* ================================================
+       ESC
+    ================================================ */
+
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key === "Escape"
+        ) {
+
+          closeMenu();
+
+          showMain();
 
         }
 
+      }
+    );
 
-        /* ==========================================
-           BACK FROM SECTION
-        ========================================== */
-
-        menuBack.addEventListener(
-          "click",
-          function () {
-
-            menuView.classList.remove(
-              "show"
-            );
-
-            menuView.setAttribute(
-              "aria-hidden",
-              "true"
-            );
-
-            mainView.style.display = "";
-
-          }
-        );
+  }
+);
 
 
-        /* ==========================================
-           MENU BUTTON
-        ========================================== */
+/* ==================================================
+   SAFE HTML FOR MENU
+================================================== */
 
-        menuButton.addEventListener(
-          "click",
-          function () {
+function escapeHTML(
+  value
+) {
 
-            if (
-              sideMenu.classList.contains(
-                "show"
-              )
-            ) {
+  return String(value)
 
-              closeMenu();
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
 
-            } else {
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
 
-              openMenu();
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
 
-            }
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
 
-          }
-        );
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 
+}
 
-        /* ==========================================
-           CLOSE BUTTON
-        ========================================== */
+</script>
 
-        menuClose.addEventListener(
-          "click",
-          closeMenu
-        );
-
-
-        /* ==========================================
-           OVERLAY
-        ========================================== */
-
-        menuOverlay.addEventListener(
-          "click",
-          closeMenu
-        );
-
-
-        /* ==========================================
-           MENU ITEMS
-        ========================================== */
-
-        menuItems.forEach(
-          function (item) {
-
-            item.addEventListener(
-              "click",
-              function () {
-
-                const type =
-                  item.dataset.menu;
-
-                menuItems.forEach(
-                  function (button) {
-
-                    button.classList.remove(
-                      "active"
-                    );
-
-                  }
-                );
-
-                item.classList.add(
-                  "active"
-                );
-
-                openSection(type);
-
-              }
-            );
-
-          }
-        );
-
-
-        /* ==========================================
-           ESC
-        ========================================== */
-
-        document.addEventListener(
-          "keydown",
-          function (event) {
-
-            if (
-              event.key === "Escape"
-            ) {
-
-              if (
-                sideMenu.classList.contains(
-                  "show"
-                )
-              ) {
-
-                closeMenu();
-
-              }
-
-              if (
-                menuView.classList.contains(
-                  "show"
-                )
-              ) {
-
-                menuView.classList.remove(
-                  "show"
-                );
-
-                mainView.style.display =
-                  "";
-
-              }
-
-            }
-
-          }
-        );
-
-      });
-
-  </script>
 
 </body>
+
 </html>
