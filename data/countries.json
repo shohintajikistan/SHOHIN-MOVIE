@@ -1,0 +1,105 @@
+{
+  "countries": [
+    {
+      "id": "usa",
+      "name": "США"
+    },
+    {
+      "id": "uk",
+      "name": "Великобритания"
+    },
+    {
+      "id": "india",
+      "name": "Индия"
+    },
+    {
+      "id": "tajikistan",
+      "name": "Таджикистан"
+    },
+    {
+      "id": "russia",
+      "name": "Россия"
+    },
+    {
+      "id": "south-korea",
+      "name": "Южная Корея"
+    },
+    {
+      "id": "china",
+      "name": "Китай"
+    },
+    {
+      "id": "japan",
+      "name": "Япония"
+    },
+    {
+      "id": "france",
+      "name": "Франция"
+    },
+    {
+      "id": "germany",
+      "name": "Германия"
+    },
+    {
+      "id": "italy",
+      "name": "Италия"
+    },
+    {
+      "id": "spain",
+      "name": "Испания"
+    },
+    {
+      "id": "turkey",
+      "name": "Турция"
+    },
+    {
+      "id": "iran",
+      "name": "Иран"
+    },
+    {
+      "id": "pakistan",
+      "name": "Пакистан"
+    },
+    {
+      "id": "canada",
+      "name": "Канада"
+    },
+    {
+      "id": "australia",
+      "name": "Австралия"
+    },
+    {
+      "id": "brazil",
+      "name": "Бразилия"
+    },
+    {
+      "id": "mexico",
+      "name": "Мексика"
+    },
+    {
+      "id": "thailand",
+      "name": "Таиланд"
+    },
+    {
+      "id": "hong-kong",
+      "name": "Гонконг"
+    },
+    {
+      "id": "sweden",
+      "name": "Швеция"
+    },
+    {
+      "id": "denmark",
+      "name": "Дания"
+    },
+    {
+      "id": "norway",
+      "name": "Норвегия"
+    },
+    {
+      "id": "other",
+      "name": "Другие страны"
+    }
+  ],
+  "version": 1
+}
