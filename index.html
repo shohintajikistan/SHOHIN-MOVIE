@@ -2,8 +2,10 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071c16">
+  <meta name="description" content="SHOHIN MOVIE — исследуйте мир кино.">
+  <meta name="color-scheme" content="dark">
   <title>SHOHIN MOVIE</title>
 
   <link rel="stylesheet" href="css/style.css">
@@ -11,1111 +13,539 @@
 
 <body>
 
-  <!-- SHOHIN BRAND COLORS — НЕ МЕНЯТЬ -->
+<header>
+  <div class="brand" onclick="goHome()">
+    <div class="brand-logo">S</div>
+    <div>
+      <div class="brand-name">SHOHIN</div>
+      <span class="brand-sub">MOVIE</span>
+    </div>
+  </div>
 
-  <!-- =========================
-       HEADER
-  ========================== -->
-  <header class="topbar">
+  <div class="header-actions">
+    <button class="icon-btn" aria-label="Поиск" onclick="focusSearch()">⌕</button>
+    <button class="icon-btn" aria-label="Меню" onclick="openMenu()">☰</button>
+  </div>
+</header>
 
-    <div class="brand">
-      <div class="brand-mark">SH</div>
+<main id="app">
 
-      <div class="brand-text">
-        <div class="brand-name">SHOHIN</div>
-        <div class="brand-subtitle">MOVIE</div>
-      </div>
+  <!-- ГЛАВНАЯ -->
+
+  <div id="homePage">
+
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Название фильма, сериал или актёр…"
+        autocomplete="off"
+        oninput="handleSearch(this.value)"
+      >
     </div>
 
-    <div class="top-actions">
+    <section class="hero" id="hero">
+      <div class="hero-art">🎬</div>
 
-      <button
-        id="searchButton"
-        class="icon-button"
-        type="button"
-        aria-label="Поиск">
-        <span>⌕</span>
-      </button>
+      <div class="hero-content">
+        <span class="eyebrow">МИР КИНО · SHOHIN</span>
 
-      <button
-        id="menuButton"
-        class="icon-button"
-        type="button"
-        aria-label="Меню">
-        <span class="menu-lines">
-          <i></i>
-          <i></i>
-          <i></i>
-        </span>
-      </button>
-
-    </div>
-
-  </header>
-
-
-  <!-- =========================
-       MAIN
-  ========================== -->
-  <main id="mainView">
-
-    <div class="main-container">
-
-      <!-- SEARCH -->
-      <section id="searchPanel" class="search-panel">
-
-        <div class="search-box">
-
-          <span class="search-symbol">⌕</span>
-
-          <input
-            id="searchInput"
-            type="search"
-            placeholder="Поиск фильмов и сериалов..."
-            autocomplete="off">
-
-          <button
-            id="closeSearch"
-            type="button"
-            class="search-close"
-            aria-label="Закрыть поиск">
-            ×
-          </button>
-
-        </div>
-
-      </section>
-
-
-      <!-- MOVIES / SERIES -->
-      <nav class="type-navigation">
-
-        <button
-          class="nav-button active"
-          data-type="movies"
-          type="button">
-          Фильмы
-        </button>
-
-        <button
-          class="nav-button"
-          data-type="series"
-          type="button">
-          Сериалы
-        </button>
-
-      </nav>
-
-
-      <!-- CARDS -->
-      <section
-        id="movieGrid"
-        class="movie-grid">
-      </section>
-
-
-      <!-- EMPTY -->
-      <section
-        id="emptyState"
-        class="empty-state"
-        hidden>
-
-        <div class="empty-icon">◌</div>
-
-        <h2>Ничего не найдено</h2>
+        <h1>Найдите свою<br>следующую историю</h1>
 
         <p>
-          Попробуйте изменить запрос.
+          Исследуйте фильмы, открывайте новых актёров
+          и находите истории, которые хочется запомнить.
         </p>
 
-      </section>
-
-    </div>
-
-  </main>
-
-
-  <!-- =========================
-       MENU VIEW
-  ========================== -->
-  <section
-    id="menuView"
-    class="menu-view">
-
-    <div class="menu-view-header">
-
-      <button
-        id="menuBack"
-        class="menu-back"
-        type="button">
-        ←
-      </button>
-
-      <h2 id="menuViewTitle">
-        Раздел
-      </h2>
-
-    </div>
-
-    <div
-      id="menuViewContent"
-      class="menu-view-content">
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       SIDE MENU
-  ========================== -->
-  <aside id="sideMenu">
-
-    <div class="side-menu-header">
-
-      <div class="side-menu-brand">
-        <div class="side-menu-logo">SH</div>
-
-        <div>
-          <strong>SHOHIN</strong>
-          <span>MOVIE</span>
-        </div>
-      </div>
-
-      <button
-        id="menuClose"
-        class="menu-close"
-        type="button"
-        aria-label="Закрыть">
-        ×
-      </button>
-
-    </div>
-
-
-    <nav class="side-menu-list">
-
-      <button
-        class="side-menu-item"
-        data-section="home"
-        type="button">
-        <span>Главная</span>
-        <b>›</b>
-      </button>
-
-      <button
-        class="side-menu-item"
-        data-section="movies"
-        type="button">
-        <span>Фильмы</span>
-        <b>›</b>
-      </button>
-
-      <button
-        class="side-menu-item"
-        data-section="series"
-        type="button">
-        <span>Сериалы</span>
-        <b>›</b>
-      </button>
-
-      <button
-        class="side-menu-item"
-        data-section="countries"
-        type="button">
-        <span>Страны</span>
-        <b>›</b>
-      </button>
-
-      <button
-        class="side-menu-item"
-        data-section="genres"
-        type="button">
-        <span>Жанры</span>
-        <b>›</b>
-      </button>
-
-      <button
-        class="side-menu-item"
-        data-section="years"
-        type="button">
-        <span>По годам</span>
-        <b>›</b>
-      </button>
-
-      <button
-        class="side-menu-item"
-        data-section="rating"
-        type="button">
-        <span>Рейтинг</span>
-        <b>›</b>
-      </button>
-
-      <button
-        class="side-menu-item"
-        data-section="favorites"
-        type="button">
-        <span>Избранное</span>
-        <b>›</b>
-      </button>
-
-      <button
-        class="side-menu-item"
-        data-section="recent"
-        type="button">
-        <span>Недавно открытые</span>
-        <b>›</b>
-      </button>
-
-      <button
-        class="side-menu-item"
-        data-section="about"
-        type="button">
-        <span>О SHOHIN MOVIE</span>
-        <b>›</b>
-      </button>
-
-    </nav>
-
-  </aside>
-
-
-  <!-- MENU OVERLAY -->
-  <div id="menuOverlay"></div>
-
-
-  <!-- =========================
-       MOVIE MODAL
-  ========================== -->
-  <div
-    id="movieModal"
-    class="movie-modal"
-    aria-hidden="true">
-
-    <div
-      id="modalOverlay"
-      class="modal-overlay">
-    </div>
-
-    <div class="modal-content">
-
-      <button
-        id="modalClose"
-        class="modal-close"
-        type="button"
-        aria-label="Закрыть">
-        ×
-      </button>
-
-
-      <div class="modal-body">
-
-        <div class="modal-poster-wrap">
-
-          <img
-            id="modalPoster"
-            class="modal-poster"
-            src=""
-            alt="">
-
-        </div>
-
-
-        <div class="modal-info">
-
-          <div
-            id="modalYear"
-            class="modal-year">
-          </div>
-
-          <h2
-            id="modalTitle"
-            class="modal-title">
-          </h2>
-
-
-          <div
-            id="modalRating"
-            class="modal-rating">
-          </div>
-
-
-          <!-- FAVORITE -->
-          <button
-            id="favoriteButton"
-            class="favorite-button"
-            type="button"
-            aria-label="Добавить в избранное">
-
-            <span class="favorite-icon">🔖</span>
-            <span class="favorite-text">Сохранить</span>
-
+        <div class="hero-buttons">
+          <button class="primary-btn" onclick="showCatalog('all')">
+            Исследовать кино →
           </button>
 
-
-          <div
-            id="modalCountry"
-            class="modal-country">
-          </div>
-
-          <div
-            id="modalGenres"
-            class="modal-genres">
-          </div>
-
+          <button class="secondary-btn" onclick="surpriseMe()">
+            🎲 Удиви меня
+          </button>
         </div>
-
       </div>
+    </section>
 
-
-      <div
-        id="modalDescription"
-        class="modal-description">
+    <div class="ad-slot" data-ad-slot="home-top">
+      <div>
+        <span class="ad-label">РЕКЛАМНОЕ МЕСТО</span>
+        Здесь будет рекламный блок
       </div>
-
     </div>
 
+    <section class="section">
+      <div class="section-heading">
+        <h2>Категории</h2>
+      </div>
+
+      <div class="chips">
+        <button class="chip active" onclick="showCatalog('all')">Все</button>
+        <button class="chip" onclick="showCatalog('movie')">Фильмы</button>
+        <button class="chip" onclick="showCatalog('series')">Сериалы</button>
+        <button class="chip" onclick="showCatalog('actor')">Актёры</button>
+      </div>
+    </section>
+
+    <section class="section" id="recentSection">
+      <div class="section-heading">
+        <h2>Недавно открытые</h2>
+        <button class="text-btn" onclick="showRecent()">Все →</button>
+      </div>
+
+      <div class="grid" id="recentGrid"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <h2>Выбор SHOHIN</h2>
+        <button class="text-btn" onclick="showCatalog('all')">Все →</button>
+      </div>
+
+      <div class="grid" id="featuredGrid"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <h2>Фильмы</h2>
+        <button class="text-btn" onclick="showCatalog('movie')">Все →</button>
+      </div>
+
+      <div class="grid" id="moviesGrid"></div>
+    </section>
+
+    <div class="ad-slot" data-ad-slot="home-middle">
+      <div>
+        <span class="ad-label">РЕКЛАМНОЕ МЕСТО</span>
+        Здесь будет рекламный блок
+      </div>
+    </div>
+
+    <section class="section">
+      <div class="section-heading">
+        <h2>Сериалы</h2>
+        <button class="text-btn" onclick="showCatalog('series')">Все →</button>
+      </div>
+
+      <div class="grid" id="seriesGrid"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <h2>Знакомые лица</h2>
+        <button class="text-btn" onclick="showCatalog('actor')">Все →</button>
+      </div>
+
+      <div class="grid" id="actorsGrid"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <h2>Исследуйте жанры</h2>
+      </div>
+
+      <div class="chips" id="genreChips"></div>
+    </section>
+
   </div>
 
+  <!-- КАТАЛОГ -->
 
-  <!-- =========================
-       LOADING
-  ========================== -->
-  <div
-    id="loading"
-    class="loading">
+  <section id="catalogPage" class="hidden">
+    <button class="back-btn" onclick="goHome()">← Главная</button>
 
-    <div class="loading-spinner"></div>
+    <h1 class="page-title" id="catalogTitle">Каталог</h1>
 
-    <span>Загрузка...</span>
+    <div class="chips" id="catalogTypes">
+      <button class="chip active" onclick="setCatalogType('all',this)">Все</button>
+      <button class="chip" onclick="setCatalogType('movie',this)">Фильмы</button>
+      <button class="chip" onclick="setCatalogType('series',this)">Сериалы</button>
+      <button class="chip" onclick="setCatalogType('actor',this)">Актёры</button>
+    </div>
 
-  </div>
+    <div class="form-row">
+      <label for="filterGenre">Жанр</label>
+      <select id="filterGenre" onchange="applyFilters()">
+        <option value="">Все жанры</option>
+      </select>
+    </div>
 
+    <div class="form-row">
+      <label for="filterYear">Год выпуска</label>
+      <select id="filterYear" onchange="applyFilters()">
+        <option value="">Все годы</option>
+      </select>
+    </div>
 
-  <!-- =========================
-       SCRIPTS
-  ========================== -->
-  <script src="js/cards.js"></script>
-  <script src="js/filters.js"></script>
-  <script src="js/app.js"></script>
+    <div class="form-row">
+      <label for="filterCountry">Страна</label>
+      <select id="filterCountry" onchange="applyFilters()">
+        <option value="">Все страны</option>
+      </select>
+    </div>
 
+    <div class="form-row">
+      <label for="sortOrder">Сортировка</label>
+      <select id="sortOrder" onchange="applyFilters()">
+        <option value="default">По умолчанию</option>
+        <option value="title">По названию</option>
+        <option value="year">Сначала новые</option>
+        <option value="rating">По рейтингу</option>
+      </select>
+    </div>
 
-  <!-- =========================
-       MENU SYSTEM
-  ========================== -->
-  <script>
+    <button class="secondary-btn" onclick="resetFilters()">
+      Сбросить фильтры
+    </button>
 
-    function openMenu() {
+    <p class="muted small" id="resultsCount"></p>
 
-      const sideMenu = document.getElementById("sideMenu");
-      const menuOverlay = document.getElementById("menuOverlay");
+    <div class="grid" id="catalogGrid"></div>
 
-      if (sideMenu) {
-        sideMenu.classList.add("show");
-      }
+    <button
+      class="primary-btn hidden"
+      id="loadMoreBtn"
+      onclick="loadMore()"
+    >
+      Показать ещё
+    </button>
+  </section>
 
-      if (menuOverlay) {
-        menuOverlay.classList.add("show");
-      }
+  <!-- ИЗБРАННОЕ -->
 
-      document.body.classList.add("menu-open");
-    }
+  <section id="favoritesPage" class="hidden">
+    <button class="back-btn" onclick="goHome()">← Главная</button>
 
+    <h1 class="page-title">Избранное</h1>
 
-    function closeMenu() {
+    <div class="chips">
+      <button class="chip active" onclick="showFavorites('all',this)">Все</button>
+      <button class="chip" onclick="showFavorites('movie',this)">Фильмы</button>
+      <button class="chip" onclick="showFavorites('series',this)">Сериалы</button>
+      <button class="chip" onclick="showFavorites('actor',this)">Актёры</button>
+    </div>
 
-      const sideMenu = document.getElementById("sideMenu");
-      const menuOverlay = document.getElementById("menuOverlay");
+    <div class="grid" id="favoritesGrid"></div>
+  </section>
 
-      if (sideMenu) {
-        sideMenu.classList.remove("show");
-      }
+  <!-- ИСТОРИЯ -->
 
-      if (menuOverlay) {
-        menuOverlay.classList.remove("show");
-      }
+  <section id="historyPage" class="hidden">
+    <button class="back-btn" onclick="goHome()">← Главная</button>
 
-      document.body.classList.remove("menu-open");
-    }
+    <div class="section-heading">
+      <h1 class="page-title">История</h1>
+      <button class="text-btn" onclick="clearHistory()">Очистить</button>
+    </div>
 
+    <p class="muted small">Недавно открытые страницы каталога.</p>
 
-    function showMain() {
+    <div class="grid" id="historyGrid"></div>
+  </section>
 
-      const mainView = document.getElementById("mainView");
-      const menuView = document.getElementById("menuView");
+  <!-- ПОИСК -->
 
-      if (mainView) {
-        mainView.style.display = "";
-      }
+  <section id="searchPage" class="hidden">
+    <button class="back-btn" onclick="goHome()">← Главная</button>
 
-      if (menuView) {
-        menuView.classList.remove("show");
-      }
+    <h1 class="page-title">Поиск</h1>
 
-    }
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
 
+      <input
+        id="pageSearchInput"
+        type="search"
+        placeholder="Введите название или имя…"
+        oninput="renderSearchResults(this.value)"
+      >
+    </div>
 
-    function showMenuView(title) {
+    <div class="grid" id="searchResultsGrid"></div>
+  </section>
 
-      const mainView = document.getElementById("mainView");
-      const menuView = document.getElementById("menuView");
-      const titleElement = document.getElementById("menuViewTitle");
+  <!-- ПОДРОБНАЯ СТРАНИЦА -->
 
-      if (mainView) {
-        mainView.style.display = "none";
-      }
+  <section id="detailPage" class="hidden">
+    <button class="back-btn" onclick="goBack()">← Назад</button>
 
-      if (menuView) {
-        menuView.classList.add("show");
-      }
+    <div class="detail-top">
+      <div class="detail-poster" id="detailPoster">🎬</div>
 
-      if (titleElement) {
-        titleElement.textContent = title || "Раздел";
-      }
+      <div class="detail-info">
+        <span class="eyebrow" id="detailType">ФИЛЬМ</span>
 
-    }
+        <h1 id="detailTitle"></h1>
 
+        <div class="info-line" id="detailMeta"></div>
+        <div class="info-line" id="detailCountry"></div>
+        <div class="info-line" id="detailGenres"></div>
 
-    function escapeHTMLMenu(value) {
+        <div class="detail-actions">
+          <button
+            class="primary-btn"
+            id="watchButton"
+            onclick="handleWatchButton()"
+          >
+            ▶ Смотреть фильм
+          </button>
 
-      return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+          <button
+            class="secondary-btn"
+            id="detailFavorite"
+            onclick="toggleCurrentFavorite()"
+          >
+            ♡ В избранное
+          </button>
 
-    }
-
-
-    function getMenuItems() {
-
-      if (
-        typeof SHOHIN_MOVIE !== "undefined" &&
-        Array.isArray(SHOHIN_MOVIE.currentItems)
-      ) {
-        return SHOHIN_MOVIE.currentItems;
-      }
-
-      return [];
-
-    }
-
-
-    function renderSimpleList(items, emptyText) {
-
-      const content =
-        document.getElementById("menuViewContent");
-
-      if (!content) return;
-
-      if (!items || !items.length) {
-
-        content.innerHTML = `
-          <div class="menu-empty">
-            ${escapeHTMLMenu(emptyText || "Пока здесь ничего нет.")}
-          </div>
-        `;
-
-        return;
-      }
-
-
-      content.innerHTML = `
-        <div class="menu-list">
-
-          ${items.map(item => `
-            <button
-              class="menu-list-item"
-              type="button"
-              data-value="${escapeHTMLMenu(item)}">
-
-              <span>${escapeHTMLMenu(item)}</span>
-
-              <b>›</b>
-
-            </button>
-          `).join("")}
-
+          <button class="secondary-btn" onclick="shareCurrent()">
+            ↗ Поделиться
+          </button>
         </div>
-      `;
+      </div>
+    </div>
+
+    <section class="section">
+      <h2>О фильме</h2>
+      <p class="detail-description" id="detailDescription"></p>
+    </section>
+
+    <section class="section" id="detailExtraSection">
+      <h2>Дополнительная информация</h2>
+      <div class="info-line" id="detailDirector"></div>
+      <div class="info-line" id="detailRuntime"></div>
+      <div class="info-line" id="detailLanguage"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <h2>Актёры</h2>
+      </div>
+
+      <div class="cast-grid" id="detailCast"></div>
+    </section>
+
+    <div class="ad-slot" data-ad-slot="detail-bottom">
+      <div>
+        <span class="ad-label">РЕКЛАМНОЕ МЕСТО</span>
+        Здесь будет рекламный блок
+      </div>
+    </div>
+
+    <section class="section">
+      <div class="section-heading">
+        <h2>Похожие фильмы</h2>
+      </div>
+
+      <div class="grid" id="similarGrid"></div>
+    </section>
+  </section>
+
+  <!-- СТРАНИЦА АКТЁРА -->
+
+  <section id="actorPage" class="hidden">
+    <button class="back-btn" onclick="goBack()">← Назад</button>
+
+    <div class="actor-profile">
+      <div class="actor-big-avatar" id="actorBigAvatar">👤</div>
+      <h1 id="actorName"></h1>
+      <p class="muted" id="actorMeta"></p>
+    </div>
+
+    <section class="section">
+      <h2>Биография</h2>
+      <p class="detail-description" id="actorBiography"></p>
+    </section>
+
+    <section class="section">
+      <h2>Фильмография</h2>
+      <div class="grid" id="actorFilmography"></div>
+    </section>
+
+    <div class="ad-slot" data-ad-slot="actor-bottom">
+      <div>
+        <span class="ad-label">РЕКЛАМНОЕ МЕСТО</span>
+        Здесь будет рекламный блок
+      </div>
+    </div>
+  </section>
+
+  <!-- НАСТРОЙКИ -->
+
+  <section id="settingsPage" class="hidden">
+    <button class="back-btn" onclick="goHome()">← Главная</button>
+
+    <h1 class="page-title">Настройки</h1>
+
+    <div class="form-row">
+      <label for="cardSize">Размер карточек</label>
+
+      <select id="cardSize" onchange="setCardSize(this.value)">
+        <option value="normal">Обычный</option>
+        <option value="large">Крупный</option>
+        <option value="compact">Компактный</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>
+        <input
+          type="checkbox"
+          id="saveHistory"
+          checked
+          onchange="setHistoryEnabled(this.checked)"
+        >
+        Сохранять историю
+      </label>
+    </div>
+
+    <button class="secondary-btn" onclick="resetAppSettings()">
+      Сбросить настройки
+    </button>
+  </section>
 
+  <!-- О ПРИЛОЖЕНИИ -->
 
-      content
-        .querySelectorAll(".menu-list-item")
-        .forEach(button => {
+  <section id="aboutPage" class="hidden">
+    <button class="back-btn" onclick="goHome()">← Главная</button>
 
-          button.addEventListener("click", () => {
+    <h1 class="page-title">О SHOHIN MOVIE</h1>
 
-            const value = button.dataset.value;
+    <div class="actor-profile">
+      <div
+        class="brand-logo"
+        style="margin:auto;width:60px;height:60px;font-size:25px"
+      >
+        S
+      </div>
 
-            showMain();
+      <h2>SHOHIN MOVIE</h2>
 
-            setTimeout(() => {
+      <p class="muted">Мир кино — в одном месте.</p>
 
-              const input =
-                document.getElementById("searchInput");
+      <p class="detail-description">
+        Международный каталог фильмов, сериалов и актёров.
+        Проект предназначен для поиска и изучения информации
+        о кино.
+      </p>
 
-              if (input) {
+      <p class="muted small">Версия 1.0 · Демонстрационная версия</p>
+    </div>
+  </section>
 
-                input.value = value;
+  <footer>
+    SHOHIN MOVIE<br>
+    Исследуйте мир кино<br>
+    © <span id="footerYear"></span> SHOHIN
+  </footer>
 
-                input.dispatchEvent(
-                  new Event("input")
-                );
+</main>
 
-              }
+<!-- НИЖНЯЯ НАВИГАЦИЯ -->
 
-            }, 50);
+<nav class="bottom-nav">
+  <button class="nav-btn active" data-nav="home" onclick="goHome()">
+    <span>⌂</span>
+    <span>Главная</span>
+  </button>
 
-          });
+  <button class="nav-btn" data-nav="search" onclick="openSearch()">
+    <span>⌕</span>
+    <span>Поиск</span>
+  </button>
 
-        });
+  <button class="nav-btn" data-nav="catalog" onclick="showCatalog('all')">
+    <span>▤</span>
+    <span>Каталог</span>
+  </button>
 
-    }
+  <button class="nav-btn" data-nav="favorites" onclick="openFavorites()">
+    <span>♡</span>
+    <span>Избранное</span>
+  </button>
 
+  <button class="nav-btn" data-nav="menu" onclick="openMenu()">
+    <span>☰</span>
+    <span>Меню</span>
+  </button>
+</nav>
 
-    function openSection(section) {
+<!-- БОКОВОЕ МЕНЮ -->
 
-      closeMenu();
+<div id="menuOverlay" class="overlay hidden" onclick="closeMenu(event)">
+  <aside class="drawer" onclick="event.stopPropagation()">
 
-      const content =
-        document.getElementById("menuViewContent");
+    <div class="drawer-top">
+      <div class="brand" onclick="goHome();closeMenu()">
+        <div class="brand-logo">S</div>
 
-      if (!content) return;
+        <div>
+          <div class="brand-name">SHOHIN</div>
+          <span class="brand-sub">MOVIE</span>
+        </div>
+      </div>
 
+      <button class="icon-btn" onclick="closeMenu()">✕</button>
+    </div>
 
-      /* =========================
-         HOME
-      ========================== */
+    <div class="drawer-title">НАВИГАЦИЯ</div>
 
-      if (section === "home") {
+    <button class="menu-item" onclick="goHome();closeMenu()">
+      <span>⌂</span> Главная
+    </button>
 
-        showMain();
+    <button class="menu-item" onclick="showCatalog('movie');closeMenu()">
+      <span>🎬</span> Фильмы
+    </button>
 
-        return;
+    <button class="menu-item" onclick="showCatalog('series');closeMenu()">
+      <span>▣</span> Сериалы
+    </button>
 
-      }
+    <button class="menu-item" onclick="showCatalog('actor');closeMenu()">
+      <span>👤</span> Актёры
+    </button>
 
+    <button class="menu-item" onclick="showCatalog('all');closeMenu()">
+      <span>▤</span> Весь каталог
+    </button>
 
-      /* =========================
-         MOVIES
-      ========================== */
+    <div class="drawer-title">МОЯ КОЛЛЕКЦИЯ</div>
 
-      if (section === "movies") {
+    <button class="menu-item" onclick="openFavorites();closeMenu()">
+      <span>♡</span> Избранное
+    </button>
 
-        showMain();
+    <button class="menu-item" onclick="showRecent();closeMenu()">
+      <span>◷</span> История
+    </button>
 
-        const button =
-          document.querySelector(
-            '.nav-button[data-type="movies"]'
-          );
+    <button class="menu-item" onclick="surpriseMe();closeMenu()">
+      <span>🎲</span> Удиви меня
+    </button>
 
-        if (button) {
-          button.click();
-        }
+    <div class="drawer-title">ПРИЛОЖЕНИЕ</div>
 
-        return;
+    <button class="menu-item" onclick="openSettings();closeMenu()">
+      <span>⚙</span> Настройки
+    </button>
 
-      }
+    <button class="menu-item" onclick="openAbout();closeMenu()">
+      <span>ⓘ</span> О приложении
+    </button>
 
+  </aside>
+</div>
 
-      /* =========================
-         SERIES
-      ========================== */
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
-      if (section === "series") {
+<!-- JavaScript подключим отдельными файлами -->
 
-        showMain();
-
-        const button =
-          document.querySelector(
-            '.nav-button[data-type="series"]'
-          );
-
-        if (button) {
-          button.click();
-        }
-
-        return;
-
-      }
-
-
-      /* =========================
-         COUNTRIES
-      ========================== */
-
-      if (section === "countries") {
-
-        showMenuView("Страны");
-
-        let countries = [];
-
-        if (
-          typeof getAllCountries === "function"
-        ) {
-          countries = getAllCountries();
-        }
-
-        renderSimpleList(
-          countries,
-          "Страны пока не загружены."
-        );
-
-        return;
-
-      }
-
-
-      /* =========================
-         GENRES
-      ========================== */
-
-      if (section === "genres") {
-
-        showMenuView("Жанры");
-
-        let genres = [];
-
-        if (
-          typeof getAllGenres === "function"
-        ) {
-          genres = getAllGenres();
-        }
-
-        renderSimpleList(
-          genres,
-          "Жанры пока не загружены."
-        );
-
-        return;
-
-      }
-
-
-      /* =========================
-         YEARS
-      ========================== */
-
-      if (section === "years") {
-
-        showMenuView("По годам");
-
-        const items = getMenuItems();
-
-        const years =
-          typeof getAvailableYears === "function"
-            ? getAvailableYears(items)
-            : [];
-
-        renderSimpleList(
-          years,
-          "Годы пока не загружены."
-        );
-
-        return;
-
-      }
-
-
-      /* =========================
-         RATING
-      ========================== */
-
-      if (section === "rating") {
-
-        showMenuView("Рейтинг");
-
-        const items =
-          typeof sortByRating === "function"
-            ? sortByRating(getMenuItems()).slice(0, 10)
-            : [];
-
-        if (!items.length) {
-
-          content.innerHTML = `
-            <div class="menu-empty">
-              Рейтинг пока пуст.
-            </div>
-          `;
-
-          return;
-
-        }
-
-
-        content.innerHTML = `
-          <div class="menu-ranking">
-
-            ${items.map((item, index) => `
-
-              <button
-                class="ranking-item"
-                type="button"
-                data-id="${escapeHTMLMenu(item.id)}">
-
-                <span class="ranking-number">
-                  ${index + 1}
-                </span>
-
-                <span class="ranking-title">
-                  ${escapeHTMLMenu(item.title)}
-                </span>
-
-                <strong>
-                  ${Number(item.rating || 0).toFixed(1)}
-                </strong>
-
-              </button>
-
-            `).join("")}
-
-          </div>
-        `;
-
-
-        content
-          .querySelectorAll(".ranking-item")
-          .forEach(button => {
-
-            button.addEventListener("click", () => {
-
-              const id = button.dataset.id;
-
-              const item =
-                getMenuItems().find(
-                  movie => String(movie.id) === String(id)
-                );
-
-              if (item && typeof openMovieModal === "function") {
-
-                openMovieModal(item);
-
-              }
-
-            });
-
-          });
-
-        return;
-
-      }
-
-
-      /* =========================
-         FAVORITES
-      ========================== */
-
-      if (section === "favorites") {
-
-        showMenuView("Избранное");
-
-        const favorites =
-          typeof getFavorites === "function"
-            ? getFavorites()
-            : [];
-
-
-        if (!favorites.length) {
-
-          content.innerHTML = `
-            <div class="menu-empty">
-
-              <div class="menu-empty-icon">
-                🔖
-              </div>
-
-              <h3>
-                Избранное пусто
-              </h3>
-
-              <p>
-                Откройте фильм и нажмите
-                «Сохранить», чтобы добавить его сюда.
-              </p>
-
-            </div>
-          `;
-
-          return;
-
-        }
-
-
-        content.innerHTML = `
-          <div
-            id="favoritesGrid"
-            class="movie-grid favorites-grid">
-          </div>
-        `;
-
-
-        const grid =
-          document.getElementById("favoritesGrid");
-
-        if (!grid) return;
-
-
-        favorites.forEach(item => {
-
-          if (
-            typeof createMovieCard === "function"
-          ) {
-
-            const card =
-              createMovieCard(item);
-
-            if (card) {
-              grid.appendChild(card);
-            }
-
-          }
-
-        });
-
-        return;
-
-      }
-
-
-      /* =========================
-         RECENT
-      ========================== */
-
-      if (section === "recent") {
-
-        showMenuView("Недавно открытые");
-
-        let recent = [];
-
-        try {
-
-          recent =
-            JSON.parse(
-              localStorage.getItem(
-                "SHOHIN_MOVIE_RECENT"
-              ) || "[]"
-            );
-
-        } catch (error) {
-
-          recent = [];
-
-        }
-
-
-        recent = recent.slice(0, 10);
-
-
-        if (!recent.length) {
-
-          content.innerHTML = `
-            <div class="menu-empty">
-
-              <div class="menu-empty-icon">
-                ◷
-              </div>
-
-              <h3>
-                История пуста
-              </h3>
-
-              <p>
-                Здесь появятся фильмы и сериалы,
-                которые вы открывали.
-              </p>
-
-            </div>
-          `;
-
-          return;
-
-        }
-
-
-        content.innerHTML = `
-          <div
-            id="recentGrid"
-            class="movie-grid">
-          </div>
-        `;
-
-
-        const grid =
-          document.getElementById("recentGrid");
-
-        recent.forEach(item => {
-
-          if (
-            typeof createMovieCard === "function"
-          ) {
-
-            const card =
-              createMovieCard(item);
-
-            if (card) {
-              grid.appendChild(card);
-            }
-
-          }
-
-        });
-
-        return;
-
-      }
-
-
-      /* =========================
-         ABOUT
-      ========================== */
-
-      if (section === "about") {
-
-        showMenuView("О SHOHIN MOVIE");
-
-        content.innerHTML = `
-
-          <div class="about-content">
-
-            <div class="about-logo">
-              SH
-            </div>
-
-            <h3>
-              SHOHIN MOVIE
-            </h3>
-
-            <p>
-              Каталог фильмов и сериалов
-              от SHOHIN.
-            </p>
-
-            <p>
-              Здесь собрана информация о
-              фильмах и сериалах: названия,
-              годы, страны, жанры, рейтинги
-              и описания.
-            </p>
-
-            <p>
-              Проект развивается постепенно,
-              чтобы сделать удобный и быстрый
-              каталог для пользователей.
-            </p>
-
-            <div class="about-tagline">
-              SHOHIN MOVIE
-            </div>
-
-          </div>
-
-        `;
-
-        return;
-
-      }
-
-    }
-
-
-    /* =========================
-       MENU EVENTS
-    ========================== */
-
-    document.addEventListener(
-      "DOMContentLoaded",
-      () => {
-
-        const menuButton =
-          document.getElementById("menuButton");
-
-        const menuClose =
-          document.getElementById("menuClose");
-
-        const menuOverlay =
-          document.getElementById("menuOverlay");
-
-        const menuBack =
-          document.getElementById("menuBack");
-
-
-        if (menuButton) {
-
-          menuButton.addEventListener(
-            "click",
-            openMenu
-          );
-
-        }
-
-
-        if (menuClose) {
-
-          menuClose.addEventListener(
-            "click",
-            closeMenu
-          );
-
-        }
-
-
-        if (menuOverlay) {
-
-          menuOverlay.addEventListener(
-            "click",
-            closeMenu
-          );
-
-        }
-
-
-        if (menuBack) {
-
-          menuBack.addEventListener(
-            "click",
-            showMain
-          );
-
-        }
-
-
-        document
-          .querySelectorAll(".side-menu-item")
-          .forEach(button => {
-
-            button.addEventListener(
-              "click",
-              () => {
-
-                const section =
-                  button.dataset.section;
-
-                openSection(section);
-
-              }
-            );
-
-          });
-
-
-        document.addEventListener(
-          "keydown",
-          event => {
-
-            if (event.key === "Escape") {
-
-              closeMenu();
-
-            }
-
-          }
-        );
-
-      }
-    );
-
-  </script>
+<script src="js/cards.js" defer></script>
+<script src="js/app.js" defer></script>
 
 </body>
 </html>
