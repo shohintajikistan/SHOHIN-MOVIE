@@ -4,548 +4,423 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#071c16">
-  <meta name="description" content="SHOHIN MOVIE — исследуйте мир кино.">
-  <meta name="color-scheme" content="dark">
+  <meta name="description" content="SHOHIN MOVIE — каталог фильмов, сериалов и актёров.">
+
   <title>SHOHIN MOVIE</title>
 
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 
 <body>
+  <div id="app">
+    <header class="topbar">
+      <a href="#home" class="brand" aria-label="SHOHIN MOVIE — главная">
+        <img src="assets/logo/logo.svg" alt="" class="brand-logo">
+        <span class="brand-name">SHOHIN <span>MOVIE</span></span>
+      </a>
 
-<header>
-  <div class="brand" onclick="goHome()">
-    <div class="brand-logo">S</div>
-    <div>
-      <div class="brand-name">SHOHIN</div>
-      <span class="brand-sub">MOVIE</span>
-    </div>
-  </div>
-
-  <div class="header-actions">
-    <button class="icon-btn" aria-label="Поиск" onclick="focusSearch()">⌕</button>
-    <button class="icon-btn" aria-label="Меню" onclick="openMenu()">☰</button>
-  </div>
-</header>
-
-<main id="app">
-
-  <!-- ГЛАВНАЯ -->
-
-  <div id="homePage">
-
-    <div class="search-wrap">
-      <span class="search-icon">⌕</span>
-      <input
-        id="searchInput"
-        type="search"
-        placeholder="Название фильма, сериал или актёр…"
-        autocomplete="off"
-        oninput="handleSearch(this.value)"
+      <button
+        id="menuButton"
+        class="icon-button"
+        type="button"
+        aria-label="Открыть меню"
+        aria-expanded="false"
       >
-    </div>
-
-    <section class="hero" id="hero">
-      <div class="hero-art">🎬</div>
-
-      <div class="hero-content">
-        <span class="eyebrow">МИР КИНО · SHOHIN</span>
-
-        <h1>Найдите свою<br>следующую историю</h1>
-
-        <p>
-          Исследуйте фильмы, открывайте новых актёров
-          и находите истории, которые хочется запомнить.
-        </p>
-
-        <div class="hero-buttons">
-          <button class="primary-btn" onclick="showCatalog('all')">
-            Исследовать кино →
-          </button>
-
-          <button class="secondary-btn" onclick="surpriseMe()">
-            🎲 Удиви меня
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <div class="ad-slot" data-ad-slot="home-top">
-      <div>
-        <span class="ad-label">РЕКЛАМНОЕ МЕСТО</span>
-        Здесь будет рекламный блок
-      </div>
-    </div>
-
-    <section class="section">
-      <div class="section-heading">
-        <h2>Категории</h2>
-      </div>
-
-      <div class="chips">
-        <button class="chip active" onclick="showCatalog('all')">Все</button>
-        <button class="chip" onclick="showCatalog('movie')">Фильмы</button>
-        <button class="chip" onclick="showCatalog('series')">Сериалы</button>
-        <button class="chip" onclick="showCatalog('actor')">Актёры</button>
-      </div>
-    </section>
-
-    <section class="section" id="recentSection">
-      <div class="section-heading">
-        <h2>Недавно открытые</h2>
-        <button class="text-btn" onclick="showRecent()">Все →</button>
-      </div>
-
-      <div class="grid" id="recentGrid"></div>
-    </section>
-
-    <section class="section">
-      <div class="section-heading">
-        <h2>Выбор SHOHIN</h2>
-        <button class="text-btn" onclick="showCatalog('all')">Все →</button>
-      </div>
-
-      <div class="grid" id="featuredGrid"></div>
-    </section>
-
-    <section class="section">
-      <div class="section-heading">
-        <h2>Фильмы</h2>
-        <button class="text-btn" onclick="showCatalog('movie')">Все →</button>
-      </div>
-
-      <div class="grid" id="moviesGrid"></div>
-    </section>
-
-    <div class="ad-slot" data-ad-slot="home-middle">
-      <div>
-        <span class="ad-label">РЕКЛАМНОЕ МЕСТО</span>
-        Здесь будет рекламный блок
-      </div>
-    </div>
-
-    <section class="section">
-      <div class="section-heading">
-        <h2>Сериалы</h2>
-        <button class="text-btn" onclick="showCatalog('series')">Все →</button>
-      </div>
-
-      <div class="grid" id="seriesGrid"></div>
-    </section>
-
-    <section class="section">
-      <div class="section-heading">
-        <h2>Знакомые лица</h2>
-        <button class="text-btn" onclick="showCatalog('actor')">Все →</button>
-      </div>
-
-      <div class="grid" id="actorsGrid"></div>
-    </section>
-
-    <section class="section">
-      <div class="section-heading">
-        <h2>Исследуйте жанры</h2>
-      </div>
-
-      <div class="chips" id="genreChips"></div>
-    </section>
-
-  </div>
-
-  <!-- КАТАЛОГ -->
-
-  <section id="catalogPage" class="hidden">
-    <button class="back-btn" onclick="goHome()">← Главная</button>
-
-    <h1 class="page-title" id="catalogTitle">Каталог</h1>
-
-    <div class="chips" id="catalogTypes">
-      <button class="chip active" onclick="setCatalogType('all',this)">Все</button>
-      <button class="chip" onclick="setCatalogType('movie',this)">Фильмы</button>
-      <button class="chip" onclick="setCatalogType('series',this)">Сериалы</button>
-      <button class="chip" onclick="setCatalogType('actor',this)">Актёры</button>
-    </div>
-
-    <div class="form-row">
-      <label for="filterGenre">Жанр</label>
-      <select id="filterGenre" onchange="applyFilters()">
-        <option value="">Все жанры</option>
-      </select>
-    </div>
-
-    <div class="form-row">
-      <label for="filterYear">Год выпуска</label>
-      <select id="filterYear" onchange="applyFilters()">
-        <option value="">Все годы</option>
-      </select>
-    </div>
-
-    <div class="form-row">
-      <label for="filterCountry">Страна</label>
-      <select id="filterCountry" onchange="applyFilters()">
-        <option value="">Все страны</option>
-      </select>
-    </div>
-
-    <div class="form-row">
-      <label for="sortOrder">Сортировка</label>
-      <select id="sortOrder" onchange="applyFilters()">
-        <option value="default">По умолчанию</option>
-        <option value="title">По названию</option>
-        <option value="year">Сначала новые</option>
-        <option value="rating">По рейтингу</option>
-      </select>
-    </div>
-
-    <button class="secondary-btn" onclick="resetFilters()">
-      Сбросить фильтры
-    </button>
-
-    <p class="muted small" id="resultsCount"></p>
-
-    <div class="grid" id="catalogGrid"></div>
-
-    <button
-      class="primary-btn hidden"
-      id="loadMoreBtn"
-      onclick="loadMore()"
-    >
-      Показать ещё
-    </button>
-  </section>
-
-  <!-- ИЗБРАННОЕ -->
-
-  <section id="favoritesPage" class="hidden">
-    <button class="back-btn" onclick="goHome()">← Главная</button>
-
-    <h1 class="page-title">Избранное</h1>
-
-    <div class="chips">
-      <button class="chip active" onclick="showFavorites('all',this)">Все</button>
-      <button class="chip" onclick="showFavorites('movie',this)">Фильмы</button>
-      <button class="chip" onclick="showFavorites('series',this)">Сериалы</button>
-      <button class="chip" onclick="showFavorites('actor',this)">Актёры</button>
-    </div>
-
-    <div class="grid" id="favoritesGrid"></div>
-  </section>
-
-  <!-- ИСТОРИЯ -->
-
-  <section id="historyPage" class="hidden">
-    <button class="back-btn" onclick="goHome()">← Главная</button>
-
-    <div class="section-heading">
-      <h1 class="page-title">История</h1>
-      <button class="text-btn" onclick="clearHistory()">Очистить</button>
-    </div>
-
-    <p class="muted small">Недавно открытые страницы каталога.</p>
-
-    <div class="grid" id="historyGrid"></div>
-  </section>
-
-  <!-- ПОИСК -->
-
-  <section id="searchPage" class="hidden">
-    <button class="back-btn" onclick="goHome()">← Главная</button>
-
-    <h1 class="page-title">Поиск</h1>
-
-    <div class="search-wrap">
-      <span class="search-icon">⌕</span>
-
-      <input
-        id="pageSearchInput"
-        type="search"
-        placeholder="Введите название или имя…"
-        oninput="renderSearchResults(this.value)"
-      >
-    </div>
-
-    <div class="grid" id="searchResultsGrid"></div>
-  </section>
-
-  <!-- ПОДРОБНАЯ СТРАНИЦА -->
-
-  <section id="detailPage" class="hidden">
-    <button class="back-btn" onclick="goBack()">← Назад</button>
-
-    <div class="detail-top">
-      <div class="detail-poster" id="detailPoster">🎬</div>
-
-      <div class="detail-info">
-        <span class="eyebrow" id="detailType">ФИЛЬМ</span>
-
-        <h1 id="detailTitle"></h1>
-
-        <div class="info-line" id="detailMeta"></div>
-        <div class="info-line" id="detailCountry"></div>
-        <div class="info-line" id="detailGenres"></div>
-
-        <div class="detail-actions">
-          <button
-            class="primary-btn"
-            id="watchButton"
-            onclick="handleWatchButton()"
-          >
-            ▶ Смотреть фильм
-          </button>
-
-          <button
-            class="secondary-btn"
-            id="detailFavorite"
-            onclick="toggleCurrentFavorite()"
-          >
-            ♡ В избранное
-          </button>
-
-          <button class="secondary-btn" onclick="shareCurrent()">
-            ↗ Поделиться
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <section class="section">
-      <h2>О фильме</h2>
-      <p class="detail-description" id="detailDescription"></p>
-    </section>
-
-    <section class="section" id="detailExtraSection">
-      <h2>Дополнительная информация</h2>
-      <div class="info-line" id="detailDirector"></div>
-      <div class="info-line" id="detailRuntime"></div>
-      <div class="info-line" id="detailLanguage"></div>
-    </section>
-
-    <section class="section">
-      <div class="section-heading">
-        <h2>Актёры</h2>
-      </div>
-
-      <div class="cast-grid" id="detailCast"></div>
-    </section>
-
-    <div class="ad-slot" data-ad-slot="detail-bottom">
-      <div>
-        <span class="ad-label">РЕКЛАМНОЕ МЕСТО</span>
-        Здесь будет рекламный блок
-      </div>
-    </div>
-
-    <section class="section">
-      <div class="section-heading">
-        <h2>Похожие фильмы</h2>
-      </div>
-
-      <div class="grid" id="similarGrid"></div>
-    </section>
-  </section>
-
-  <!-- СТРАНИЦА АКТЁРА -->
-
-  <section id="actorPage" class="hidden">
-    <button class="back-btn" onclick="goBack()">← Назад</button>
-
-    <div class="actor-profile">
-      <div class="actor-big-avatar" id="actorBigAvatar">👤</div>
-      <h1 id="actorName"></h1>
-      <p class="muted" id="actorMeta"></p>
-    </div>
-
-    <section class="section">
-      <h2>Биография</h2>
-      <p class="detail-description" id="actorBiography"></p>
-    </section>
-
-    <section class="section">
-      <h2>Фильмография</h2>
-      <div class="grid" id="actorFilmography"></div>
-    </section>
-
-    <div class="ad-slot" data-ad-slot="actor-bottom">
-      <div>
-        <span class="ad-label">РЕКЛАМНОЕ МЕСТО</span>
-        Здесь будет рекламный блок
-      </div>
-    </div>
-  </section>
-
-  <!-- НАСТРОЙКИ -->
-
-  <section id="settingsPage" class="hidden">
-    <button class="back-btn" onclick="goHome()">← Главная</button>
-
-    <h1 class="page-title">Настройки</h1>
-
-    <div class="form-row">
-      <label for="cardSize">Размер карточек</label>
-
-      <select id="cardSize" onchange="setCardSize(this.value)">
-        <option value="normal">Обычный</option>
-        <option value="large">Крупный</option>
-        <option value="compact">Компактный</option>
-      </select>
-    </div>
-
-    <div class="form-row">
-      <label>
-        <input
-          type="checkbox"
-          id="saveHistory"
-          checked
-          onchange="setHistoryEnabled(this.checked)"
-        >
-        Сохранять историю
-      </label>
-    </div>
-
-    <button class="secondary-btn" onclick="resetAppSettings()">
-      Сбросить настройки
-    </button>
-  </section>
-
-  <!-- О ПРИЛОЖЕНИИ -->
-
-  <section id="aboutPage" class="hidden">
-    <button class="back-btn" onclick="goHome()">← Главная</button>
-
-    <h1 class="page-title">О SHOHIN MOVIE</h1>
-
-    <div class="actor-profile">
-      <div
-        class="brand-logo"
-        style="margin:auto;width:60px;height:60px;font-size:25px"
-      >
-        S
-      </div>
-
-      <h2>SHOHIN MOVIE</h2>
-
-      <p class="muted">Мир кино — в одном месте.</p>
-
-      <p class="detail-description">
-        Международный каталог фильмов, сериалов и актёров.
-        Проект предназначен для поиска и изучения информации
-        о кино.
-      </p>
-
-      <p class="muted small">Версия 1.0 · Демонстрационная версия</p>
-    </div>
-  </section>
-
-  <footer>
-    SHOHIN MOVIE<br>
-    Исследуйте мир кино<br>
-    © <span id="footerYear"></span> SHOHIN
-  </footer>
-
-</main>
-
-<!-- НИЖНЯЯ НАВИГАЦИЯ -->
-
-<nav class="bottom-nav">
-  <button class="nav-btn active" data-nav="home" onclick="goHome()">
-    <span>⌂</span>
-    <span>Главная</span>
-  </button>
-
-  <button class="nav-btn" data-nav="search" onclick="openSearch()">
-    <span>⌕</span>
-    <span>Поиск</span>
-  </button>
-
-  <button class="nav-btn" data-nav="catalog" onclick="showCatalog('all')">
-    <span>▤</span>
-    <span>Каталог</span>
-  </button>
-
-  <button class="nav-btn" data-nav="favorites" onclick="openFavorites()">
-    <span>♡</span>
-    <span>Избранное</span>
-  </button>
-
-  <button class="nav-btn" data-nav="menu" onclick="openMenu()">
-    <span>☰</span>
-    <span>Меню</span>
-  </button>
-</nav>
-
-<!-- БОКОВОЕ МЕНЮ -->
-
-<div id="menuOverlay" class="overlay hidden" onclick="closeMenu(event)">
-  <aside class="drawer" onclick="event.stopPropagation()">
-
-    <div class="drawer-top">
-      <div class="brand" onclick="goHome();closeMenu()">
-        <div class="brand-logo">S</div>
-
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg>
+      </button>
+    </header>
+
+    <aside id="sideMenu" class="side-menu" aria-hidden="true">
+      <div class="menu-header">
         <div>
-          <div class="brand-name">SHOHIN</div>
-          <span class="brand-sub">MOVIE</span>
+          <span class="menu-eyebrow">SHOHIN</span>
+          <h2>Меню</h2>
         </div>
+
+        <button
+          id="closeMenuButton"
+          class="icon-button"
+          type="button"
+          aria-label="Закрыть меню"
+        >×</button>
       </div>
 
-      <button class="icon-btn" onclick="closeMenu()">✕</button>
+      <nav class="menu-navigation">
+        <a href="#home" data-page="home">Главная</a>
+        <a href="#movies" data-page="movies">Фильмы</a>
+        <a href="#series" data-page="series">Сериалы</a>
+        <a href="#actors" data-page="actors">Актёры</a>
+        <a href="#countries" data-page="countries">Страны</a>
+        <a href="#genres" data-page="genres">Жанры</a>
+        <a href="#years" data-page="years">Годы выпуска</a>
+        <a href="#favorites" data-page="favorites">Избранное</a>
+        <a href="#history" data-page="history">Недавно открытые</a>
+        <a href="#settings" data-page="settings">Настройки</a>
+        <a href="#about" data-page="about">О SHOHIN MOVIE</a>
+      </nav>
+
+      <div class="menu-footer">
+        <span>SHOHIN MOVIE</span>
+        <span>Твой мир кино</span>
+      </div>
+    </aside>
+
+    <div id="menuOverlay" class="menu-overlay"></div>
+
+    <main id="mainContent">
+      <section id="homePage" class="page active" data-page-content="home">
+        <section class="hero">
+          <div class="hero-content">
+            <span class="eyebrow">МИР КИНО В ОДНОМ МЕСТЕ</span>
+
+            <h1>Найди свою<br><span>историю.</span></h1>
+
+            <p>
+              Исследуй фильмы, сериалы и актёров.
+              Открывай новое и сохраняй любимое.
+            </p>
+          </div>
+
+          <div class="hero-decoration" aria-hidden="true">
+            <span class="hero-circle"></span>
+            <span class="hero-line"></span>
+          </div>
+        </section>
+
+        <section class="search-section">
+          <label class="search-box" for="mainSearch">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="10.8" cy="10.8" r="6.8"></circle>
+              <path d="m16 16 4.5 4.5"></path>
+            </svg>
+
+            <input
+              id="mainSearch"
+              type="search"
+              placeholder="Название фильма, сериала или актёра..."
+              autocomplete="off"
+            >
+
+            <button id="clearSearchButton" type="button" aria-label="Очистить поиск">
+              ×
+            </button>
+          </label>
+
+          <div id="searchSuggestions" class="search-suggestions"></div>
+        </section>
+
+        <section class="category-section">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">ВЫБИРАЙ</span>
+              <h2>Что посмотрим?</h2>
+            </div>
+          </div>
+
+          <div class="category-grid">
+            <a href="#movies" class="category-card movie-category" data-page="movies">
+              <span class="category-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="4" width="18" height="16" rx="3"></rect>
+                  <path d="M7 4v4m5-4v4m5-4v4M7 16h10"></path>
+                </svg>
+              </span>
+
+              <span class="category-text">
+                <strong>Фильмы</strong>
+                <small>Полнометражное кино</small>
+              </span>
+
+              <span class="category-arrow" aria-hidden="true">↗</span>
+            </a>
+
+            <a href="#series" class="category-card series-category" data-page="series">
+              <span class="category-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <rect x="4" y="4" width="16" height="16" rx="3"></rect>
+                  <path d="m10 8 6 4-6 4z"></path>
+                </svg>
+              </span>
+
+              <span class="category-text">
+                <strong>Сериалы</strong>
+                <small>Истории по сериям</small>
+              </span>
+
+              <span class="category-arrow" aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </section>
+
+        <section class="catalog-section">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">КАТАЛОГ</span>
+              <h2>Открой для себя</h2>
+            </div>
+          </div>
+
+          <div id="homeCatalog" class="card-grid"></div>
+
+          <div id="homeEmptyState" class="empty-state">
+            <span class="empty-icon" aria-hidden="true">✦</span>
+            <h3>Каталог готов к наполнению</h3>
+            <p>Фильмы и сериалы добавим в отдельные файлы данных.</p>
+          </div>
+        </section>
+      </section>
+
+      <section id="moviesPage" class="page" data-page-content="movies" hidden>
+        <div class="page-heading">
+          <span class="eyebrow">КАТАЛОГ</span>
+          <h1>Фильмы</h1>
+          <p>Исследуй кино разных лет и стран.</p>
+        </div>
+
+        <div class="filter-row">
+          <select id="movieYearFilter" aria-label="Фильтр по году">
+            <option value="">Все годы</option>
+          </select>
+
+          <select id="movieGenreFilter" aria-label="Фильтр по жанру">
+            <option value="">Все жанры</option>
+          </select>
+
+          <select id="movieCountryFilter" aria-label="Фильтр по стране">
+            <option value="">Все страны</option>
+          </select>
+        </div>
+
+        <div id="moviesGrid" class="card-grid"></div>
+
+        <div id="moviesEmptyState" class="empty-state">
+          <span class="empty-icon" aria-hidden="true">▧</span>
+          <h3>Фильмов пока нет</h3>
+          <p>Каталог можно заполнить через файлы JSON.</p>
+        </div>
+      </section>
+
+      <section id="seriesPage" class="page" data-page-content="series" hidden>
+        <div class="page-heading">
+          <span class="eyebrow">КАТАЛОГ</span>
+          <h1>Сериалы</h1>
+          <p>Открой истории, к которым хочется возвращаться.</p>
+        </div>
+
+        <div class="filter-row">
+          <select id="seriesYearFilter" aria-label="Фильтр по году">
+            <option value="">Все годы</option>
+          </select>
+
+          <select id="seriesGenreFilter" aria-label="Фильтр по жанру">
+            <option value="">Все жанры</option>
+          </select>
+
+          <select id="seriesCountryFilter" aria-label="Фильтр по стране">
+            <option value="">Все страны</option>
+          </select>
+        </div>
+
+        <div id="seriesGrid" class="card-grid"></div>
+
+        <div id="seriesEmptyState" class="empty-state">
+          <span class="empty-icon" aria-hidden="true">▧</span>
+          <h3>Сериалов пока нет</h3>
+          <p>Каталог можно заполнить через файлы JSON.</p>
+        </div>
+      </section>
+
+      <section id="actorsPage" class="page" data-page-content="actors" hidden>
+        <div class="page-heading">
+          <span class="eyebrow">ЛЮДИ КИНО</span>
+          <h1>Актёры</h1>
+          <p>Узнавай актёров и находи фильмы с их участием.</p>
+        </div>
+
+        <label class="search-box actor-search-box" for="actorSearch">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="10.8" cy="10.8" r="6.8"></circle>
+            <path d="m16 16 4.5 4.5"></path>
+          </svg>
+
+          <input
+            id="actorSearch"
+            type="search"
+            placeholder="Найти актёра..."
+            autocomplete="off"
+          >
+        </label>
+
+        <div id="actorsGrid" class="actor-grid"></div>
+
+        <div id="actorsEmptyState" class="empty-state">
+          <span class="empty-icon" aria-hidden="true">◎</span>
+          <h3>Актёров пока нет</h3>
+          <p>Список актёров будет храниться в data/actors.json.</p>
+        </div>
+      </section>
+
+      <section id="countriesPage" class="page" data-page-content="countries" hidden>
+        <div class="page-heading">
+          <span class="eyebrow">ГЕОГРАФИЯ КИНО</span>
+          <h1>Страны</h1>
+          <p>Выбирай кино по стране производства.</p>
+        </div>
+
+        <div id="countriesGrid" class="filter-card-grid"></div>
+      </section>
+
+      <section id="genresPage" class="page" data-page-content="genres" hidden>
+        <div class="page-heading">
+          <span class="eyebrow">ТВОЙ ВЫБОР</span>
+          <h1>Жанры</h1>
+          <p>От приключений до сильных драм.</p>
+        </div>
+
+        <div id="genresGrid" class="filter-card-grid"></div>
+      </section>
+
+      <section id="yearsPage" class="page" data-page-content="years" hidden>
+        <div class="page-heading">
+          <span class="eyebrow">КИНО ВО ВРЕМЕНИ</span>
+          <h1>Годы выпуска</h1>
+          <p>Исследуй каталог по годам.</p>
+        </div>
+
+        <div id="yearsGrid" class="year-grid"></div>
+      </section>
+
+      <section id="favoritesPage" class="page" data-page-content="favorites" hidden>
+        <div class="page-heading">
+          <span class="eyebrow">ТВОЯ КОЛЛЕКЦИЯ</span>
+          <h1>Избранное</h1>
+          <p>Фильмы и сериалы, которые ты сохранил.</p>
+        </div>
+
+        <div class="segmented-control">
+          <button class="segment active" data-favorite-type="all" type="button">Всё</button>
+          <button class="segment" data-favorite-type="movie" type="button">Фильмы</button>
+          <button class="segment" data-favorite-type="series" type="button">Сериалы</button>
+        </div>
+
+        <div id="favoritesGrid" class="card-grid"></div>
+
+        <div id="favoritesEmptyState" class="empty-state">
+          <span class="empty-icon" aria-hidden="true">♡</span>
+          <h3>Пока ничего не сохранено</h3>
+          <p>Нажимай на значок закладки на карточках.</p>
+        </div>
+      </section>
+
+      <section id="historyPage" class="page" data-page-content="history" hidden>
+        <div class="page-heading">
+          <span class="eyebrow">ТВОЯ ИСТОРИЯ</span>
+          <h1>Недавно открытые</h1>
+          <p>Возвращайся к просмотренным страницам каталога.</p>
+        </div>
+
+        <div id="historyGrid" class="card-grid"></div>
+
+        <div id="historyEmptyState" class="empty-state">
+          <span class="empty-icon" aria-hidden="true">◷</span>
+          <h3>История пока пуста</h3>
+          <p>Здесь появятся недавно открытые фильмы и сериалы.</p>
+        </div>
+      </section>
+
+      <section id="detailsPage" class="page" data-page-content="details" hidden>
+        <button id="backFromDetails" class="back-button" type="button">
+          <span aria-hidden="true">←</span> Назад
+        </button>
+
+        <div id="detailsContent"></div>
+      </section>
+
+      <section id="settingsPage" class="page" data-page-content="settings" hidden>
+        <div class="page-heading">
+          <span class="eyebrow">ПЕРСОНАЛИЗАЦИЯ</span>
+          <h1>Настройки</h1>
+          <p>Настрой приложение под себя.</p>
+        </div>
+
+        <div class="settings-card">
+          <div>
+            <strong>Анимации</strong>
+            <p>Плавные переходы между страницами.</p>
+          </div>
+
+          <label class="switch">
+            <input id="animationsToggle" type="checkbox" checked>
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-card">
+          <div>
+            <strong>Сохранённые данные</strong>
+            <p>Избранное и история хранятся на этом устройстве.</p>
+          </div>
+
+          <button id="clearHistoryButton" class="secondary-button" type="button">
+            Очистить историю
+          </button>
+        </div>
+      </section>
+
+      <section id="aboutPage" class="page" data-page-content="about" hidden>
+        <div class="page-heading">
+          <span class="eyebrow">НАШ ПРОЕКТ</span>
+          <h1>SHOHIN MOVIE</h1>
+          <p>Твой мир кино.</p>
+        </div>
+
+        <div class="about-card">
+          <img src="assets/logo/logo.svg" alt="SHOHIN MOVIE" class="about-logo">
+
+          <h2>Открывай. Исследуй. Сохраняй.</h2>
+
+          <p>
+            SHOHIN MOVIE — каталог фильмов, сериалов и актёров.
+            Данные хранятся в файлах проекта, а избранное и история —
+            локально на устройстве.
+          </p>
+
+          <div class="about-badges">
+            <span>Без регистрации</span>
+            <span>Без базы данных</span>
+            <span>Каталог на GitHub Pages</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a href="#home" class="footer-brand">SHOHIN MOVIE</a>
+      <p>Твой мир кино.</p>
+      <span>© <span id="currentYear"></span> SHOHIN</span>
+    </footer>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <div id="loadingScreen" class="loading-screen" hidden>
+      <div class="loader"></div>
+      <span>SHOHIN MOVIE</span>
     </div>
+  </div>
 
-    <div class="drawer-title">НАВИГАЦИЯ</div>
-
-    <button class="menu-item" onclick="goHome();closeMenu()">
-      <span>⌂</span> Главная
-    </button>
-
-    <button class="menu-item" onclick="showCatalog('movie');closeMenu()">
-      <span>🎬</span> Фильмы
-    </button>
-
-    <button class="menu-item" onclick="showCatalog('series');closeMenu()">
-      <span>▣</span> Сериалы
-    </button>
-
-    <button class="menu-item" onclick="showCatalog('actor');closeMenu()">
-      <span>👤</span> Актёры
-    </button>
-
-    <button class="menu-item" onclick="showCatalog('all');closeMenu()">
-      <span>▤</span> Весь каталог
-    </button>
-
-    <div class="drawer-title">МОЯ КОЛЛЕКЦИЯ</div>
-
-    <button class="menu-item" onclick="openFavorites();closeMenu()">
-      <span>♡</span> Избранное
-    </button>
-
-    <button class="menu-item" onclick="showRecent();closeMenu()">
-      <span>◷</span> История
-    </button>
-
-    <button class="menu-item" onclick="surpriseMe();closeMenu()">
-      <span>🎲</span> Удиви меня
-    </button>
-
-    <div class="drawer-title">ПРИЛОЖЕНИЕ</div>
-
-    <button class="menu-item" onclick="openSettings();closeMenu()">
-      <span>⚙</span> Настройки
-    </button>
-
-    <button class="menu-item" onclick="openAbout();closeMenu()">
-      <span>ⓘ</span> О приложении
-    </button>
-
-  </aside>
-</div>
-
-<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
-
-<!-- JavaScript подключим отдельными файлами -->
-
-<script src="js/cards.js" defer></script>
-<script src="js/app.js" defer></script>
-
+  <script src="js/storage.js" defer></script>
+  <script src="js/data.js" defer></script>
+  <script src="js/cards.js" defer></script>
+  <script src="js/details.js" defer></script>
+  <script src="js/search.js" defer></script>
+  <script src="js/navigation.js" defer></script>
+  <script src="js/app.js" defer></script>
 </body>
 </html>
