@@ -10,19 +10,18 @@ window.SHOHIN_MOVIE = window.SHOHIN_MOVIE || {};
 
 (function () {
   const App = {
-    version: "1.0.0",
+    version: "1.0.1",
     started: false,
 
     init: function () {
       if (this.started) return;
-
       this.started = true;
 
-      document.addEventListener("DOMContentLoaded", () => {
-        this.start();
-      });
-
-      if (document.readyState !== "loading") {
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => {
+          this.start();
+        }, { once: true });
+      } else {
         this.start();
       }
     },
@@ -38,11 +37,9 @@ window.SHOHIN_MOVIE = window.SHOHIN_MOVIE || {};
     },
 
     setCurrentYear: function () {
-      const yearElements = document.querySelectorAll(
+      document.querySelectorAll(
         "[data-current-year], #currentYear"
-      );
-
-      yearElements.forEach(function (element) {
+      ).forEach(function (element) {
         element.textContent = new Date().getFullYear();
       });
     },
@@ -60,15 +57,22 @@ window.SHOHIN_MOVIE = window.SHOHIN_MOVIE || {};
         "#menuOverlay, #menu-overlay, .menu-overlay"
       );
 
-      if (!menuButton || !menu) return;
+      const closeButton = document.querySelector("#closeMenuButton");
+
+      if (!menuButton || !menu) {
+        console.error("SHOHIN MOVIE: кнопка или меню не найдены.");
+        return;
+      }
 
       const closeMenu = function () {
         menu.classList.remove("active", "open", "show");
-        menuButton.classList.remove("active");
+        menuButton.classList.remove("active", "open");
+
         menuButton.setAttribute("aria-expanded", "false");
+        menu.setAttribute("aria-hidden", "true");
 
         if (overlay) {
-          overlay.classList.remove("active", "show");
+          overlay.classList.remove("active", "open", "show");
           overlay.setAttribute("aria-hidden", "true");
         }
 
@@ -76,12 +80,15 @@ window.SHOHIN_MOVIE = window.SHOHIN_MOVIE || {};
       };
 
       const openMenu = function () {
-        menu.classList.add("active");
-        menuButton.classList.add("active");
+        // CSS проекта использует класс open.
+        menu.classList.add("open", "active");
+        menuButton.classList.add("active", "open");
+
         menuButton.setAttribute("aria-expanded", "true");
+        menu.setAttribute("aria-hidden", "false");
 
         if (overlay) {
-          overlay.classList.add("active");
+          overlay.classList.add("open", "active");
           overlay.setAttribute("aria-hidden", "false");
         }
 
@@ -91,34 +98,34 @@ window.SHOHIN_MOVIE = window.SHOHIN_MOVIE || {};
       menuButton.setAttribute("aria-expanded", "false");
 
       menuButton.addEventListener("click", function () {
-        const isOpen = menu.classList.contains("active");
-
-        if (isOpen) {
+        if (menu.classList.contains("open")) {
           closeMenu();
         } else {
           openMenu();
         }
       });
 
+      if (closeButton) {
+        closeButton.addEventListener("click", closeMenu);
+      }
+
       if (overlay) {
         overlay.addEventListener("click", closeMenu);
       }
 
-      menu.querySelectorAll("a, button").forEach(function (item) {
+      menu.querySelectorAll("a").forEach(function (item) {
         item.addEventListener("click", function () {
-          if (item.dataset.keepMenuOpen !== "true") {
-            closeMenu();
-          }
+          closeMenu();
         });
       });
 
-      window.SHOHIN_MOVIE.closeMenu = closeMenu;
       window.SHOHIN_MOVIE.openMenu = openMenu;
+      window.SHOHIN_MOVIE.closeMenu = closeMenu;
     },
 
     setupSearchButton: function () {
       const searchInput = document.querySelector(
-        "#searchInput, #search-input, [data-search-input]"
+        "#searchInput, #search-input, #mainSearch, [data-search-input]"
       );
 
       const searchButton = document.querySelector(
@@ -196,7 +203,7 @@ window.SHOHIN_MOVIE = window.SHOHIN_MOVIE || {};
           event.key.toLowerCase() === "k"
         ) {
           const searchInput = document.querySelector(
-            "#searchInput, #search-input, [data-search-input]"
+            "#searchInput, #search-input, #mainSearch, [data-search-input]"
           );
 
           if (searchInput) {
@@ -223,7 +230,7 @@ window.SHOHIN_MOVIE = window.SHOHIN_MOVIE || {};
       }
     },
 
-    loadCatalog: async function () {
+    async loadCatalog() {
       this.showLoading();
 
       try {
@@ -233,13 +240,22 @@ window.SHOHIN_MOVIE = window.SHOHIN_MOVIE || {};
 
         if (typeof window.renderCatalog === "function") {
           window.renderCatalog();
+        } else if (
+          window.SHOHIN_MOVIE.Cards &&
+          typeof window.SHOHIN_MOVIE.Cards.renderCatalog === "function"
+        ) {
+          window.SHOHIN_MOVIE.Cards.renderCatalog();
         }
 
         document.dispatchEvent(
           new CustomEvent("shohin:catalog-ready")
         );
       } catch (error) {
-        console.error("SHOHIN MOVIE: ошибка загрузки каталога.", error);
+        console.error(
+          "SHOHIN MOVIE: ошибка загрузки каталога.",
+          error
+        );
+
         this.showError(
           "Не удалось загрузить каталог. Проверь файлы JSON и пути к ним."
         );
@@ -265,14 +281,14 @@ window.SHOHIN_MOVIE = window.SHOHIN_MOVIE || {};
         "#appLoader, #loadingScreen, [data-app-loader]"
       );
 
-      if (loader) {
-        loader.classList.add("hidden");
-        loader.setAttribute("aria-hidden", "true");
+      if (!loader) return;
 
-        window.setTimeout(function () {
-          loader.hidden = true;
-        }, 500);
-      }
+      loader.classList.add("hidden");
+      loader.setAttribute("aria-hidden", "true");
+
+      window.setTimeout(function () {
+        loader.hidden = true;
+      }, 500);
     },
 
     showError: function (message) {
@@ -292,11 +308,5 @@ window.SHOHIN_MOVIE = window.SHOHIN_MOVIE || {};
 
   window.SHOHIN_MOVIE.App = App;
 
-  window.addEventListener("DOMContentLoaded", function () {
-    App.start();
-  });
-
-  if (document.readyState !== "loading") {
-    App.start();
-  }
+  App.init();
 })();
