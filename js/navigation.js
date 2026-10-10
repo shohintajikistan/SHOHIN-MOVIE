@@ -19,15 +19,13 @@
       series: "Сериалы",
       actors: "Актёры",
       favorites: "Избранное",
-      favoriteMovies: "Избранные фильмы",
-      favoriteSeries: "Избранные сериалы",
-      favoriteActors: "Избранные актёры",
       history: "Недавно открытые",
       genres: "Жанры",
       countries: "Страны",
-      years: "Годы",
-      rating: "Рейтинг",
-      about: "О SHOHIN MOVIE"
+      years: "Годы выпуска",
+      settings: "Настройки",
+      about: "О SHOHIN MOVIE",
+      details: "Подробности"
     },
 
     init: function () {
@@ -37,27 +35,29 @@
 
       const initialSection = this.getSectionFromURL();
 
-      if (initialSection) {
-        this.navigate(initialSection, false);
-      } else {
-        this.navigate("home", false);
-      }
+      this.navigate(initialSection || "home", false);
     },
 
     getSectionFromURL: function () {
       const params = new URLSearchParams(window.location.search);
-      const section = params.get("section");
+      const querySection = params.get("section");
 
-      if (section && this.sectionNames[section]) {
-        return section;
+      if (querySection && this.sectionNames[querySection]) {
+        return querySection;
       }
 
-      return null;
+      const hash = window.location.hash.replace(/^#/, "");
+
+      if (this.sectionNames[hash]) {
+        return hash;
+      }
+
+      return "home";
     },
 
     bindMenuLinks: function () {
       document.querySelectorAll(
-        "[data-section], [data-navigate]"
+        "a[data-page], a[data-section], a[data-navigate]"
       ).forEach((element) => {
         if (element.dataset.navigationBound === "true") return;
 
@@ -66,16 +66,16 @@
         element.addEventListener("click", (event) => {
           const section =
             element.dataset.section ||
-            element.dataset.navigate;
+            element.dataset.navigate ||
+            element.dataset.page ||
+            element.getAttribute("href")?.replace(/^#/, "");
 
           if (!section || !this.sectionNames[section]) return;
 
           event.preventDefault();
           this.navigate(section);
 
-          if (
-            typeof window.SHOHIN_MOVIE.closeMenu === "function"
-          ) {
+          if (typeof window.SHOHIN_MOVIE.closeMenu === "function") {
             window.SHOHIN_MOVIE.closeMenu();
           }
         });
@@ -83,31 +83,35 @@
     },
 
     bindNavigationButtons: function () {
-      document.querySelectorAll(
-        "[data-go-home], #homeButton"
-      ).forEach((button) => {
-        button.addEventListener("click", () => {
+      const backButton = document.querySelector("#backFromDetails");
+
+      if (backButton) {
+        backButton.addEventListener("click", () => {
           this.navigate("home");
         });
-      });
+      }
 
-      document.querySelectorAll(
-        "[data-go-back], #backButton"
-      ).forEach((button) => {
-        button.addEventListener("click", () => {
-          if (window.history.length > 1) {
-            window.history.back();
-          } else {
+      document.querySelectorAll("[data-go-home], #homeButton").forEach(
+        (button) => {
+          button.addEventListener("click", (event) => {
+            event.preventDefault();
             this.navigate("home");
-          }
-        });
-      });
+          });
+        }
+      );
     },
 
     bindBrowserHistory: function () {
       window.addEventListener("popstate", () => {
-        const section = this.getSectionFromURL() || "home";
-        this.navigate(section, false);
+        this.navigate(this.getSectionFromURL(), false);
+      });
+
+      window.addEventListener("hashchange", () => {
+        const hash = window.location.hash.replace(/^#/, "");
+
+        if (this.sectionNames[hash]) {
+          this.navigate(hash, false);
+        }
       });
     },
 
@@ -118,31 +122,24 @@
 
       this.currentSection = section;
 
-      document.querySelectorAll(
-        "[data-page], .app-page"
-      ).forEach((page) => {
-        const pageName =
-          page.dataset.page ||
-          page.id.replace(/^page-/, "");
-
-        const active = pageName === section;
+      // Переключаем только настоящие страницы.
+      document.querySelectorAll("[data-page-content]").forEach((page) => {
+        const active = page.dataset.pageContent === section;
 
         page.hidden = !active;
         page.classList.toggle("active", active);
-
-        if (active) {
-          page.setAttribute("aria-hidden", "false");
-        } else {
-          page.setAttribute("aria-hidden", "true");
-        }
+        page.setAttribute("aria-hidden", active ? "false" : "true");
       });
 
+      // Активное состояние ссылок меню.
       document.querySelectorAll(
-        "[data-section], [data-navigate]"
+        ".menu-navigation a, a[data-section], a[data-navigate]"
       ).forEach((link) => {
         const linkSection =
           link.dataset.section ||
-          link.dataset.navigate;
+          link.dataset.navigate ||
+          link.dataset.page ||
+          link.getAttribute("href")?.replace(/^#/, "");
 
         const active = linkSection === section;
 
@@ -159,7 +156,7 @@
 
       if (updateURL) {
         const url = new URL(window.location.href);
-        url.searchParams.set("section", section);
+        url.hash = section;
 
         window.history.pushState(
           { section: section },
@@ -189,15 +186,13 @@
       const title = this.sectionNames[section] || "SHOHIN MOVIE";
 
       document.title =
-        title === "Главная"
+        section === "home"
           ? "SHOHIN MOVIE"
           : title + " — SHOHIN MOVIE";
 
-      const titleElements = document.querySelectorAll(
+      document.querySelectorAll(
         "[data-page-title], #pageTitle"
-      );
-
-      titleElements.forEach((element) => {
+      ).forEach((element) => {
         element.textContent = title;
       });
     },
@@ -213,81 +208,49 @@
         const containers = document.querySelectorAll(selectors);
 
         containers.forEach((container) => {
-          cards.renderInto(container, items, type);
+          if (typeof cards.renderInto === "function") {
+            cards.renderInto(container, items || [], type);
+          }
         });
 
-        cards.bindCardEvents();
+        if (typeof cards.bindCardEvents === "function") {
+          cards.bindCardEvents();
+        }
       };
 
       switch (section) {
         case "movies":
-          renderList(
-            "#movieGrid, #moviesGrid, [data-movie-grid]",
-            data.getMovies(),
-            "movie"
-          );
+          if (typeof data.getMovies === "function") {
+            renderList("#moviesGrid", data.getMovies(), "movie");
+          }
           break;
 
         case "series":
-          renderList(
-            "#seriesGrid, #series-grid, [data-series-grid]",
-            data.getSeries(),
-            "series"
-          );
+          if (typeof data.getSeries === "function") {
+            renderList("#seriesGrid", data.getSeries(), "series");
+          }
           break;
 
         case "actors":
-          renderList(
-            "#actorsGrid, #actorGrid, [data-actor-grid]",
-            data.getActors(),
-            "actor"
-          );
+          if (typeof data.getActors === "function") {
+            renderList("#actorsGrid", data.getActors(), "actor");
+          }
           break;
 
         case "favorites":
-          if (storage) {
+          if (storage && typeof storage.getSavedItems === "function") {
             renderList(
-              "#favoritesGrid, [data-favorites-grid]",
+              "#favoritesGrid",
               storage.getSavedItems(),
               "movie"
             );
           }
           break;
 
-        case "favoriteMovies":
-          if (storage) {
-            renderList(
-              "#favoriteMoviesGrid, [data-favorite-movies-grid]",
-              storage.getSavedItems("movie"),
-              "movie"
-            );
-          }
-          break;
-
-        case "favoriteSeries":
-          if (storage) {
-            renderList(
-              "#favoriteSeriesGrid, [data-favorite-series-grid]",
-              storage.getSavedItems("series"),
-              "series"
-            );
-          }
-          break;
-
-        case "favoriteActors":
-          if (storage) {
-            renderList(
-              "#favoriteActorsGrid, [data-favorite-actors-grid]",
-              storage.getSavedItems("actor"),
-              "actor"
-            );
-          }
-          break;
-
         case "history":
-          if (storage) {
+          if (storage && typeof storage.getHistoryItems === "function") {
             renderList(
-              "#historyGrid, [data-history-grid]",
+              "#historyGrid",
               storage.getHistoryItems(),
               "movie"
             );
@@ -295,7 +258,9 @@
           break;
 
         case "home":
-          cards.renderCatalog();
+          if (typeof cards.renderCatalog === "function") {
+            cards.renderCatalog();
+          }
           break;
       }
     }
@@ -309,7 +274,7 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     Navigation.init();
-  });
+  }, { once: true });
 
   if (document.readyState !== "loading") {
     Navigation.init();
