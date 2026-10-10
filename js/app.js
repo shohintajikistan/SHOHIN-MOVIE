@@ -1,1792 +1,1434 @@
-// SHOHIN MOVIE — MAIN APP
-// SHOHIN BRAND COLORS — НЕ МЕНЯТЬ
+/* SHOHIN MOVIE — MAIN APPLICATION */
+/* SHOHIN BRAND COLORS — НЕ МЕНЯТЬ */
 
-"use strict";
+(function () {
+  "use strict";
 
-
-/* =========================================================
-   НАСТРОЙКИ
-========================================================= */
-
-const SHOHIN_MOVIE_YEARS = [];
-
-for (let year = 1980; year <= 2026; year++) {
-  SHOHIN_MOVIE_YEARS.push(year);
-}
-
-const FAVORITES_KEY = "SHOHIN_MOVIE_FAVORITES";
-const RECENT_KEY = "SHOHIN_MOVIE_RECENT";
-
-const MAX_FAVORITES = 500;
-const MAX_RECENT = 30;
-
-
-/* =========================================================
-   ОСНОВНОЙ ОБЪЕКТ
-========================================================= */
-
-if (!window.SHOHIN_MOVIE) {
-
-  window.SHOHIN_MOVIE = {
-    currentType: "movies",
-    currentYear: "all",
-    movies: [],
-    series: []
+  const STORAGE = {
+    favorites: "shohin_movie_favorites",
+    history: "shohin_movie_history",
+    cardSize: "shohin_movie_card_size",
+    saveHistory: "shohin_movie_save_history"
   };
 
-}
+  const state = {
+    movies: [],
+    series: [],
+    actors: [],
+    allItems: [],
+    currentItem: null,
+    currentActor: null,
+    catalogType: "all",
+    searchQuery: "",
+    visibleCount: 20,
+    pageSize: 20,
+    loading: false,
+    activePage: "homePage",
+    lastPage: "homePage"
+  };
 
-const SHOHIN_MOVIE = window.SHOHIN_MOVIE;
+  const $ = (selector) => document.querySelector(selector);
 
+  const byId = (id) => document.getElementById(id);
 
-/* =========================================================
-   ЗАПУСК
-========================================================= */
-
-document.addEventListener("DOMContentLoaded", () => {
-
-  initApp();
-
-});
-
-
-async function initApp() {
-
-  setupEventListeners();
-
-  initFavoriteButton();
-
-  setupSearch();
-
-  await loadAllCatalogs();
-
-  renderCatalog();
-
-  updateMenuData();
-
-}
-
-
-/* =========================================================
-   ЗАГРУЗКА ВСЕХ ГОДОВ
-========================================================= */
-
-async function loadAllCatalogs() {
-
-  const movies = [];
-  const series = [];
-
-  const movieRequests = SHOHIN_MOVIE_YEARS.map(async year => {
-
+  function readStorage(key, fallback) {
     try {
+      const value = localStorage.getItem(key);
 
-      const response = await fetch(
-        `data/movies/${year}.json`,
-        {
-          cache: "no-cache"
-        }
-      );
-
-      if (!response.ok) {
-        return [];
-      }
-
-      const data = await response.json();
-
-      return normalizeCatalogData(data, year);
-
+      return value === null ? fallback : JSON.parse(value);
     } catch (error) {
-
-      console.warn(
-        `SHOHIN MOVIE: не удалось загрузить movies/${year}.json`
-      );
-
-      return [];
-
+      return fallback;
     }
-
-  });
-
-
-  const seriesRequests = SHOHIN_MOVIE_YEARS.map(async year => {
-
-    try {
-
-      const response = await fetch(
-        `data/series/${year}.json`,
-        {
-          cache: "no-cache"
-        }
-      );
-
-      if (!response.ok) {
-        return [];
-      }
-
-      const data = await response.json();
-
-      return normalizeCatalogData(data, year);
-
-    } catch (error) {
-
-      console.warn(
-        `SHOHIN MOVIE: не удалось загрузить series/${year}.json`
-      );
-
-      return [];
-
-    }
-
-  });
-
-
-  const movieResults =
-    await Promise.all(movieRequests);
-
-  const seriesResults =
-    await Promise.all(seriesRequests);
-
-
-  movieResults.forEach(list => {
-
-    if (Array.isArray(list)) {
-      movies.push(...list);
-    }
-
-  });
-
-
-  seriesResults.forEach(list => {
-
-    if (Array.isArray(list)) {
-      series.push(...list);
-    }
-
-  });
-
-
-  SHOHIN_MOVIE.movies =
-    removeDuplicateItems(movies);
-
-  SHOHIN_MOVIE.series =
-    removeDuplicateItems(series);
-
-
-  console.log(
-    "SHOHIN MOVIE — фильмы:",
-    SHOHIN_MOVIE.movies.length
-  );
-
-  console.log(
-    "SHOHIN MOVIE — сериалы:",
-    SHOHIN_MOVIE.series.length
-  );
-
-}
-
-
-/* =========================================================
-   НОРМАЛИЗАЦИЯ JSON
-========================================================= */
-
-function normalizeCatalogData(data, year) {
-
-  let items = [];
-
-  if (Array.isArray(data)) {
-
-    items = data;
-
-  } else if (
-    data &&
-    Array.isArray(data.movies)
-  ) {
-
-    items = data.movies;
-
-  } else if (
-    data &&
-    Array.isArray(data.series)
-  ) {
-
-    items = data.series;
-
-  } else if (
-    data &&
-    Array.isArray(data.items)
-  ) {
-
-    items = data.items;
-
   }
 
-
-  return items
-    .filter(item =>
-      item &&
-      typeof item === "object"
-    )
-    .map((item, index) => {
-
-      const normalized = {
-        ...item
-      };
-
-
-      /* -----------------------------
-         ID
-      ----------------------------- */
-
-      if (!normalized.id) {
-
-        normalized.id =
-          `${year}-${index + 1}`;
-
-      }
-
-
-      /* -----------------------------
-         ГОД
-      ----------------------------- */
-
-      if (
-        !normalized.year ||
-        Number(normalized.year) === 0
-      ) {
-
-        normalized.year = year;
-
-      }
-
-
-      /* -----------------------------
-         НАЗВАНИЕ
-      ----------------------------- */
-
-      if (!normalized.title) {
-
-        normalized.title =
-          normalized.name ||
-          normalized.originalTitle ||
-          "Без названия";
-
-      }
-
-
-      /* -----------------------------
-         ОРИГИНАЛЬНОЕ НАЗВАНИЕ
-      ----------------------------- */
-
-      if (
-        normalized.originalTitle === undefined ||
-        normalized.originalTitle === null
-      ) {
-
-        normalized.originalTitle = "";
-
-      }
-
-
-      /* -----------------------------
-         СТРАНЫ
-      ----------------------------- */
-
-      if (
-        !Array.isArray(normalized.countries)
-      ) {
-
-        if (normalized.country) {
-
-          normalized.countries = [
-            normalized.country
-          ];
-
-        } else {
-
-          normalized.countries = [];
-
-        }
-
-      }
-
-
-      /* -----------------------------
-         ЖАНРЫ
-      ----------------------------- */
-
-      if (
-        !Array.isArray(normalized.genres)
-      ) {
-
-        if (normalized.genre) {
-
-          normalized.genres = [
-            normalized.genre
-          ];
-
-        } else {
-
-          normalized.genres = [];
-
-        }
-
-      }
-
-
-      /* -----------------------------
-         АКТЁРЫ
-      ----------------------------- */
-
-      if (
-        !Array.isArray(normalized.actors)
-      ) {
-
-        if (normalized.actor) {
-
-          normalized.actors = [
-            normalized.actor
-          ];
-
-        } else {
-
-          normalized.actors = [];
-
-        }
-
-      }
-
-
-      /* -----------------------------
-         ПОСТЕР
-      ----------------------------- */
-
-      if (
-        normalized.poster === undefined ||
-        normalized.poster === null
-      ) {
-
-        normalized.poster = "";
-
-      }
-
-
-      /* -----------------------------
-         РЕЙТИНГ
-      ----------------------------- */
-
-      if (
-        normalized.rating === undefined ||
-        normalized.rating === null ||
-        normalized.rating === ""
-      ) {
-
-        normalized.rating = "";
-
-      }
-
-
-      /* -----------------------------
-         ОПИСАНИЕ
-      ----------------------------- */
-
-      if (
-        normalized.description === undefined ||
-        normalized.description === null
-      ) {
-
-        normalized.description = "";
-
-      }
-
-
-      return normalized;
-
+  function writeStorage(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (error) {
+      showToast("Не удалось сохранить данные на устройстве.");
+      return false;
+    }
+  }
+
+  function escapeHTML(value) {
+    if (window.SHOHINCards) {
+      return window.SHOHINCards.escapeHTML(value);
+    }
+
+    return String(value ?? "").replace(/[&<>"']/g, function (char) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char];
     });
-
-}
-
-
-/* =========================================================
-   УДАЛЕНИЕ ДУБЛИКАТОВ
-========================================================= */
-
-function removeDuplicateItems(items) {
-
-  if (!Array.isArray(items)) {
-    return [];
   }
 
-  const result = [];
-  const usedIds = new Set();
+  function getId(item) {
+    if (window.SHOHINCards) {
+      return window.SHOHINCards.getMovieId(item);
+    }
 
-  items.forEach(item => {
+    if (item.id !== undefined && item.id !== null) {
+      return String(item.id);
+    }
 
-    if (!item) {
+    return [
+      item.type || "film",
+      item.year || "",
+      item.originalTitle || item.title || ""
+    ].join("-").toLowerCase();
+  }
+
+  function getFavorites() {
+    const result = readStorage(STORAGE.favorites, []);
+
+    return Array.isArray(result) ? result : [];
+  }
+
+  function getHistory() {
+    const result = readStorage(STORAGE.history, []);
+
+    return Array.isArray(result) ? result : [];
+  }
+
+  function isSeries(item) {
+    return [
+      "series",
+      "serie",
+      "tv",
+      "tvshow",
+      "tv_show",
+      "сериал"
+    ].includes(String(item.type || "").toLowerCase());
+  }
+
+  function findItem(id) {
+    return state.allItems.find(function (item) {
+      return getId(item) === String(id);
+    });
+  }
+
+  function showToast(message) {
+    const toast = byId("toast");
+
+    if (!toast) {
+      console.log(message);
       return;
     }
 
-    const id = String(
-      item.id || ""
+    toast.textContent = message;
+    toast.classList.remove("hidden");
+
+    clearTimeout(showToast.timer);
+
+    showToast.timer = setTimeout(function () {
+      toast.classList.add("hidden");
+    }, 2500);
+  }
+
+  // --------------------------------------------------
+  // ЗАГРУЗКА ЛОКАЛЬНЫХ JSON-ФАЙЛОВ
+  // --------------------------------------------------
+
+  function getYearFolder(year) {
+    const number = Number(year);
+
+    if (number >= 1990 && number <= 2000) {
+      return "1990-2000";
+    }
+
+    if (number >= 2001 && number <= 2010) {
+      return "2001-2010";
+    }
+
+    if (number >= 2011 && number <= 2020) {
+      return "2011-2020";
+    }
+
+    return "2021-2026";
+  }
+
+  async function fetchJSON(path) {
+    try {
+      const response = await fetch(path, {
+        cache: "no-cache"
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      return await response.json();
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function extractArray(data) {
+    if (Array.isArray(data)) {
+      return data;
+    }
+
+    if (data && Array.isArray(data.movies)) {
+      return data.movies;
+    }
+
+    if (data && Array.isArray(data.series)) {
+      return data.series;
+    }
+
+    if (data && Array.isArray(data.actors)) {
+      return data.actors;
+    }
+
+    if (data && Array.isArray(data.items)) {
+      return data.items;
+    }
+
+    return [];
+  }
+
+  async function loadYear(year) {
+    const folder = getYearFolder(year);
+
+    const paths = [
+      `data/movies/${folder}/${year}.json`,
+      `data/movies/${year}.json`
+    ];
+
+    for (const path of paths) {
+      const data = await fetchJSON(path);
+
+      if (data !== null) {
+        return extractArray(data);
+      }
+    }
+
+    return [];
+  }
+
+  async function loadAllData() {
+    if (state.loading) {
+      return;
+    }
+
+    state.loading = true;
+
+    const moviesGrid = byId("moviesGrid");
+
+    if (moviesGrid) {
+      moviesGrid.innerHTML = `
+        <div class="loader-wrap">
+          <div class="loader"></div>
+          <span>Загружаем фильмы...</span>
+        </div>
+      `;
+    }
+
+    try {
+      const years = [];
+
+      for (let year = 1990; year <= 2026; year++) {
+        years.push(year);
+      }
+
+      const results = await Promise.all(
+        years.map(function (year) {
+          return loadYear(year);
+        })
+      );
+
+      const loadedMovies = results.flat();
+
+      const normalizedMovies = loadedMovies.map(function (item) {
+        return normalizeItem(item, "film");
+      });
+
+      const seriesData = await fetchJSON("data/series.json");
+
+      const normalizedSeries = extractArray(seriesData).map(function (item) {
+        return normalizeItem(item, "series");
+      });
+
+      const actorsData = await fetchJSON("data/actors.json");
+
+      state.movies = removeDuplicates(normalizedMovies);
+      state.series = removeDuplicates(normalizedSeries);
+      state.actors = extractArray(actorsData);
+
+      state.allItems = removeDuplicates(
+        state.movies.concat(state.series)
+      );
+
+      renderHome();
+      renderFavorites();
+      renderHistory();
+      updateFooter();
+
+      if (state.allItems.length === 0) {
+        showToast(
+          "Фильмы пока не загружены. Проверьте JSON-файлы."
+        );
+      }
+    } catch (error) {
+      console.error("SHOHIN MOVIE:", error);
+
+      showToast("Не удалось загрузить каталог.");
+    } finally {
+      state.loading = false;
+    }
+  }
+
+  function normalizeItem(item, defaultType) {
+    return {
+      ...item,
+      type: item.type || defaultType,
+      title: item.title || item.name || "Без названия",
+      originalTitle:
+        item.originalTitle ||
+        item.original_title ||
+        item.originalName ||
+        item.title ||
+        item.name ||
+        "",
+      year: item.year || item.releaseYear || "",
+      country: item.country || item.countries || "",
+      genres: Array.isArray(item.genres)
+        ? item.genres
+        : typeof item.genres === "string"
+          ? item.genres.split(",").map(function (genre) {
+              return genre.trim();
+            })
+          : [],
+      actors: Array.isArray(item.actors)
+        ? item.actors
+        : [],
+      description:
+        item.description ||
+        item.overview ||
+        "",
+      poster:
+        item.poster ||
+        item.posterUrl ||
+        ""
+    };
+  }
+
+  function removeDuplicates(items) {
+    const seen = new Set();
+
+    return items.filter(function (item) {
+      const id = getId(item);
+
+      if (seen.has(id)) {
+        return false;
+      }
+
+      seen.add(id);
+      return true;
+    });
+  }
+
+  // --------------------------------------------------
+  // НАВИГАЦИЯ МЕЖДУ СТРАНИЦАМИ
+  // --------------------------------------------------
+
+  function showPage(pageId) {
+    const page = byId(pageId);
+
+    if (!page) {
+      console.warn("SHOHIN MOVIE: страница не найдена:", pageId);
+      return;
+    }
+
+    document.querySelectorAll(".page").forEach(function (element) {
+      element.classList.remove("active");
+    });
+
+    page.classList.add("active");
+
+    state.lastPage = state.activePage;
+    state.activePage = pageId;
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+    updateNavigation(pageId);
+    closeMenu();
+  }
+
+  function updateNavigation(pageId) {
+    document.querySelectorAll(
+      ".nav-item, .drawer-link"
+    ).forEach(function (button) {
+      const target =
+        button.dataset.page ||
+        button.dataset.target ||
+        "";
+
+      button.classList.toggle(
+        "active",
+        target === pageId
+      );
+    });
+  }
+
+  function goHome() {
+    showPage("homePage");
+    renderHome();
+  }
+
+  function goBack() {
+    showPage(state.lastPage || "homePage");
+  }
+
+  // --------------------------------------------------
+  // ГЛАВНАЯ СТРАНИЦА
+  // --------------------------------------------------
+
+  function renderHome() {
+    const recent = getHistory()
+      .map(function (entry) {
+        return findItem(entry.id);
+      })
+      .filter(Boolean)
+      .slice(0, 10);
+
+    const featured = state.movies
+      .filter(function (item) {
+        return Number(item.rating) >= 7;
+      })
+      .sort(function (a, b) {
+        return Number(b.rating || 0) - Number(a.rating || 0);
+      })
+      .slice(0, 12);
+
+    renderCards(recent, "recentGrid", "Недавно открытые фильмы");
+    renderCards(featured, "featuredGrid", "Популярные фильмы");
+    renderCards(state.movies.slice(0, 20), "moviesGrid", "Фильмы");
+    renderCards(state.series.slice(0, 20), "seriesGrid", "Сериалы");
+
+    if (window.SHOHINCards) {
+      window.SHOHINCards.renderActorCards(
+        state.actors.slice(0, 12),
+        "actorsGrid"
+      );
+    }
+
+    renderGenreChips();
+  }
+
+  function renderCards(items, containerId, emptyTitle) {
+    const target = byId(containerId);
+
+    if (!target || !window.SHOHINCards) {
+      return;
+    }
+
+    window.SHOHINCards.renderMovieCards(
+      items,
+      target,
+      {
+        emptyTitle: emptyTitle,
+        emptyText: "Когда данные будут добавлены, они появятся здесь."
+      }
+    );
+  }
+
+  function renderGenreChips() {
+    const container = byId("genreChips");
+
+    if (!container) {
+      return;
+    }
+
+    const genres = new Set();
+
+    state.allItems.forEach(function (item) {
+      item.genres.forEach(function (genre) {
+        if (genre) {
+          genres.add(genre);
+        }
+      });
+    });
+
+    const list = Array.from(genres).slice(0, 15);
+
+    container.innerHTML = list.map(function (genre) {
+      return `
+        <button
+          class="chip"
+          type="button"
+          onclick="openGenre('${escapeHTML(genre).replace(/'/g, "\\'")}')"
+        >${escapeHTML(genre)}</button>
+      `;
+    }).join("");
+  }
+
+  // --------------------------------------------------
+  // ПОИСК
+  // --------------------------------------------------
+
+  function focusSearch() {
+    const input = byId("searchInput");
+
+    if (input) {
+      input.focus();
+      input.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+  }
+
+  function openSearch() {
+    showPage("searchPage");
+
+    const input = byId("pageSearchInput");
+
+    if (input) {
+      input.focus();
+    }
+  }
+
+  function handleSearch(value) {
+    const query = String(
+      value !== undefined
+        ? value
+        : (byId("searchInput") || {}).value || ""
     ).trim();
 
-    if (!id) {
-      result.push(item);
+    state.searchQuery = query;
+
+    if (!query) {
       return;
     }
 
-    if (usedIds.has(id)) {
-      return;
+    const pageInput = byId("pageSearchInput");
+
+    if (pageInput) {
+      pageInput.value = query;
     }
 
-    usedIds.add(id);
-
-    result.push(item);
-
-  });
-
-  return result;
-}
-
-
-/* =========================================================
-   РЕНДЕР КАТАЛОГА
-========================================================= */
-
-function renderCatalog() {
-
-  const container =
-    document.getElementById("movieGrid") ||
-    document.getElementById("moviesGrid") ||
-    document.querySelector(".movie-grid") ||
-    document.querySelector(".movies-grid");
-
-
-  if (!container) {
-    return;
+    renderSearchResults();
+    showPage("searchPage");
   }
 
-
-  let items =
-    SHOHIN_MOVIE.currentType === "series"
-      ? SHOHIN_MOVIE.series
-      : SHOHIN_MOVIE.movies;
-
-
-  if (!Array.isArray(items)) {
-    items = [];
-  }
-
-
-  /* -----------------------------
-     ГОД
-  ----------------------------- */
-
-  if (
-    SHOHIN_MOVIE.currentYear &&
-    SHOHIN_MOVIE.currentYear !== "all"
-  ) {
-
-    const selectedYear =
-      Number(SHOHIN_MOVIE.currentYear);
-
-    items = items.filter(item =>
-      Number(item.year) === selectedYear
-    );
-
-  }
-
-
-  /* -----------------------------
-     АКТИВНЫЙ ФИЛЬТР
-  ----------------------------- */
-
-  if (
-    typeof activeFilter !== "undefined" &&
-    activeFilter &&
-    activeFilter !== "all"
-  ) {
-
-    items = applyActiveFilter(
-      items,
-      activeFilter
-    );
-
-  }
-
-
-  /* -----------------------------
-     ПОИСК
-  ----------------------------- */
-
-  if (currentSearchQuery) {
-
-    items = searchItems(
-      items,
-      currentSearchQuery
-    );
-
-  }
-
-
-  /* -----------------------------
-     КАРТОЧКИ
-  ----------------------------- */
-
-  if (
-    typeof renderMovieCards === "function"
-  ) {
-
-    renderMovieCards(
-      items,
-      container
-    );
-
-  } else {
-
-    container.innerHTML = items
-      .map(item =>
-        typeof createMovieCard === "function"
-          ? createMovieCard(item)
-          : ""
-      )
-      .join("");
-
-  }
-
-}
-
-
-/* =========================================================
-   АКТИВНЫЕ ФИЛЬТРЫ
-========================================================= */
-
-function applyActiveFilter(items, filter) {
-
-  if (!Array.isArray(items)) {
-    return [];
-  }
-
-
-  const value =
-    String(filter)
-      .trim()
-      .toLowerCase();
-
-
-  if (!value || value === "all") {
-    return items;
-  }
-
-
-  /* Рейтинг */
-
-  if (
-    value.startsWith("rating:")
-  ) {
-
-    const minimum =
-      Number(
-        value.replace("rating:", "")
-      );
-
-    return items.filter(item =>
-      Number(item.rating || 0) >= minimum
-    );
-
-  }
-
-
-  /* Страна */
-
-  if (
-    value.startsWith("country:")
-  ) {
-
-    const country =
-      value.replace("country:", "").trim();
-
-    return items.filter(item => {
-
-      const countries =
-        Array.isArray(item.countries)
-          ? item.countries
-          : [];
-
-      return countries.some(itemCountry =>
-        String(itemCountry)
-          .toLowerCase()
-          .trim() === country
-      );
-
-    });
-
-  }
-
-
-  /* Жанр */
-
-  if (
-    value.startsWith("genre:")
-  ) {
-
-    const genre =
-      value.replace("genre:", "").trim();
-
-    return items.filter(item => {
-
-      const genres =
-        Array.isArray(item.genres)
-          ? item.genres
-          : [];
-
-      return genres.some(itemGenre =>
-        String(itemGenre)
-          .toLowerCase()
-          .trim() === genre
-      );
-
-    });
-
-  }
-
-
-  return items;
-}
-
-
-/* =========================================================
-   ПОИСК
-========================================================= */
-
-let currentSearchQuery = "";
-
-
-function setupSearch() {
-
-  const searchInput =
-    document.getElementById("searchInput");
-
-
-  if (!searchInput) {
-    return;
-  }
-
-
-  searchInput.addEventListener(
-    "input",
-    event => {
-
-      currentSearchQuery =
-        String(
-          event.target.value || ""
-        )
-        .trim()
-        .toLowerCase();
-
-
-      renderCatalog();
-
-    }
-  );
-
-}
-
-
-function searchItems(items, query) {
-
-  if (!Array.isArray(items)) {
-    return [];
-  }
-
-
-  if (!query) {
-    return items;
-  }
-
-
-  return items.filter(item => {
-
-    const countries =
-      Array.isArray(item.countries)
-        ? item.countries.join(" ")
-        : "";
-
-    const genres =
-      Array.isArray(item.genres)
-        ? item.genres.join(" ")
-        : "";
-
-    const actors =
-      Array.isArray(item.actors)
-        ? item.actors.join(" ")
-        : "";
-
-
-    const text = [
-
-      item.title,
-      item.originalTitle,
-      item.description,
-      item.director,
-      countries,
-      genres,
-      actors,
-      item.year
-
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-
-
-    return text.includes(query);
-
-  });
-
-}
-
-
-/* =========================================================
-   ПЕРЕКЛЮЧЕНИЕ ФИЛЬМЫ / СЕРИАЛЫ
-========================================================= */
-
-function setCatalogType(type) {
-
-  const selectedType =
-    type === "series"
-      ? "series"
-      : "movies";
-
-
-  SHOHIN_MOVIE.currentType =
-    selectedType;
-
-
-  SHOHIN_MOVIE.currentYear =
-    "all";
-
-
-  renderCatalog();
-
-}
-
-
-/* =========================================================
-   ПЕРЕКЛЮЧЕНИЕ ГОДА
-========================================================= */
-
-function setCatalogYear(year) {
-
-  if (
-    year === undefined ||
-    year === null ||
-    year === "" ||
-    year === "all"
-  ) {
-
-    SHOHIN_MOVIE.currentYear =
-      "all";
-
-  } else {
-
-    SHOHIN_MOVIE.currentYear =
-      Number(year);
-
-  }
-
-
-  renderCatalog();
-
-}
-
-
-/* =========================================================
-   ФИЛЬТР ПО СТРАНЕ
-========================================================= */
-
-function filterByCountry(country) {
-
-  if (!country || country === "all") {
-
-    if (
-      typeof resetFilters === "function"
-    ) {
-      resetFilters();
-    } else {
-      renderCatalog();
-    }
-
-    return;
-  }
-
-
-  const items =
-    SHOHIN_MOVIE.currentType === "series"
-      ? SHOHIN_MOVIE.series
-      : SHOHIN_MOVIE.movies;
-
-
-  const filtered =
-    typeof getItemsByCountry === "function"
-      ? getItemsByCountry(
-          items,
-          country
-        )
-      : items;
-
-
-  renderFilteredItems(filtered);
-
-}
-
-
-/* =========================================================
-   ФИЛЬТР ПО ЖАНРУ
-========================================================= */
-
-function filterByGenre(genre) {
-
-  if (!genre || genre === "all") {
-
-    if (
-      typeof resetFilters === "function"
-    ) {
-      resetFilters();
-    } else {
-      renderCatalog();
-    }
-
-    return;
-  }
-
-
-  const items =
-    SHOHIN_MOVIE.currentType === "series"
-      ? SHOHIN_MOVIE.series
-      : SHOHIN_MOVIE.movies;
-
-
-  const filtered =
-    typeof getItemsByGenre === "function"
-      ? getItemsByGenre(
-          items,
-          genre
-        )
-      : items;
-
-
-  renderFilteredItems(filtered);
-
-}
-
-
-/* =========================================================
-   ФИЛЬТРОВАННЫЕ КАРТОЧКИ
-========================================================= */
-
-function renderFilteredItems(items) {
-
-  const container =
-    document.getElementById("movieGrid") ||
-    document.getElementById("moviesGrid") ||
-    document.querySelector(".movie-grid") ||
-    document.querySelector(".movies-grid");
-
-
-  if (!container) {
-    return;
-  }
-
-
-  if (
-    typeof renderMovieCards === "function"
-  ) {
-
-    renderMovieCards(
-      items,
-      container
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   ИЗБРАННОЕ
-========================================================= */
-
-function getFavorites() {
-
-  try {
-
-    const saved =
-      localStorage.getItem(
-        FAVORITES_KEY
-      );
-
-
-    if (!saved) {
-      return [];
-    }
-
-
-    const data =
-      JSON.parse(saved);
-
-
-    return Array.isArray(data)
-      ? data
+  function renderSearchResults() {
+    const input = byId("pageSearchInput");
+
+    const query = String(
+      (input && input.value) || state.searchQuery || ""
+    ).trim().toLowerCase();
+
+    state.searchQuery = query;
+
+    const results = query
+      ? state.allItems.filter(function (item) {
+          const searchable = [
+            item.title,
+            item.originalTitle,
+            item.year,
+            item.country,
+            item.description,
+            item.genres.join(" "),
+            item.actors.join(" ")
+          ].join(" ").toLowerCase();
+
+          return searchable.includes(query);
+        })
       : [];
 
-  } catch (error) {
-
-    return [];
-
+    renderCards(results, "searchResultsGrid", "Ничего не найдено");
   }
 
-}
+  // --------------------------------------------------
+  // КАТАЛОГ И ФИЛЬТРЫ
+  // --------------------------------------------------
 
+  function showCatalog(type) {
+    state.catalogType = type || "all";
+    state.visibleCount = state.pageSize;
 
-function saveFavorites(items) {
+    showPage("catalogPage");
 
-  if (!Array.isArray(items)) {
-    return;
+    const title = byId("catalogTitle");
+
+    if (title) {
+      const titles = {
+        all: "Весь каталог",
+        film: "Фильмы",
+        series: "Сериалы"
+      };
+
+      title.textContent = titles[state.catalogType] || "Каталог";
+    }
+
+    renderCatalogTypes();
+    applyFilters();
   }
 
+  function renderCatalogTypes() {
+    const container = byId("catalogTypes");
 
-  try {
+    if (!container) {
+      return;
+    }
 
-    localStorage.setItem(
-      FAVORITES_KEY,
-      JSON.stringify(
-        items.slice(
-          0,
-          MAX_FAVORITES
+    const types = [
+      { id: "all", title: "Всё" },
+      { id: "film", title: "Фильмы" },
+      { id: "series", title: "Сериалы" }
+    ];
+
+    container.innerHTML = types.map(function (type) {
+      const active = state.catalogType === type.id
+        ? " active"
+        : "";
+
+      return `
+        <button
+          class="chip${active}"
+          type="button"
+          onclick="setCatalogType('${type.id}')"
+        >${type.title}</button>
+      `;
+    }).join("");
+  }
+
+  function setCatalogType(type) {
+    state.catalogType = type || "all";
+    state.visibleCount = state.pageSize;
+
+    const title = byId("catalogTitle");
+
+    if (title) {
+      title.textContent = {
+        all: "Весь каталог",
+        film: "Фильмы",
+        series: "Сериалы"
+      }[state.catalogType] || "Каталог";
+    }
+
+    renderCatalogTypes();
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const genre = (byId("filterGenre") || {}).value || "";
+    const year = (byId("filterYear") || {}).value || "";
+    const country = (byId("filterCountry") || {}).value || "";
+    const sort = (byId("sortOrder") || {}).value || "rating";
+
+    let items = state.allItems.filter(function (item) {
+      if (
+        state.catalogType === "film" &&
+        isSeries(item)
+      ) {
+        return false;
+      }
+
+      if (
+        state.catalogType === "series" &&
+        !isSeries(item)
+      ) {
+        return false;
+      }
+
+      if (genre && !item.genres.includes(genre)) {
+        return false;
+      }
+
+      if (year && String(item.year) !== String(year)) {
+        return false;
+      }
+
+      if (
+        country &&
+        !String(item.country).toLowerCase().includes(
+          country.toLowerCase()
         )
-      )
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+
+    if (sort === "rating") {
+      items.sort(function (a, b) {
+        return Number(b.rating || 0) - Number(a.rating || 0);
+      });
+    } else if (sort === "year-new") {
+      items.sort(function (a, b) {
+        return Number(b.year || 0) - Number(a.year || 0);
+      });
+    } else if (sort === "year-old") {
+      items.sort(function (a, b) {
+        return Number(a.year || 0) - Number(b.year || 0);
+      });
+    } else if (sort === "title") {
+      items.sort(function (a, b) {
+        return a.title.localeCompare(b.title, "ru");
+      });
+    }
+
+    const visibleItems = items.slice(0, state.visibleCount);
+
+    renderCards(
+      visibleItems,
+      "catalogGrid",
+      "Фильмы не найдены"
     );
 
-  } catch (error) {
+    const count = byId("resultsCount");
 
-    console.warn(
-      "SHOHIN MOVIE: ошибка сохранения избранного"
-    );
+    if (count) {
+      count.textContent = "Найдено: " + items.length;
+    }
 
-  }
+    const button = byId("loadMoreBtn");
 
-}
-
-
-function isFavorite(id) {
-
-  const favorites =
-    getFavorites();
-
-
-  return favorites.some(item =>
-    String(item.id) === String(id)
-  );
-
-}
-
-
-function toggleFavorite(item) {
-
-  if (!item || !item.id) {
-    return false;
-  }
-
-
-  let favorites =
-    getFavorites();
-
-
-  const existingIndex =
-    favorites.findIndex(
-      favorite =>
-        String(favorite.id) ===
-        String(item.id)
-    );
-
-
-  if (existingIndex !== -1) {
-
-    favorites.splice(
-      existingIndex,
-      1
-    );
-
-    saveFavorites(
-      favorites
-    );
-
-    updateFavoriteButton(
-      false
-    );
-
-    return false;
-
-  }
-
-
-  favorites.unshift(item);
-
-
-  if (
-    favorites.length >
-    MAX_FAVORITES
-  ) {
-
-    favorites =
-      favorites.slice(
-        0,
-        MAX_FAVORITES
+    if (button) {
+      button.classList.toggle(
+        "hidden",
+        visibleItems.length >= items.length
       );
-
+    }
   }
 
+  function resetFilters() {
+    [
+      "filterGenre",
+      "filterYear",
+      "filterCountry"
+    ].forEach(function (id) {
+      const element = byId(id);
 
-  saveFavorites(
-    favorites
-  );
+      if (element) {
+        element.value = "";
+      }
+    });
 
+    const sort = byId("sortOrder");
 
-  updateFavoriteButton(
-    true
-  );
+    if (sort) {
+      sort.value = "rating";
+    }
 
-
-  return true;
-
-}
-
-
-/* =========================================================
-   КНОПКА ИЗБРАННОГО
-========================================================= */
-
-let currentModalItem = null;
-
-
-function initFavoriteButton() {
-
-  const button =
-    document.getElementById(
-      "favoriteButton"
-    );
-
-
-  if (!button) {
-    return;
+    state.visibleCount = state.pageSize;
+    applyFilters();
   }
 
+  function loadMore() {
+    state.visibleCount += state.pageSize;
+    applyFilters();
+  }
 
-  button.addEventListener(
-    "click",
-    event => {
+  function openGenre(genre) {
+    showCatalog("all");
 
-      event.preventDefault();
+    const select = byId("filterGenre");
 
-      event.stopPropagation();
+    if (select) {
+      const exists = Array.from(select.options).some(function (option) {
+        return option.value === genre;
+      });
 
+      if (exists) {
+        select.value = genre;
+      }
+    }
 
-      if (!currentModalItem) {
+    applyFilters();
+  }
+
+  function surpriseMe() {
+    const items = state.allItems;
+
+    if (!items.length) {
+      showToast("Сначала добавьте фильмы в каталог.");
+      return;
+    }
+
+    const item = items[Math.floor(Math.random() * items.length)];
+
+    openDetail(getId(item));
+  }
+
+  // --------------------------------------------------
+  // ИЗБРАННОЕ
+  // --------------------------------------------------
+
+  function toggleFavorite(id) {
+    const item = findItem(id);
+
+    if (!item) {
+      showToast("Фильм пока не найден в каталоге.");
+      return;
+    }
+
+    let favorites = getFavorites();
+
+    const exists = favorites.some(function (favorite) {
+      return String(
+        typeof favorite === "object" ? favorite.id : favorite
+      ) === String(id);
+    });
+
+    if (exists) {
+      favorites = favorites.filter(function (favorite) {
+        return String(
+          typeof favorite === "object" ? favorite.id : favorite
+        ) !== String(id);
+      });
+
+      showToast("Удалено из избранного.");
+    } else {
+      favorites.push(String(id));
+      showToast("Добавлено в избранное ♥");
+    }
+
+    writeStorage(STORAGE.favorites, favorites);
+
+    refreshFavoriteButtons();
+    renderFavorites();
+
+    if (state.currentItem && getId(state.currentItem) === String(id)) {
+      updateDetailFavorite();
+    }
+  }
+
+  function refreshFavoriteButtons() {
+    document.querySelectorAll(".movie-card").forEach(function (card) {
+      const id = card.dataset.movieId;
+
+      const button = card.querySelector(".favorite-btn");
+
+      if (!button) {
         return;
       }
 
+      const favorite = getFavorites().some(function (item) {
+        return String(typeof item === "object" ? item.id : item) === id;
+      });
 
-      const added =
-        toggleFavorite(
-          currentModalItem
-        );
+      button.classList.toggle("active", favorite);
+      button.textContent = favorite ? "♥" : "♡";
+      button.setAttribute("aria-pressed", String(favorite));
+    });
+  }
 
+  function showFavorites() {
+    showPage("favoritesPage");
+    renderFavorites();
+  }
 
-      button.classList.remove(
-        "favorite-pulse"
-      );
+  function renderFavorites() {
+    const favoriteIds = getFavorites().map(function (item) {
+      return String(typeof item === "object" ? item.id : item);
+    });
 
+    const items = state.allItems.filter(function (item) {
+      return favoriteIds.includes(getId(item));
+    });
 
-      void button.offsetWidth;
+    renderCards(items, "favoritesGrid", "Избранное пока пусто");
+  }
 
-
-      button.classList.add(
-        "favorite-pulse"
-      );
-
-
-      updateFavoriteButton(
-        added
-      );
-
+  function toggleCurrentFavorite() {
+    if (state.currentItem) {
+      toggleFavorite(getId(state.currentItem));
     }
-  );
-
-}
-
-
-function updateFavoriteButton(active) {
-
-  const button =
-    document.getElementById(
-      "favoriteButton"
-    );
-
-
-  if (!button) {
-    return;
   }
 
+  // --------------------------------------------------
+  // ИСТОРИЯ
+  // --------------------------------------------------
 
-  const icon =
-    button.querySelector(
-      ".favorite-icon"
-    );
+  function addToHistory(item) {
+    const enabled = readStorage(STORAGE.saveHistory, true);
 
-
-  const text =
-    button.querySelector(
-      ".favorite-text"
-    );
-
-
-  button.classList.toggle(
-    "active",
-    Boolean(active)
-  );
-
-
-  if (icon) {
-
-    icon.textContent =
-      active
-        ? "🔖"
-        : "🔖";
-
-  }
-
-
-  if (text) {
-
-    text.textContent =
-      active
-        ? "Сохранено"
-        : "Сохранить";
-
-  }
-
-
-  button.setAttribute(
-    "aria-label",
-    active
-      ? "Удалить из избранного"
-      : "Добавить в избранное"
-  );
-
-}
-
-
-/* =========================================================
-   НЕДАВНО ОТКРЫТЫЕ
-========================================================= */
-
-function getRecentItems() {
-
-  try {
-
-    const saved =
-      localStorage.getItem(
-        RECENT_KEY
-      );
-
-
-    if (!saved) {
-      return [];
+    if (!enabled || !item) {
+      return;
     }
 
+    let history = getHistory();
 
-    const data =
-      JSON.parse(saved);
+    const id = getId(item);
 
+    history = history.filter(function (entry) {
+      return String(entry.id) !== id;
+    });
 
-    return Array.isArray(data)
-      ? data
-      : [];
+    history.unshift({
+      id: id,
+      openedAt: Date.now()
+    });
 
-  } catch (error) {
+    history = history.slice(0, 100);
 
-    return [];
-
+    writeStorage(STORAGE.history, history);
   }
 
-}
-
-
-function saveRecentItem(item) {
-
-  if (!item || !item.id) {
-    return;
+  function showRecent() {
+    showPage("historyPage");
+    renderHistory();
   }
 
+  function renderHistory() {
+    const items = getHistory()
+      .map(function (entry) {
+        return findItem(entry.id);
+      })
+      .filter(Boolean);
 
-  let recent =
-    getRecentItems();
-
-
-  recent =
-    recent.filter(
-      recentItem =>
-        String(recentItem.id) !==
-        String(item.id)
-    );
-
-
-  recent.unshift(item);
-
-
-  recent =
-    recent.slice(
-      0,
-      MAX_RECENT
-    );
-
-
-  try {
-
-    localStorage.setItem(
-      RECENT_KEY,
-      JSON.stringify(recent)
-    );
-
-  } catch (error) {
-
-    console.warn(
-      "SHOHIN MOVIE: ошибка сохранения истории"
-    );
-
+    renderCards(items, "historyGrid", "История пока пуста");
   }
 
-}
+  function clearHistory() {
+    if (!confirm("Очистить историю просмотренных карточек?")) {
+      return;
+    }
 
+    writeStorage(STORAGE.history, []);
 
-/* =========================================================
-   МОДАЛЬНОЕ ОКНО
-========================================================= */
+    renderHistory();
+    renderHome();
 
-function openMovieModal(item) {
-
-  if (!item) {
-    return;
+    showToast("История очищена.");
   }
 
+  // --------------------------------------------------
+  // СТРАНИЦА ФИЛЬМА
+  // --------------------------------------------------
 
-  currentModalItem =
-    item;
+  function openDetail(id) {
+    const item = findItem(id);
 
+    if (!item) {
+      showToast("Информация об этом фильме пока недоступна.");
+      return;
+    }
 
-  saveRecentItem(
-    item
-  );
+    state.currentItem = item;
 
+    addToHistory(item);
 
-  updateFavoriteButton(
-    isFavorite(item.id)
-  );
+    const poster = byId("detailPoster");
+    const type = byId("detailType");
+    const title = byId("detailTitle");
+    const meta = byId("detailMeta");
+    const country = byId("detailCountry");
+    const genres = byId("detailGenres");
+    const description = byId("detailDescription");
 
+    if (poster) {
+      poster.innerHTML = item.poster
+        ? `
+          <img
+            src="${escapeHTML(item.poster)}"
+            alt="${escapeHTML(item.title)}"
+            onerror="this.remove()"
+          >
+        `
+        : `
+          <div class="poster-placeholder">
+            <span>SM</span>
+            <strong>${escapeHTML(item.title)}</strong>
+          </div>
+        `;
+    }
 
-  const modal =
-    document.getElementById(
-      "movieModal"
-    );
+    if (type) {
+      type.textContent = isSeries(item) ? "Сериал" : "Фильм";
+    }
 
+    if (title) {
+      title.textContent = item.title;
+    }
 
-  if (!modal) {
-    return;
+    if (meta) {
+      meta.textContent = [
+        item.year,
+        item.rating ? "★ " + item.rating : ""
+      ].filter(Boolean).join(" • ");
+    }
+
+    if (country) {
+      country.textContent = item.country || "Не указано";
+    }
+
+    if (genres) {
+      genres.innerHTML = item.genres.map(function (genre) {
+        return `
+          <span class="detail-tag">${escapeHTML(genre)}</span>
+        `;
+      }).join("");
+    }
+
+    if (description) {
+      description.textContent =
+        item.description || "Описание пока не добавлено.";
+    }
+
+    setText("detailDirector", item.director || "Не указано");
+    setText("detailRuntime", item.runtime || "Не указано");
+    setText("detailLanguage", item.language || "Не указано");
+
+    const cast = byId("detailCast");
+
+    if (cast) {
+      cast.innerHTML = item.actors.map(function (actor) {
+        const name = typeof actor === "string"
+          ? actor
+          : actor.name || "";
+
+        return `
+          <button
+            class="detail-actor"
+            type="button"
+            onclick="openActor('${escapeHTML(name).replace(/'/g, "\\'")}')"
+          >${escapeHTML(name)}</button>
+        `;
+      }).join("");
+    }
+
+    const extra = byId("detailExtraSection");
+
+    if (extra) {
+      extra.classList.toggle(
+        "hidden",
+        !item.director && !item.runtime && !item.language
+      );
+    }
+
+    const similar = state.allItems.filter(function (other) {
+      return getId(other) !== getId(item) &&
+        other.genres.some(function (genre) {
+          return item.genres.includes(genre);
+        });
+    }).slice(0, 8);
+
+    renderCards(similar, "similarGrid", "Похожих фильмов пока нет");
+
+    updateDetailFavorite();
+
+    showPage("detailPage");
   }
 
+  function setText(id, value) {
+    const element = byId(id);
 
-  const title =
-    modal.querySelector(
-      ".modal-title"
-    );
-
-
-  const originalTitle =
-    modal.querySelector(
-      ".modal-original-title"
-    );
-
-
-  const poster =
-    modal.querySelector(
-      ".modal-poster"
-    );
-
-
-  const description =
-    modal.querySelector(
-      ".modal-description"
-    );
-
-
-  const year =
-    modal.querySelector(
-      ".modal-year"
-    );
-
-
-  const rating =
-    modal.querySelector(
-      ".modal-rating"
-    );
-
-
-  const director =
-    modal.querySelector(
-      ".modal-director"
-    );
-
-
-  const actors =
-    modal.querySelector(
-      ".modal-actors"
-    );
-
-
-  const countries =
-    modal.querySelector(
-      ".modal-countries"
-    );
-
-
-  const genres =
-    modal.querySelector(
-      ".modal-genres"
-    );
-
-
-  if (title) {
-
-    title.textContent =
-      item.title || "Без названия";
-
+    if (element) {
+      element.textContent = value;
+    }
   }
 
+  function updateDetailFavorite() {
+    const button = byId("detailFavorite");
 
-  if (originalTitle) {
+    if (!button || !state.currentItem) {
+      return;
+    }
 
-    originalTitle.textContent =
-      item.originalTitle || "";
+    const favorite = getFavorites().some(function (item) {
+      return String(typeof item === "object" ? item.id : item) ===
+        getId(state.currentItem);
+    });
 
+    button.textContent = favorite
+      ? "♥ В избранном"
+      : "♡ В избранное";
+
+    button.setAttribute("aria-pressed", String(favorite));
   }
 
+  function handleWatchButton() {
+    showToast(
+      "SHOHIN MOVIE — каталог фильмов. Просмотр внутри приложения пока не предусмотрен."
+    );
+  }
 
-  if (poster) {
+  async function shareCurrent() {
+    if (!state.currentItem) {
+      return;
+    }
 
-    const image =
-      poster.querySelector("img");
+    const item = state.currentItem;
 
+    const text = [
+      item.title,
+      item.year || "",
+      item.country || "",
+      item.description || ""
+    ].filter(Boolean).join("\n");
 
-    if (image) {
-
-      if (item.poster) {
-
-        image.src =
-          item.poster;
-
-        image.alt =
-          item.title || "";
-
-        image.style.display =
-          "block";
-
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: item.title,
+          text: text
+        });
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+        showToast("Информация скопирована.");
       } else {
-
-        image.removeAttribute(
-          "src"
-        );
-
-        image.style.display =
-          "none";
-
+        showToast("Поделиться сейчас невозможно.");
       }
-
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        showToast("Не удалось поделиться информацией.");
+      }
     }
-
   }
 
+  // --------------------------------------------------
+  // АКТЁРЫ
+  // --------------------------------------------------
 
-  if (description) {
+  function openActor(id) {
+    const actor = state.actors.find(function (item) {
+      return String(item.id || item.name) === String(id) ||
+        String(item.name) === String(id);
+    });
 
-    description.textContent =
-      item.description || "";
+    const name = actor
+      ? actor.name
+      : String(id);
 
-  }
+    state.currentActor = actor || { name: name };
 
-
-  if (year) {
-
-    year.textContent =
-      item.year || "";
-
-  }
-
-
-  if (rating) {
-
-    rating.textContent =
-      item.rating
-        ? `★ ${item.rating}`
-        : "";
-
-  }
-
-
-  if (director) {
-
-    director.textContent =
-      item.director || "—";
-
-  }
-
-
-  if (actors) {
-
-    const actorList =
-      Array.isArray(item.actors)
-        ? item.actors
-        : [];
-
-
-    actors.textContent =
-      actorList.join(", ");
-
-  }
-
-
-  if (countries) {
-
-    const countryList =
-      Array.isArray(item.countries)
-        ? item.countries
-        : [];
-
-
-    countries.textContent =
-      countryList.join(", ");
-
-  }
-
-
-  if (genres) {
-
-    const genreList =
-      Array.isArray(item.genres)
-        ? item.genres
-        : [];
-
-
-    genres.textContent =
-      genreList.join(", ");
-
-  }
-
-
-  modal.classList.add(
-    "open"
-  );
-
-
-  document.body.classList.add(
-    "modal-open"
-  );
-
-}
-
-
-function closeMovieModal() {
-
-  const modal =
-    document.getElementById(
-      "movieModal"
+    setText("actorName", name);
+    setText(
+      "actorMeta",
+      actor && actor.country ? actor.country : "Актёр"
     );
 
+    setText(
+      "actorBiography",
+      actor && actor.biography
+        ? actor.biography
+        : "Биография пока не добавлена."
+    );
 
-  if (!modal) {
-    return;
+    const avatar = byId("actorBigAvatar");
+
+    if (avatar) {
+      if (actor && (actor.photo || actor.image)) {
+        avatar.innerHTML = `
+          <img
+            src="${escapeHTML(actor.photo || actor.image)}"
+            alt="${escapeHTML(name)}"
+            onerror="this.remove()"
+          >
+        `;
+      } else {
+        avatar.textContent = name.charAt(0) || "?";
+      }
+    }
+
+    const filmography = state.allItems.filter(function (item) {
+      return item.actors.some(function (person) {
+        const personName = typeof person === "string"
+          ? person
+          : person.name || "";
+
+        return personName.toLowerCase() === name.toLowerCase();
+      });
+    });
+
+    renderCards(
+      filmography,
+      "actorFilmography",
+      "Фильмография пока не добавлена"
+    );
+
+    showPage("actorPage");
   }
 
+  // --------------------------------------------------
+  // МЕНЮ
+  // --------------------------------------------------
 
-  modal.classList.remove(
-    "open"
-  );
+  function openMenu() {
+    const overlay = byId("menuOverlay");
 
-
-  document.body.classList.remove(
-    "modal-open"
-  );
-
-
-  currentModalItem =
-    null;
-
-}
-
-
-/* =========================================================
-   СОБЫТИЯ
-========================================================= */
-
-function setupEventListeners() {
-
-
-  /* Фильмы */
-
-  document.addEventListener(
-    "click",
-    event => {
-
-      const moviesButton =
-        event.target.closest(
-          "[data-type='movies']"
-        );
-
-
-      if (moviesButton) {
-
-        setCatalogType(
-          "movies"
-        );
-
-      }
-
+    if (overlay) {
+      overlay.classList.add("open");
+      overlay.setAttribute("aria-hidden", "false");
     }
-  );
 
+    document.querySelectorAll(".drawer").forEach(function (drawer) {
+      drawer.classList.add("open");
+    });
 
-  /* Сериалы */
+    document.body.style.overflow = "hidden";
+  }
 
-  document.addEventListener(
-    "click",
-    event => {
+  function closeMenu() {
+    const overlay = byId("menuOverlay");
 
-      const seriesButton =
-        event.target.closest(
-          "[data-type='series']"
-        );
-
-
-      if (seriesButton) {
-
-        setCatalogType(
-          "series"
-        );
-
-      }
-
+    if (overlay) {
+      overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden", "true");
     }
-  );
 
+    document.querySelectorAll(".drawer").forEach(function (drawer) {
+      drawer.classList.remove("open");
+    });
 
-  /* Год */
+    document.body.style.overflow = "";
+  }
 
-  document.addEventListener(
-    "click",
-    event => {
+  // --------------------------------------------------
+  // НАСТРОЙКИ
+  // --------------------------------------------------
 
-      const yearButton =
-        event.target.closest(
-          "[data-year]"
-        );
+  function openSettings() {
+    showPage("settingsPage");
 
+    const size = byId("cardSize");
 
-      if (
-        yearButton &&
-        !yearButton.closest(
-          ".movie-card"
-        )
-      ) {
-
-        const year =
-          yearButton.dataset.year;
-
-
-        setCatalogYear(
-          year
-        );
-
-      }
-
+    if (size) {
+      size.value = readStorage(STORAGE.cardSize, "normal");
     }
-  );
 
+    const history = byId("saveHistory");
 
-  /* Закрытие модального окна */
-
-  document.addEventListener(
-    "click",
-    event => {
-
-      if (
-        event.target.matches(
-          "[data-close-modal]"
-        )
-      ) {
-
-        closeMovieModal();
-
-      }
-
+    if (history) {
+      history.checked = readStorage(STORAGE.saveHistory, true);
     }
-  );
+  }
 
+  function setCardSize(value) {
+    const size = value || (byId("cardSize") || {}).value || "normal";
 
-  document.addEventListener(
-    "keydown",
-    event => {
+    writeStorage(STORAGE.cardSize, size);
 
-      if (
-        event.key === "Escape"
-      ) {
+    document.body.classList.remove(
+      "cards-small",
+      "cards-normal",
+      "cards-large"
+    );
 
-        closeMovieModal();
+    document.body.classList.add("cards-" + size);
 
-      }
+    showToast("Размер карточек изменён.");
+  }
 
+  function setHistoryEnabled(value) {
+    const enabled = typeof value === "boolean"
+      ? value
+      : Boolean((byId("saveHistory") || {}).checked);
+
+    writeStorage(STORAGE.saveHistory, enabled);
+
+    if (!enabled) {
+      writeStorage(STORAGE.history, []);
+      renderHistory();
+      renderHome();
     }
-  );
 
-}
+    showToast(
+      enabled
+        ? "История включена."
+        : "История отключена."
+    );
+  }
 
+  function resetAppSettings() {
+    if (!confirm("Сбросить настройки SHOHIN MOVIE?")) {
+      return;
+    }
 
-/* =========================================================
-   ДАННЫЕ ДЛЯ МЕНЮ
-========================================================= */
+    localStorage.removeItem(STORAGE.cardSize);
+    localStorage.removeItem(STORAGE.saveHistory);
 
-function updateMenuData() {
+    document.body.classList.remove(
+      "cards-small",
+      "cards-large"
+    );
 
-  const allItems = [
-    ...SHOHIN_MOVIE.movies,
-    ...SHOHIN_MOVIE.series
-  ];
+    const size = byId("cardSize");
 
+    if (size) {
+      size.value = "normal";
+    }
 
-  const years =
-    typeof getAvailableYears === "function"
-      ? getAvailableYears(allItems)
-      : [];
+    const history = byId("saveHistory");
 
+    if (history) {
+      history.checked = true;
+    }
 
-  const countries =
-    typeof getAllCountries === "function"
-      ? getAllCountries(allItems)
-      : [];
+    showToast("Настройки сброшены.");
+  }
 
+  function openAbout() {
+    showPage("aboutPage");
+  }
 
-  const genres =
-    typeof getAllGenres === "function"
-      ? getAllGenres(allItems)
-      : [];
+  function updateFooter() {
+    const year = byId("footerYear");
 
+    if (year) {
+      year.textContent = String(new Date().getFullYear());
+    }
+  }
 
-  window.SHOHIN_MOVIE_MENU_DATA = {
+  // --------------------------------------------------
+  // СОБЫТИЯ
+  // --------------------------------------------------
 
-    years,
-    countries,
-    genres
+  function connectEvents() {
+    const searchInput = byId("searchInput");
 
-  };
+    if (searchInput) {
+      searchInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          handleSearch(searchInput.value);
+        }
+      });
 
-}
+      searchInput.addEventListener("input", function () {
+        if (!searchInput.value.trim()) {
+          state.searchQuery = "";
+        }
+      });
+    }
 
+    const pageSearchInput = byId("pageSearchInput");
 
-/* =========================================================
-   ESCAPE
-========================================================= */
+    if (pageSearchInput) {
+      pageSearchInput.addEventListener("input", renderSearchResults);
+    }
 
-function escapeHTML(value) {
+    [
+      "filterGenre",
+      "filterYear",
+      "filterCountry",
+      "sortOrder"
+    ].forEach(function (id) {
+      const element = byId(id);
 
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+      if (element) {
+        element.addEventListener("change", function () {
+          state.visibleCount = state.pageSize;
+          applyFilters();
+        });
+      }
+    });
 
-}
+    const cardSize = byId("cardSize");
 
+    if (cardSize) {
+      cardSize.addEventListener("change", function () {
+        setCardSize(cardSize.value);
+      });
+    }
 
-/* =========================================================
-   ГЛОБАЛЬНЫЕ ФУНКЦИИ
-========================================================= */
+    const saveHistory = byId("saveHistory");
 
-window.loadAllCatalogs =
-  loadAllCatalogs;
+    if (saveHistory) {
+      saveHistory.addEventListener("change", function () {
+        setHistoryEnabled(saveHistory.checked);
+      });
+    }
 
-window.renderCatalog =
-  renderCatalog;
+    const overlay = byId("menuOverlay");
 
-window.setCatalogType =
-  setCatalogType;
+    if (overlay) {
+      overlay.addEventListener("click", function (event) {
+        if (event.target === overlay) {
+          closeMenu();
+        }
+      });
+    }
 
-window.setCatalogYear =
-  setCatalogYear;
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        closeMenu();
+      }
+    });
 
-window.searchItems =
-  searchItems;
+    document.querySelectorAll("[data-page]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        const pageId = button.dataset.page;
 
-window.filterByCountry =
-  filterByCountry;
+        if (pageId) {
+          showPage(pageId);
+        }
+      });
+    });
+  }
 
-window.filterByGenre =
-  filterByGenre;
+  // --------------------------------------------------
+  // ПУБЛИЧНЫЕ ФУНКЦИИ ДЛЯ HTML
+  // --------------------------------------------------
 
-window.renderFilteredItems =
-  renderFilteredItems;
+  Object.assign(window, {
+    goHome,
+    goBack,
+    focusSearch,
+    openSearch,
+    handleSearch,
+    renderSearchResults,
 
-window.getFavorites =
-  getFavorites;
+    showCatalog,
+    setCatalogType,
+    applyFilters,
+    resetFilters,
+    loadMore,
+    surpriseMe,
+    openGenre,
 
-window.saveFavorites =
-  saveFavorites;
+    toggleFavorite,
+    toggleCurrentFavorite,
+    showFavorites,
+    showRecent,
+    clearHistory,
 
-window.isFavorite =
-  isFavorite;
+    openDetail,
+    handleWatchButton,
+    shareCurrent,
 
-window.toggleFavorite =
-  toggleFavorite;
+    openActor,
 
-window.openMovieModal =
-  openMovieModal;
+    openMenu,
+    closeMenu,
+    openSettings,
+    openAbout,
 
-window.closeMovieModal =
-  closeMovieModal;
+    setCardSize,
+    setHistoryEnabled,
+    resetAppSettings
+  });
 
-window.getRecentItems =
-  getRecentItems;
+  // --------------------------------------------------
+  // ЗАПУСК
+  // --------------------------------------------------
 
-window.saveRecentItem =
-  saveRecentItem;
+  function init() {
+    connectEvents();
 
-window.escapeHTML =
-  escapeHTML;
+    const savedSize = readStorage(STORAGE.cardSize, "normal");
 
-window.SHOHIN_MOVIE_APP = {
+    document.body.classList.add("cards-" + savedSize);
 
-  loadAllCatalogs,
-  renderCatalog,
-  setCatalogType,
-  setCatalogYear,
-  searchItems,
-  filterByCountry,
-  filterByGenre,
-  getFavorites,
-  saveFavorites,
-  isFavorite,
-  toggleFavorite,
-  openMovieModal,
-  closeMovieModal,
-  getRecentItems,
-  saveRecentItem
+    updateFooter();
+    loadAllData();
+  }
 
-};
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
