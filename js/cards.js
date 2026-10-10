@@ -1,310 +1,465 @@
-/* SHOHIN MOVIE — CARD SYSTEM /
-/ SHOHIN BRAND COLORS — НЕ МЕНЯТЬ */
+/* ==========================================
+   SHOHIN MOVIE
+   FILE: js/cards.js
+   Карточки фильмов, сериалов и актёров
+   SHOHIN BRAND COLORS — НЕ МЕНЯТЬ
+   ========================================== */
 
-(function () {
 "use strict";
 
-// Безопасное отображение текста
-function escapeHTML(value) {
-const entities = {
-"&": "&",
-"<": "<",
-">": ">",
-'"': """,
-"'": "'"
-};
+(function () {
+  window.SHOHIN_MOVIE = window.SHOHIN_MOVIE || {};
 
-return String(value ?? "").replace(/[&<>"']/g, function (char) {
-  return entities[char];
-});
+  const Cards = {
+    escapeHTML: function (value) {
+      return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    },
 
-}
-
-// Уникальный идентификатор фильма
-function getMovieId(movie) {
-if (movie.id !== undefined && movie.id !== null) {
-return String(movie.id);
-}
-
-return [
-  movie.type || "film",
-  movie.year || "",
-  movie.originalTitle || movie.title || ""
-].join("-").toLowerCase();
-
-}
-
-// Получение избранного
-function getFavorites() {
-try {
-const stored = JSON.parse(
-localStorage.getItem("shohin_movie_favorites") || "[]"
-);
-
-  return Array.isArray(stored) ? stored : [];
-} catch (error) {
-  return [];
-}
-
-}
-
-// Проверка избранного
-function isFavorite(movie) {
-const id = getMovieId(movie);
-
-return getFavorites().some(function (item) {
-  if (typeof item === "string" || typeof item === "number") {
-    return String(item) === id;
-  }
-
-  return item && String(item.id) === id;
-});
-
-}
-
-// Постер фильма
-function getPosterHTML(movie) {
-const poster = movie.poster || movie.posterUrl || "";
-const title = escapeHTML(movie.title || "Без названия");
-
-if (poster) {
-  return `
-    <img
-      class="movie-poster"
-      src="${escapeHTML(poster)}"
-      alt="${title}"
-      loading="lazy"
-      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-    >
-
-    <div class="poster-placeholder" style="display:none">
-      <span>SM</span>
-      <strong>${title}</strong>
-    </div>
-  `;
-}
-
-return `
-  <div class="poster-placeholder">
-    <span>SM</span>
-    <strong>${title}</strong>
-  </div>
-`;
-
-}
-
-// Карточка фильма
-function getMovieCardHTML(movie, index) {
-const id = getMovieId(movie);
-const title = escapeHTML(movie.title || "Без названия");
-const year = escapeHTML(movie.year || "—");
-const country = escapeHTML(
-movie.country || "Страна не указана"
-);
-
-const rating = Number(movie.rating);
-
-const description = escapeHTML(
-  movie.description || "Описание фильма скоро появится."
-);
-
-const favorite = isFavorite(movie);
-const favoriteClass = favorite ? " active" : "";
-const favoriteIcon = favorite ? "♥" : "♡";
-
-const safeRating =
-  Number.isFinite(rating) && rating > 0
-    ? rating.toFixed(1)
-    : "";
-
-// JSON.stringify безопаснее для передачи ID в JavaScript-строку.
-const safeId = JSON.stringify(id)
-  .replace(/</g, "\\u003c")
-  .replace(/>/g, "\\u003e")
-  .replace(/&/g, "\\u0026");
-
-return `
-  <article
-    class="movie-card"
-    data-movie-id="${escapeHTML(id)}"
-    style="animation-delay:${Math.min(index * 25, 250)}ms"
-  >
-    <div class="movie-poster-wrap">
-      <button
-        class="poster-open-button"
-        type="button"
-        aria-label="Открыть фильм: ${title}"
-        onclick="openDetail(${safeId})"
-        style="position:absolute;inset:0;width:100%;height:100%;background:transparent;z-index:1"
-      ></button>
-
-      ${getPosterHTML(movie)}
-
-      ${
-        safeRating
-          ? `<div class="movie-rating">★ ${safeRating}</div>`
-          : ""
+    getValue: function (item, keys, fallback = "") {
+      for (const key of keys) {
+        if (
+          item &&
+          item[key] !== undefined &&
+          item[key] !== null &&
+          item[key] !== ""
+        ) {
+          return item[key];
+        }
       }
 
-      <button
-        class="favorite-btn${favoriteClass}"
-        type="button"
-        aria-label="Добавить в избранное"
-        aria-pressed="${favorite}"
-        onclick="event.stopPropagation();toggleFavorite(${safeId})"
-      >${favoriteIcon}</button>
-    </div>
+      return fallback;
+    },
 
-    <div class="movie-info">
-      <button
-        type="button"
-        class="movie-title"
-        onclick="openDetail(${safeId})"
-        style="display:block;width:100%;padding:0;border:0;background:transparent;text-align:left"
-      >${title}</button>
+    getTitle: function (item) {
+      return this.getValue(
+        item,
+        ["title", "name", "ruTitle", "originalTitle"],
+        "Без названия"
+      );
+    },
 
-      <div class="movie-meta">
-        <span>${year}</span>
-        <span>${country}</span>
-      </div>
+    getYear: function (item) {
+      return this.getValue(item, ["year", "releaseYear"], "");
+    },
 
-      <p class="movie-description">${description}</p>
-    </div>
-  </article>
-`;
+    getCountry: function (item) {
+      const country = this.getValue(
+        item,
+        ["country", "countries"],
+        ""
+      );
 
-}
+      if (Array.isArray(country)) {
+        return country.join(", ");
+      }
 
-// Отображение карточек фильмов
-function renderMovieCards(movies, container, options = {}) {
-const target =
-typeof container === "string"
-? document.querySelector(container)
-: container;
+      return country;
+    },
 
-if (!target) {
-  console.warn(
-    "SHOHIN MOVIE: контейнер карточек не найден."
-  );
-  return;
-}
+    getRating: function (item) {
+      return this.getValue(
+        item,
+        ["rating", "imdbRating", "score"],
+        ""
+      );
+    },
 
-if (!Array.isArray(movies) || movies.length === 0) {
-  target.innerHTML = `
-    <div class="empty-state">
-      <div class="empty-icon">🎬</div>
+    getPoster: function (item) {
+      return this.getValue(
+        item,
+        ["poster", "image", "cover", "posterUrl"],
+        ""
+      );
+    },
 
-      <h3>${escapeHTML(
-        options.emptyTitle || "Фильмы пока не найдены"
-      )}</h3>
+    getDescription: function (item) {
+      return this.getValue(
+        item,
+        ["description", "overview", "plot", "summary"],
+        "Описание пока не добавлено."
+      );
+    },
 
-      <p>${escapeHTML(
-        options.emptyText ||
-        "Попробуйте изменить поиск или фильтры."
-      )}</p>
-    </div>
-  `;
+    getId: function (item, index, type) {
+      return String(
+        this.getValue(
+          item,
+          ["id", "slug"],
+          type + "-" + index
+        )
+      );
+    },
 
-  return;
-}
+    getStorage: function () {
+      return window.SHOHIN_MOVIE.Storage || null;
+    },
 
-target.innerHTML = movies
-  .map(function (movie, index) {
-    return getMovieCardHTML(movie, index);
-  })
-  .join("");
+    isFavorite: function (item, type) {
+      const storage = this.getStorage();
 
-}
+      if (storage && typeof storage.isFavorite === "function") {
+        return storage.isFavorite(item.id, type);
+      }
 
-// Карточка актёра
-function getActorCardHTML(actor) {
-const name = escapeHTML(
-actor.name || "Неизвестный актёр"
-);
+      try {
+        const favorites = JSON.parse(
+          localStorage.getItem("shohin_movie_favorites") || "[]"
+        );
 
-const id = JSON.stringify(
-  String(actor.id || actor.name || "")
-)
-  .replace(/</g, "\\u003c")
-  .replace(/>/g, "\\u003e")
-  .replace(/&/g, "\\u0026");
+        return favorites.some(function (favorite) {
+          return (
+            String(favorite.id) === String(item.id) &&
+            favorite.type === type
+          );
+        });
+      } catch (error) {
+        return false;
+      }
+    },
 
-const photo = actor.photo || actor.image || "";
-const filmsCount = Number(actor.filmsCount) || 0;
+    makePoster: function (item) {
+      const poster = this.getPoster(item);
 
-const photoHTML = photo
-  ? `
-    <img
-      src="${escapeHTML(photo)}"
-      alt="${name}"
-      loading="lazy"
-      onerror="this.remove()"
-    >
-  `
-  : escapeHTML((actor.name || "?").charAt(0));
+      if (!poster) {
+        return `
+          <div class="movie-poster-placeholder" aria-label="Постер отсутствует">
+            <span class="poster-placeholder-logo">SHOHIN</span>
+            <span class="poster-placeholder-text">MOVIE</span>
+          </div>
+        `;
+      }
 
-return `
-  <button
-    class="actor-card"
-    type="button"
-    onclick="openActor(${id})"
-  >
-    <span class="actor-photo">
-      ${photoHTML}
-    </span>
+      const safePoster = this.escapeHTML(poster);
+      const title = this.escapeHTML(this.getTitle(item));
 
-    <strong>${name}</strong>
+      return `
+        <img
+          class="movie-poster-image"
+          src="${safePoster}"
+          alt="${title}"
+          loading="lazy"
+          onerror="this.hidden=true;this.nextElementSibling.hidden=false"
+        >
+        <div class="movie-poster-placeholder" hidden>
+          <span class="poster-placeholder-logo">SHOHIN</span>
+          <span class="poster-placeholder-text">MOVIE</span>
+        </div>
+      `;
+    },
 
-    <small>
-      ${filmsCount ? filmsCount + " фильмов" : "Актёр"}
-    </small>
-  </button>
-`;
+    createMediaCard: function (item, index, type = "movie") {
+      const title = this.escapeHTML(this.getTitle(item));
+      const year = this.escapeHTML(this.getYear(item));
+      const country = this.escapeHTML(this.getCountry(item));
+      const rating = this.escapeHTML(this.getRating(item));
+      const id = this.escapeHTML(this.getId(item, index, type));
+      const favorite = this.isFavorite(item, type);
 
-}
+      return `
+        <article
+          class="movie-card"
+          data-card-type="${type}"
+          data-item-id="${id}"
+          tabindex="0"
+          role="button"
+          aria-label="Открыть: ${title}"
+        >
+          <div class="movie-poster">
+            ${this.makePoster(item)}
 
-// Отображение актёров
-function renderActorCards(actors, container) {
-const target =
-typeof container === "string"
-? document.querySelector(container)
-: container;
+            <button
+              class="favorite-button ${favorite ? "is-favorite" : ""}"
+              type="button"
+              data-favorite-button
+              data-favorite-id="${id}"
+              data-favorite-type="${type}"
+              aria-label="${favorite ? "Убрать из избранного" : "Добавить в избранное"}"
+              aria-pressed="${favorite ? "true" : "false"}"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M12 21s-8-4.8-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6.2-8 11-8 11z"
+                ></path>
+              </svg>
+            </button>
 
-if (!target) {
-  console.warn(
-    "SHOHIN MOVIE: контейнер актёров не найден."
-  );
-  return;
-}
+            ${
+              rating
+                ? `<span class="movie-rating">★ ${rating}</span>`
+                : ""
+            }
+          </div>
 
-if (!Array.isArray(actors) || actors.length === 0) {
-  target.innerHTML = `
-    <div class="empty-state">
-      <div class="empty-icon">♙</div>
+          <div class="movie-card-info">
+            <h3 class="movie-card-title">${title}</h3>
 
-      <h3>Актёры пока не добавлены</h3>
+            <div class="movie-card-meta">
+              ${year ? `<span>${year}</span>` : ""}
+              ${
+                country
+                  ? `<span class="movie-card-country">${country}</span>`
+                  : ""
+              }
+            </div>
+          </div>
+        </article>
+      `;
+    },
 
-      <p>Список появится после добавления данных.</p>
-    </div>
-  `;
+    createActorCard: function (actor, index) {
+      const name = this.escapeHTML(
+        this.getValue(actor, ["name", "title"], "Без имени")
+      );
 
-  return;
-}
+      const photo = this.escapeHTML(
+        this.getValue(actor, ["photo", "image", "portrait"], "")
+      );
 
-target.innerHTML = actors
-  .map(getActorCardHTML)
-  .join("");
+      const id = this.escapeHTML(
+        this.getId(actor, index, "actor")
+      );
 
-}
+      const fallback = `
+        <div class="actor-photo-placeholder">
+          <span>SHOHIN</span>
+        </div>
+      `;
 
-// Публичные функции SHOHIN MOVIE
-window.SHOHINCards = {
-escapeHTML: escapeHTML,
-getMovieId: getMovieId,
-getMovieCardHTML: getMovieCardHTML,
-renderMovieCards: renderMovieCards,
-getActorCardHTML: getActorCardHTML,
-renderActorCards: renderActorCards,
-isFavorite: isFavorite
-};
+      const image = photo
+        ? `
+          <img
+            src="${photo}"
+            alt="${name}"
+            loading="lazy"
+            onerror="this.hidden=true;this.nextElementSibling.hidden=false"
+          >
+          <div class="actor-photo-placeholder" hidden>
+            <span>SHOHIN</span>
+          </div>
+        `
+        : fallback;
+
+      return `
+        <article
+          class="actor-card"
+          data-card-type="actor"
+          data-item-id="${id}"
+          tabindex="0"
+          role="button"
+          aria-label="Открыть актёра: ${name}"
+        >
+          <div class="actor-photo">
+            ${image}
+          </div>
+
+          <div class="actor-card-info">
+            <h3>${name}</h3>
+          </div>
+        </article>
+      `;
+    },
+
+    renderInto: function (container, items, type = "movie") {
+      if (!container) return;
+
+      if (!Array.isArray(items) || items.length === 0) {
+        container.innerHTML = `
+          <div class="catalog-empty">
+            <div class="catalog-empty-icon">✦</div>
+            <h3>Пока здесь пусто</h3>
+            <p>Каталог будет пополняться.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = items
+        .map((item, index) => {
+          if (type === "actor") {
+            return this.createActorCard(item, index);
+          }
+
+          return this.createMediaCard(item, index, type);
+        })
+        .join("");
+    },
+
+    renderCatalog: function () {
+      const data = window.SHOHIN_MOVIE.Data;
+
+      if (!data) {
+        console.warn(
+          "SHOHIN MOVIE: сначала подключи js/data.js"
+        );
+        return;
+      }
+
+      const movies = data.getMovies();
+      const series = data.getSeries();
+
+      const movieContainers = document.querySelectorAll(
+        "#movieGrid, #moviesGrid, [data-movie-grid]"
+      );
+
+      const seriesContainers = document.querySelectorAll(
+        "#seriesGrid, #series-grid, [data-series-grid]"
+      );
+
+      movieContainers.forEach((container) => {
+        this.renderInto(container, movies, "movie");
+      });
+
+      seriesContainers.forEach((container) => {
+        this.renderInto(container, series, "series");
+      });
+
+      this.updateCounters(movies, series);
+      this.bindCardEvents();
+    },
+
+    updateCounters: function (movies, series) {
+      const movieCounters = document.querySelectorAll(
+        "#movieCount, [data-movie-count]"
+      );
+
+      const seriesCounters = document.querySelectorAll(
+        "#seriesCount, [data-series-count]"
+      );
+
+      movieCounters.forEach((element) => {
+        element.textContent = movies.length;
+      });
+
+      seriesCounters.forEach((element) => {
+        element.textContent = series.length;
+      });
+    },
+
+    bindCardEvents: function () {
+      document.querySelectorAll("[data-favorite-button]").forEach((button) => {
+        if (button.dataset.favoriteBound === "true") return;
+
+        button.dataset.favoriteBound = "true";
+
+        button.addEventListener("click", (event) => {
+          event.stopPropagation();
+
+          const id = button.dataset.favoriteId;
+          const type = button.dataset.favoriteType;
+
+          const storage = this.getStorage();
+
+          if (storage && typeof storage.toggleFavorite === "function") {
+            storage.toggleFavorite(id, type);
+          } else {
+            this.toggleFavoriteLocally(id, type);
+          }
+
+          const active = button.classList.toggle("is-favorite");
+
+          button.setAttribute(
+            "aria-pressed",
+            active ? "true" : "false"
+          );
+
+          button.setAttribute(
+            "aria-label",
+            active ? "Убрать из избранного" : "Добавить в избранное"
+          );
+        });
+      });
+
+      document.querySelectorAll(
+        ".movie-card, .actor-card"
+      ).forEach((card) => {
+        if (card.dataset.cardBound === "true") return;
+
+        card.dataset.cardBound = "true";
+
+        const openCard = () => {
+          const type = card.dataset.cardType;
+          const id = card.dataset.itemId;
+
+          if (
+            window.SHOHIN_MOVIE.Details &&
+            typeof window.SHOHIN_MOVIE.Details.open === "function"
+          ) {
+            window.SHOHIN_MOVIE.Details.open(id, type);
+            return;
+          }
+
+          if (typeof window.openDetails === "function") {
+            window.openDetails(id, type);
+          }
+        };
+
+        card.addEventListener("click", (event) => {
+          if (event.target.closest("[data-favorite-button]")) return;
+          openCard();
+        });
+
+        card.addEventListener("keydown", (event) => {
+          if (event.target !== card) return;
+
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openCard();
+          }
+        });
+      });
+    },
+
+    toggleFavoriteLocally: function (id, type) {
+      const key = "shohin_movie_favorites";
+      let favorites = [];
+
+      try {
+        favorites = JSON.parse(localStorage.getItem(key) || "[]");
+      } catch (error) {
+        favorites = [];
+      }
+
+      const index = favorites.findIndex((favorite) => {
+        return (
+          String(favorite.id) === String(id) &&
+          favorite.type === type
+        );
+      });
+
+      if (index >= 0) {
+        favorites.splice(index, 1);
+      } else {
+        favorites.push({
+          id: id,
+          type: type,
+          savedAt: Date.now()
+        });
+      }
+
+      localStorage.setItem(key, JSON.stringify(favorites));
+    }
+  };
+
+  window.SHOHIN_MOVIE.Cards = Cards;
+
+  window.renderMovieCards = function () {
+    Cards.renderCatalog();
+  };
+
+  window.createMovieCard = function (item, index) {
+    return Cards.createMediaCard(item, index, "movie");
+  };
+
+  window.createSeriesCard = function (item, index) {
+    return Cards.createMediaCard(item, index, "series");
+  };
+
+  window.createActorCard = function (item, index) {
+    return Cards.createActorCard(item, index);
+  };
 })();
