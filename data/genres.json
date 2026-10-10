@@ -1,0 +1,85 @@
+{
+  "genres": [
+    {
+      "id": "action",
+      "name": "Боевик"
+    },
+    {
+      "id": "adventure",
+      "name": "Приключения"
+    },
+    {
+      "id": "comedy",
+      "name": "Комедия"
+    },
+    {
+      "id": "drama",
+      "name": "Драма"
+    },
+    {
+      "id": "crime",
+      "name": "Криминал"
+    },
+    {
+      "id": "thriller",
+      "name": "Триллер"
+    },
+    {
+      "id": "horror",
+      "name": "Ужасы"
+    },
+    {
+      "id": "science-fiction",
+      "name": "Фантастика"
+    },
+    {
+      "id": "fantasy",
+      "name": "Фэнтези"
+    },
+    {
+      "id": "romance",
+      "name": "Мелодрама"
+    },
+    {
+      "id": "mystery",
+      "name": "Детектив"
+    },
+    {
+      "id": "animation",
+      "name": "Анимация"
+    },
+    {
+      "id": "documentary",
+      "name": "Документальный"
+    },
+    {
+      "id": "historical",
+      "name": "Исторический"
+    },
+    {
+      "id": "war",
+      "name": "Военный"
+    },
+    {
+      "id": "family",
+      "name": "Семейный"
+    },
+    {
+      "id": "music",
+      "name": "Музыкальный"
+    },
+    {
+      "id": "western",
+      "name": "Вестерн"
+    },
+    {
+      "id": "biography",
+      "name": "Биография"
+    },
+    {
+      "id": "sport",
+      "name": "Спорт"
+    }
+  ],
+  "version": 1
+}
