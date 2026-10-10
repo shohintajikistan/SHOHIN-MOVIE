@@ -1,658 +1,310 @@
-// SHOHIN MOVIE — CARD SYSTEM
-// SHOHIN BRAND COLORS — НЕ МЕНЯТЬ
+/* SHOHIN MOVIE — CARD SYSTEM /
+/ SHOHIN BRAND COLORS — НЕ МЕНЯТЬ */
 
-const SHOHIN_MOVIE = window.SHOHIN_MOVIE || {
-  currentType: "movies",
-  currentYear: "all",
-  movies: [],
-  series: []
+(function () {
+"use strict";
+
+// Безопасное отображение текста
+function escapeHTML(value) {
+const entities = {
+"&": "&",
+"<": "<",
+">": ">",
+'"': """,
+"'": "'"
 };
 
-window.SHOHIN_MOVIE = SHOHIN_MOVIE;
+return String(value ?? "").replace(/[&<>"']/g, function (char) {
+  return entities[char];
+});
 
-
-/* =========================================================
-   ОСНОВНЫЕ ДАННЫЕ
-========================================================= */
-
-function getCurrentItems() {
-  if (SHOHIN_MOVIE.currentType === "series") {
-    return Array.isArray(SHOHIN_MOVIE.series)
-      ? SHOHIN_MOVIE.series
-      : [];
-  }
-
-  return Array.isArray(SHOHIN_MOVIE.movies)
-    ? SHOHIN_MOVIE.movies
-    : [];
 }
 
+// Уникальный идентификатор фильма
+function getMovieId(movie) {
+if (movie.id !== undefined && movie.id !== null) {
+return String(movie.id);
+}
 
-/* =========================================================
-   ПОЛУЧЕНИЕ КАРТОЧКИ
-========================================================= */
+return [
+  movie.type || "film",
+  movie.year || "",
+  movie.originalTitle || movie.title || ""
+].join("-").toLowerCase();
 
-function createMovieCard(item) {
+}
 
-  if (!item || typeof item !== "object") {
-    return "";
+// Получение избранного
+function getFavorites() {
+try {
+const stored = JSON.parse(
+localStorage.getItem("shohin_movie_favorites") || "[]"
+);
+
+  return Array.isArray(stored) ? stored : [];
+} catch (error) {
+  return [];
+}
+
+}
+
+// Проверка избранного
+function isFavorite(movie) {
+const id = getMovieId(movie);
+
+return getFavorites().some(function (item) {
+  if (typeof item === "string" || typeof item === "number") {
+    return String(item) === id;
   }
 
-  const id = String(item.id || "");
-  const title = String(item.title || item.name || "Без названия");
-  const originalTitle = String(
-    item.originalTitle ||
-    item.original_title ||
-    ""
-  );
+  return item && String(item.id) === id;
+});
 
-  const year = item.year || "";
-  const rating = item.rating !== undefined && item.rating !== null
-    ? String(item.rating)
-    : "";
+}
 
-  const poster = String(item.poster || "").trim();
+// Постер фильма
+function getPosterHTML(movie) {
+const poster = movie.poster || movie.posterUrl || "";
+const title = escapeHTML(movie.title || "Без названия");
 
-  const genres = Array.isArray(item.genres)
-    ? item.genres
-    : item.genre
-      ? [item.genre]
-      : [];
-
-  const genreText = genres
-    .filter(Boolean)
-    .slice(0, 2)
-    .join(" • ");
-
-  const safeId = escapeCardHTML(id);
-  const safeTitle = escapeCardHTML(title);
-  const safeOriginalTitle = escapeCardHTML(originalTitle);
-  const safeYear = escapeCardHTML(year);
-  const safeRating = escapeCardHTML(rating);
-  const safeGenre = escapeCardHTML(genreText);
-
-  const hasPoster = poster.length > 0;
-
+if (poster) {
   return `
-    <article
-      class="movie-card"
-      data-id="${safeId}"
-      data-year="${safeYear}"
-      data-title="${safeTitle}"
-      tabindex="0"
-      role="button"
-      aria-label="${safeTitle}"
+    <img
+      class="movie-poster"
+      src="${escapeHTML(poster)}"
+      alt="${title}"
+      loading="lazy"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
     >
 
-      <div class="movie-card-poster">
-
-        ${
-          hasPoster
-            ? `
-              <img
-                src="${escapeCardHTML(poster)}"
-                alt="${safeTitle}"
-                class="movie-card-image"
-                loading="lazy"
-                decoding="async"
-                onerror="this.style.display='none'; this.parentElement.classList.add('poster-empty');"
-              >
-            `
-            : `
-              <div class="poster-placeholder">
-                <div class="poster-placeholder-logo">SH</div>
-                <div class="poster-placeholder-text">SHOHIN MOVIE</div>
-              </div>
-            `
-        }
-
-        ${
-          safeRating
-            ? `
-              <div class="movie-rating">
-                <span class="rating-star">★</span>
-                <span>${safeRating}</span>
-              </div>
-            `
-            : ""
-        }
-
-      </div>
-
-      <div class="movie-card-info">
-
-        <h3 class="movie-card-title">
-          ${safeTitle}
-        </h3>
-
-        ${
-          safeOriginalTitle
-            ? `
-              <div class="movie-card-original-title">
-                ${safeOriginalTitle}
-              </div>
-            `
-            : ""
-        }
-
-        <div class="movie-card-meta">
-
-          ${
-            safeYear
-              ? `
-                <span class="movie-card-year">
-                  ${safeYear}
-                </span>
-              `
-              : ""
-          }
-
-          ${
-            safeGenre
-              ? `
-                <span class="movie-card-genre">
-                  ${safeGenre}
-                </span>
-              `
-              : ""
-          }
-
-        </div>
-
-      </div>
-
-    </article>
+    <div class="poster-placeholder" style="display:none">
+      <span>SM</span>
+      <strong>${title}</strong>
+    </div>
   `;
 }
 
+return `
+  <div class="poster-placeholder">
+    <span>SM</span>
+    <strong>${title}</strong>
+  </div>
+`;
 
-/* =========================================================
-   РЕНДЕР КАРТОЧЕК
-========================================================= */
+}
 
-function renderMovieCards(items, container) {
+// Карточка фильма
+function getMovieCardHTML(movie, index) {
+const id = getMovieId(movie);
+const title = escapeHTML(movie.title || "Без названия");
+const year = escapeHTML(movie.year || "—");
+const country = escapeHTML(
+movie.country || "Страна не указана"
+);
 
-  if (!container) {
-    return;
-  }
+const rating = Number(movie.rating);
 
-  if (!Array.isArray(items)) {
-    container.innerHTML = "";
-    return;
-  }
+const description = escapeHTML(
+  movie.description || "Описание фильма скоро появится."
+);
 
-  if (!items.length) {
+const favorite = isFavorite(movie);
+const favoriteClass = favorite ? " active" : "";
+const favoriteIcon = favorite ? "♥" : "♡";
 
-    container.innerHTML = `
-      <div class="empty-catalog">
-        <div class="empty-catalog-icon">⌕</div>
-        <h3>Ничего не найдено</h3>
-        <p>Попробуйте изменить поиск или выбрать другой раздел.</p>
+const safeRating =
+  Number.isFinite(rating) && rating > 0
+    ? rating.toFixed(1)
+    : "";
+
+// JSON.stringify безопаснее для передачи ID в JavaScript-строку.
+const safeId = JSON.stringify(id)
+  .replace(/</g, "\\u003c")
+  .replace(/>/g, "\\u003e")
+  .replace(/&/g, "\\u0026");
+
+return `
+  <article
+    class="movie-card"
+    data-movie-id="${escapeHTML(id)}"
+    style="animation-delay:${Math.min(index * 25, 250)}ms"
+  >
+    <div class="movie-poster-wrap">
+      <button
+        class="poster-open-button"
+        type="button"
+        aria-label="Открыть фильм: ${title}"
+        onclick="openDetail(${safeId})"
+        style="position:absolute;inset:0;width:100%;height:100%;background:transparent;z-index:1"
+      ></button>
+
+      ${getPosterHTML(movie)}
+
+      ${
+        safeRating
+          ? `<div class="movie-rating">★ ${safeRating}</div>`
+          : ""
+      }
+
+      <button
+        class="favorite-btn${favoriteClass}"
+        type="button"
+        aria-label="Добавить в избранное"
+        aria-pressed="${favorite}"
+        onclick="event.stopPropagation();toggleFavorite(${safeId})"
+      >${favoriteIcon}</button>
+    </div>
+
+    <div class="movie-info">
+      <button
+        type="button"
+        class="movie-title"
+        onclick="openDetail(${safeId})"
+        style="display:block;width:100%;padding:0;border:0;background:transparent;text-align:left"
+      >${title}</button>
+
+      <div class="movie-meta">
+        <span>${year}</span>
+        <span>${country}</span>
       </div>
-    `;
 
-    return;
-  }
+      <p class="movie-description">${description}</p>
+    </div>
+  </article>
+`;
 
-  container.innerHTML = items
-    .map(item => createMovieCard(item))
-    .join("");
-
-  attachCardEvents(container);
 }
 
+// Отображение карточек фильмов
+function renderMovieCards(movies, container, options = {}) {
+const target =
+typeof container === "string"
+? document.querySelector(container)
+: container;
 
-/* =========================================================
-   СОБЫТИЯ КАРТОЧЕК
-========================================================= */
-
-function attachCardEvents(container) {
-
-  const cards = container.querySelectorAll(".movie-card");
-
-  cards.forEach(card => {
-
-    card.addEventListener("click", function () {
-
-      const id = this.dataset.id;
-
-      const item = findMovieById(id);
-
-      if (item && typeof window.openMovieModal === "function") {
-        window.openMovieModal(item);
-      }
-
-    });
-
-
-    card.addEventListener("keydown", function (event) {
-
-      if (
-        event.key === "Enter" ||
-        event.key === " "
-      ) {
-
-        event.preventDefault();
-
-        const id = this.dataset.id;
-
-        const item = findMovieById(id);
-
-        if (
-          item &&
-          typeof window.openMovieModal === "function"
-        ) {
-          window.openMovieModal(item);
-        }
-
-      }
-
-    });
-
-  });
-}
-
-
-/* =========================================================
-   ПОИСК ФИЛЬМА
-========================================================= */
-
-function findMovieById(id) {
-
-  const movieId = String(id || "");
-
-  if (!movieId) {
-    return null;
-  }
-
-  const movies = Array.isArray(SHOHIN_MOVIE.movies)
-    ? SHOHIN_MOVIE.movies
-    : [];
-
-  const series = Array.isArray(SHOHIN_MOVIE.series)
-    ? SHOHIN_MOVIE.series
-    : [];
-
-  return (
-    movies.find(item => String(item.id) === movieId) ||
-    series.find(item => String(item.id) === movieId) ||
-    null
+if (!target) {
+  console.warn(
+    "SHOHIN MOVIE: контейнер карточек не найден."
   );
+  return;
 }
 
+if (!Array.isArray(movies) || movies.length === 0) {
+  target.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">🎬</div>
 
-/* =========================================================
-   ТЕКУЩИЕ ФИЛЬМЫ
-========================================================= */
+      <h3>${escapeHTML(
+        options.emptyTitle || "Фильмы пока не найдены"
+      )}</h3>
 
-function getCurrentMovieItems() {
-  return getCurrentItems();
+      <p>${escapeHTML(
+        options.emptyText ||
+        "Попробуйте изменить поиск или фильтры."
+      )}</p>
+    </div>
+  `;
+
+  return;
 }
 
+target.innerHTML = movies
+  .map(function (movie, index) {
+    return getMovieCardHTML(movie, index);
+  })
+  .join("");
 
-/* =========================================================
-   ФИЛЬТРАЦИЯ ПО ГОДУ
-========================================================= */
-
-function getItemsByYear(items, year) {
-
-  if (!Array.isArray(items)) {
-    return [];
-  }
-
-  if (
-    year === undefined ||
-    year === null ||
-    year === "" ||
-    year === "all"
-  ) {
-    return items;
-  }
-
-  const selectedYear = Number(year);
-
-  if (!selectedYear) {
-    return items;
-  }
-
-  return items.filter(item => {
-    return Number(item.year) === selectedYear;
-  });
 }
 
+// Карточка актёра
+function getActorCardHTML(actor) {
+const name = escapeHTML(
+actor.name || "Неизвестный актёр"
+);
 
-/* =========================================================
-   ФИЛЬТРАЦИЯ ПО СТРАНЕ
-========================================================= */
+const id = JSON.stringify(
+  String(actor.id || actor.name || "")
+)
+  .replace(/</g, "\\u003c")
+  .replace(/>/g, "\\u003e")
+  .replace(/&/g, "\\u0026");
 
-function getItemsByCountry(items, country) {
+const photo = actor.photo || actor.image || "";
+const filmsCount = Number(actor.filmsCount) || 0;
 
-  if (!Array.isArray(items)) {
-    return [];
-  }
+const photoHTML = photo
+  ? `
+    <img
+      src="${escapeHTML(photo)}"
+      alt="${name}"
+      loading="lazy"
+      onerror="this.remove()"
+    >
+  `
+  : escapeHTML((actor.name || "?").charAt(0));
 
-  if (
-    !country ||
-    country === "all"
-  ) {
-    return items;
-  }
+return `
+  <button
+    class="actor-card"
+    type="button"
+    onclick="openActor(${id})"
+  >
+    <span class="actor-photo">
+      ${photoHTML}
+    </span>
 
-  const selectedCountry = String(country)
-    .trim()
-    .toLowerCase();
+    <strong>${name}</strong>
 
-  return items.filter(item => {
+    <small>
+      ${filmsCount ? filmsCount + " фильмов" : "Актёр"}
+    </small>
+  </button>
+`;
 
-    const countries = Array.isArray(item.countries)
-      ? item.countries
-      : item.country
-        ? [item.country]
-        : [];
-
-    return countries.some(value =>
-      String(value)
-        .trim()
-        .toLowerCase() === selectedCountry
-    );
-
-  });
 }
 
-
-/* =========================================================
-   ФИЛЬТРАЦИЯ ПО ЖАНРУ
-========================================================= */
-
-function getItemsByGenre(items, genre) {
-
-  if (!Array.isArray(items)) {
-    return [];
-  }
-
-  if (
-    !genre ||
-    genre === "all"
-  ) {
-    return items;
-  }
-
-  const selectedGenre = String(genre)
-    .trim()
-    .toLowerCase();
-
-  return items.filter(item => {
-
-    const genres = Array.isArray(item.genres)
-      ? item.genres
-      : item.genre
-        ? [item.genre]
-        : [];
-
-    return genres.some(value =>
-      String(value)
-        .trim()
-        .toLowerCase() === selectedGenre
-    );
-
-  });
-}
-
-
-/* =========================================================
-   ПОЛУЧИТЬ СТРАНЫ
-========================================================= */
-
-function getAllCountries(items) {
-
-  if (!Array.isArray(items)) {
-    return [];
-  }
-
-  const countries = new Set();
-
-  items.forEach(item => {
-
-    const list = Array.isArray(item.countries)
-      ? item.countries
-      : item.country
-        ? [item.country]
-        : [];
-
-    list.forEach(country => {
-
-      if (country) {
-        countries.add(String(country).trim());
-      }
-
-    });
-
-  });
-
-  return [...countries]
-    .filter(Boolean)
-    .sort((a, b) =>
-      a.localeCompare(b, "ru")
-    );
-}
-
-
-/* =========================================================
-   ПОЛУЧИТЬ ЖАНРЫ
-========================================================= */
-
-function getAllGenres(items) {
-
-  if (!Array.isArray(items)) {
-    return [];
-  }
-
-  const genres = new Set();
-
-  items.forEach(item => {
-
-    const list = Array.isArray(item.genres)
-      ? item.genres
-      : item.genre
-        ? [item.genre]
-        : [];
-
-    list.forEach(genre => {
-
-      if (genre) {
-        genres.add(String(genre).trim());
-      }
-
-    });
-
-  });
-
-  return [...genres]
-    .filter(Boolean)
-    .sort((a, b) =>
-      a.localeCompare(b, "ru")
-    );
-}
-
-
-/* =========================================================
-   ПОЛУЧИТЬ ГОДЫ
-========================================================= */
-
-function getAvailableYears(items) {
-
-  if (!Array.isArray(items)) {
-    return [];
-  }
-
-  const years = new Set();
-
-  items.forEach(item => {
-
-    const year = Number(item.year);
-
-    if (
-      Number.isInteger(year) &&
-      year > 1800
-    ) {
-      years.add(year);
-    }
-
-  });
-
-  return [...years]
-    .sort((a, b) => b - a);
-}
-
-
-/* =========================================================
-   СОРТИРОВКИ
-========================================================= */
-
-function sortByRating(items) {
-
-  if (!Array.isArray(items)) {
-    return [];
-  }
-
-  return [...items].sort((a, b) => {
-
-    return (
-      Number(b.rating || 0) -
-      Number(a.rating || 0)
-    );
-
-  });
-}
-
-
-function sortByYear(items) {
-
-  if (!Array.isArray(items)) {
-    return [];
-  }
-
-  return [...items].sort((a, b) => {
-
-    return (
-      Number(b.year || 0) -
-      Number(a.year || 0)
-    );
-
-  });
-}
-
-
-function sortByTitle(items) {
-
-  if (!Array.isArray(items)) {
-    return [];
-  }
-
-  return [...items].sort((a, b) => {
-
-    const titleA = String(
-      a.title || ""
-    );
-
-    const titleB = String(
-      b.title || ""
-    );
-
-    return titleA.localeCompare(
-      titleB,
-      "ru",
-      {
-        sensitivity: "base"
-      }
-    );
-
-  });
-}
-
-
-/* =========================================================
-   ЭКРАНИРОВАНИЕ HTML
-========================================================= */
-
-function escapeCardHTML(value) {
-
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-
-/* =========================================================
-   ОБНОВЛЕНИЕ КАРТОЧЕК
-========================================================= */
-
-function refreshCards() {
-
-  const container =
-    document.getElementById("movieGrid") ||
-    document.getElementById("moviesGrid") ||
-    document.querySelector(".movie-grid") ||
-    document.querySelector(".movies-grid");
-
-  if (!container) {
-    return;
-  }
-
-  const items = getCurrentItems();
-
-  renderMovieCards(
-    items,
-    container
+// Отображение актёров
+function renderActorCards(actors, container) {
+const target =
+typeof container === "string"
+? document.querySelector(container)
+: container;
+
+if (!target) {
+  console.warn(
+    "SHOHIN MOVIE: контейнер актёров не найден."
   );
+  return;
 }
 
+if (!Array.isArray(actors) || actors.length === 0) {
+  target.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">♙</div>
 
-/* =========================================================
-   ГЛОБАЛЬНЫЕ ФУНКЦИИ
-========================================================= */
+      <h3>Актёры пока не добавлены</h3>
 
-window.createMovieCard =
-  createMovieCard;
+      <p>Список появится после добавления данных.</p>
+    </div>
+  `;
 
-window.renderMovieCards =
-  renderMovieCards;
+  return;
+}
 
-window.getCurrentMovieItems =
-  getCurrentMovieItems;
+target.innerHTML = actors
+  .map(getActorCardHTML)
+  .join("");
 
-window.findMovieById =
-  findMovieById;
+}
 
-window.getItemsByYear =
-  getItemsByYear;
-
-window.getItemsByCountry =
-  getItemsByCountry;
-
-window.getItemsByGenre =
-  getItemsByGenre;
-
-window.getAllCountries =
-  getAllCountries;
-
-window.getAllGenres =
-  getAllGenres;
-
-window.getAvailableYears =
-  getAvailableYears;
-
-window.sortByRating =
-  sortByRating;
-
-window.sortByYear =
-  sortByYear;
-
-window.sortByTitle =
-  sortByTitle;
-
-window.refreshCards =
-  refreshCards;
+// Публичные функции SHOHIN MOVIE
+window.SHOHINCards = {
+escapeHTML: escapeHTML,
+getMovieId: getMovieId,
+getMovieCardHTML: getMovieCardHTML,
+renderMovieCards: renderMovieCards,
+getActorCardHTML: getActorCardHTML,
+renderActorCards: renderActorCards,
+isFavorite: isFavorite
+};
+})();
