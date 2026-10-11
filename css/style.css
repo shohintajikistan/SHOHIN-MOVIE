@@ -6,19 +6,15 @@
   --primary: #08a56c;
   --primary-dark: #087b53;
   --accent: #baf05b;
-
   --text: #f2f8f4;
   --text-soft: #b0c5ba;
   --text-muted: #78958a;
-
   --border: rgba(186, 240, 91, 0.12);
   --border-light: rgba(255, 255, 255, 0.08);
-
   --radius-sm: 12px;
   --radius-md: 18px;
   --radius-lg: 24px;
   --radius-xl: 30px;
-
   --shadow: 0 18px 55px rgba(0, 0, 0, 0.22);
   --transition: 0.25s ease;
 }
@@ -209,6 +205,7 @@ svg {
   display: flex;
   flex-direction: column;
   width: min(340px, 88vw);
+  height: 100vh;
   height: 100dvh;
   padding: 25px 20px;
   overflow-y: auto;
@@ -348,7 +345,6 @@ main {
     opacity: 0;
     transform: translateY(7px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -504,10 +500,6 @@ main {
 
 .search-box input:focus-visible {
   outline: none;
-}
-
-.search-box input::-webkit-search-cancel-button {
-  display: none;
 }
 
 #clearSearchButton {
@@ -685,17 +677,36 @@ main {
   font-size: 20px;
 }
 
-/* MOVIE AND SERIES CARDS */
+/* CATALOG GRID */
 
-.card-grid {
+.card-grid,
+.movie-grid,
+#movieGrid,
+#moviesGrid,
+#movie-grid,
+#seriesGrid,
+#series-grid,
+#homeCatalog,
+#actorsGrid,
+[data-movie-grid],
+[data-series-grid] {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: start;
   gap: 19px;
+  min-width: 0;
+  width: 100%;
 }
 
-.media-card {
+/* COMPATIBILITY WITH BOTH CARD SYSTEMS */
+
+.media-card,
+.movie-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
+  width: 100%;
   overflow: hidden;
   background: var(--surface);
   border: 1px solid var(--border-light);
@@ -706,15 +717,19 @@ main {
     box-shadow var(--transition);
 }
 
-.media-card:hover {
+.media-card:hover,
+.movie-card:hover {
   transform: translateY(-4px);
   border-color: rgba(186, 240, 91, 0.28);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18);
 }
 
-.media-card:active {
+.media-card:active,
+.movie-card:active {
   transform: scale(0.985);
 }
+
+/* OLD CARD STRUCTURE */
 
 .card-open {
   display: block;
@@ -756,17 +771,68 @@ main {
   display: none;
 }
 
+/* NEW CARD STRUCTURE — movie-card */
+
+.movie-poster {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(8, 165, 108, 0.2),
+      transparent 60%
+    ),
+    linear-gradient(150deg, #164632, #0a2118);
+}
+
+.movie-poster-image,
+.movie-poster > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.movie-poster-placeholder,
 .poster-placeholder {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
   height: 100%;
+  min-height: 100px;
   padding: 12px;
-  color: rgba(186, 240, 91, 0.6);
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      rgba(8, 165, 108, 0.17),
+      transparent 65%
+    ),
+    linear-gradient(150deg, #164632, #0a2118);
+  color: rgba(186, 240, 91, 0.75);
   text-align: center;
+}
+
+.poster-placeholder-logo {
+  color: var(--accent);
+  font-size: clamp(14px, 2vw, 21px);
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.poster-placeholder-text {
+  color: var(--text-soft);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 4px;
 }
 
 .poster-placeholder svg {
@@ -780,6 +846,8 @@ main {
   font-weight: 800;
   letter-spacing: 1.5px;
 }
+
+/* RATINGS */
 
 .card-badge {
   position: absolute;
@@ -795,6 +863,22 @@ main {
   font-weight: 800;
   backdrop-filter: blur(8px);
 }
+
+.movie-rating {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 3;
+  padding: 4px 7px;
+  background: rgba(7, 28, 22, 0.9);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* FAVORITES */
 
 .favorite-button {
   position: absolute;
@@ -836,7 +920,10 @@ main {
   fill: var(--accent);
 }
 
+/* CARD INFORMATION — OLD */
+
 .card-info {
+  min-width: 0;
   padding: 13px;
 }
 
@@ -881,6 +968,46 @@ main {
   -webkit-line-clamp: 3;
 }
 
+/* CARD INFORMATION — NEW */
+
+.movie-card-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  padding: 12px;
+  background: var(--surface);
+}
+
+.movie-card-title {
+  display: -webkit-box;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.movie-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 8px;
+  margin-top: 7px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.movie-card-country {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 /* ACTOR CARDS */
 
 .actor-grid {
@@ -911,6 +1038,7 @@ main {
 }
 
 .actor-photo {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -924,20 +1052,33 @@ main {
 }
 
 .actor-photo img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
 .actor-photo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
   color: var(--accent);
-  font-size: 32px;
+  font-size: 20px;
   font-weight: 800;
 }
 
+.actor-card-info {
+  min-width: 0;
+}
+
+.actor-card-info h3,
 .actor-name {
   display: -webkit-box;
   overflow: hidden;
+  color: var(--text);
   font-size: 13px;
   font-weight: 800;
   line-height: 1.5;
@@ -1068,7 +1209,8 @@ main {
 
 /* EMPTY STATES */
 
-.empty-state {
+.empty-state,
+.catalog-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1081,7 +1223,8 @@ main {
   text-align: center;
 }
 
-.empty-icon {
+.empty-icon,
+.catalog-empty-icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1095,12 +1238,15 @@ main {
   font-size: 26px;
 }
 
-.empty-state h3 {
+.empty-state h3,
+.catalog-empty h3 {
+  color: var(--text);
   font-size: 18px;
   font-weight: 800;
 }
 
-.empty-state p {
+.empty-state p,
+.catalog-empty p {
   max-width: 380px;
   margin-top: 8px;
   color: var(--text-muted);
@@ -1496,6 +1642,16 @@ main {
 
 @media (max-width: 1050px) {
   .card-grid,
+  .movie-grid,
+  #movieGrid,
+  #moviesGrid,
+  #movie-grid,
+  #seriesGrid,
+  #series-grid,
+  #homeCatalog,
+  #actorsGrid,
+  [data-movie-grid],
+  [data-series-grid],
   .actor-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 15px;
@@ -1554,6 +1710,16 @@ main {
   }
 
   .card-grid,
+  .movie-grid,
+  #movieGrid,
+  #moviesGrid,
+  #movie-grid,
+  #seriesGrid,
+  #series-grid,
+  #homeCatalog,
+  #actorsGrid,
+  [data-movie-grid],
+  [data-series-grid],
   .actor-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 13px;
@@ -1746,24 +1912,38 @@ main {
   }
 
   .card-grid,
+  .movie-grid,
+  #movieGrid,
+  #moviesGrid,
+  #movie-grid,
+  #seriesGrid,
+  #series-grid,
+  #homeCatalog,
+  #actorsGrid,
+  [data-movie-grid],
+  [data-series-grid],
   .actor-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
 
-  .media-card {
+  .media-card,
+  .movie-card {
     border-radius: 15px;
   }
 
-  .card-info {
+  .card-info,
+  .movie-card-info {
     padding: 11px;
   }
 
-  .card-title {
+  .card-title,
+  .movie-card-title {
     font-size: 12px;
   }
 
-  .card-meta {
+  .card-meta,
+  .movie-card-meta {
     gap: 5px;
     font-size: 10px;
   }
@@ -1801,12 +1981,9 @@ main {
     width: min(100%, 105px);
   }
 
+  .actor-card-info h3,
   .actor-name {
     font-size: 12px;
-  }
-
-  .actor-meta {
-    font-size: 10px;
   }
 
   .page-heading {
@@ -1867,17 +2044,20 @@ main {
     font-size: 11px;
   }
 
-  .empty-state {
+  .empty-state,
+  .catalog-empty {
     min-height: 200px;
     padding: 25px 15px;
     border-radius: 18px;
   }
 
-  .empty-state h3 {
+  .empty-state h3,
+  .catalog-empty h3 {
     font-size: 16px;
   }
 
-  .empty-state p {
+  .empty-state p,
+  .catalog-empty p {
     font-size: 12px;
   }
 
@@ -1982,11 +2162,22 @@ main {
   }
 
   .card-grid,
+  .movie-grid,
+  #movieGrid,
+  #moviesGrid,
+  #movie-grid,
+  #seriesGrid,
+  #series-grid,
+  #homeCatalog,
+  #actorsGrid,
+  [data-movie-grid],
+  [data-series-grid],
   .actor-grid {
     gap: 8px;
   }
 
-  .card-info {
+  .card-info,
+  .movie-card-info {
     padding: 9px;
   }
 
