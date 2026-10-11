@@ -22,16 +22,10 @@
 
     getValue(item, keys, fallback = "") {
       for (const key of keys) {
-        if (
-          item &&
-          item[key] !== undefined &&
-          item[key] !== null &&
-          item[key] !== ""
-        ) {
+        if (item && item[key] != null && item[key] !== "") {
           return item[key];
         }
       }
-
       return fallback;
     },
 
@@ -48,20 +42,14 @@
     },
 
     getCountry(item) {
-      const value = this.getValue(
-        item,
-        ["country", "countries"],
-        ""
-      );
+      const value = this.getValue(item, ["country", "countries"], "");
 
       if (Array.isArray(value)) {
-        return value.map(item => {
-          if (typeof item === "object" && item !== null) {
-            return item.name || item.title || "";
-          }
-
-          return item;
-        }).filter(Boolean).join(", ");
+        return value.map(item =>
+          typeof item === "object" && item !== null
+            ? item.name || item.title || ""
+            : item
+        ).filter(Boolean).join(", ");
       }
 
       if (typeof value === "object" && value !== null) {
@@ -72,17 +60,21 @@
     },
 
     getRating(item) {
+      return this.getValue(item, ["rating", "imdbRating", "score"], "");
+    },
+
+    getDescription(item) {
       return this.getValue(
         item,
-        ["rating", "imdbRating", "score"],
-        ""
+        ["description", "overview", "plot", "summary"],
+        "Описание пока не добавлено."
       );
     },
 
     getPoster(item) {
       const value = this.getValue(
         item,
-        ["poster", "image", "cover", "posterUrl", "poster_url", "imageUrl"],
+        ["poster", "posterUrl", "poster_url", "image", "imageUrl", "image_url", "cover"],
         ""
       );
 
@@ -90,11 +82,7 @@
 
       const poster = value.trim();
 
-      if (!poster) return "";
-
-      if (/^https:\/\//i.test(poster)) {
-        return poster;
-      }
+      if (/^https:\/\//i.test(poster)) return poster;
 
       if (
         poster.startsWith("assets/") ||
@@ -107,20 +95,23 @@
       return "";
     },
 
-    getDescription(item) {
-      return this.getValue(
-        item,
-        ["description", "overview", "plot", "summary"],
-        "Описание пока не добавлено."
-      );
-    },
+    /*
+      ВАЖНО:
+      Используем реальный ID из данных.
+      Если ID отсутствует, используем название.
+      Не создаём временный ID вида movie-0,
+      который details.js не сможет найти.
+    */
+    getId(item) {
+      const id = this.getValue(item, ["id", "slug"], "");
 
-    getId(item, index, type) {
+      if (id !== "") return String(id);
+
       return String(
         this.getValue(
           item,
-          ["id", "slug"],
-          type + "-" + index
+          ["title", "name", "ruTitle", "originalTitle", "original_title"],
+          ""
         )
       );
     },
@@ -133,7 +124,7 @@
       const storage = this.getStorage();
 
       if (storage && typeof storage.isFavorite === "function") {
-        return storage.isFavorite(id, type);
+        return !!storage.isFavorite(id, type);
       }
 
       try {
@@ -143,10 +134,8 @@
 
         return favorites.some(favorite => {
           if (typeof favorite === "object" && favorite !== null) {
-            return (
-              String(favorite.id) === String(id) &&
-              favorite.type === type
-            );
+            return String(favorite.id) === String(id) &&
+              favorite.type === type;
           }
 
           return String(favorite) === String(id);
@@ -162,31 +151,23 @@
 
       if (!poster) {
         return `
-          <div class="movie-poster-placeholder"
-               aria-label="Постер отсутствует">
-            <span class="poster-placeholder-logo">SHOHIN</span>
-            <span class="poster-placeholder-text">MOVIE</span>
+          <div class="poster-placeholder">
+            <span>SHOHIN</span>
+            <span>MOVIE</span>
           </div>
         `;
       }
 
       return `
         <img
-          class="movie-poster-image"
           src="${this.escapeHTML(poster)}"
           alt="${title}"
           loading="lazy"
-          onerror="
-            this.hidden=true;
-            if(this.nextElementSibling){
-              this.nextElementSibling.hidden=false;
-            }
-          "
+          onerror="this.hidden=true;this.nextElementSibling.hidden=false"
         >
-
-        <div class="movie-poster-placeholder" hidden>
-          <span class="poster-placeholder-logo">SHOHIN</span>
-          <span class="poster-placeholder-text">MOVIE</span>
+        <div class="poster-placeholder" hidden>
+          <span>SHOHIN</span>
+          <span>MOVIE</span>
         </div>
       `;
     },
@@ -196,73 +177,73 @@
       const year = this.escapeHTML(this.getYear(item));
       const country = this.escapeHTML(this.getCountry(item));
       const rating = this.escapeHTML(this.getRating(item));
-      const id = this.escapeHTML(this.getId(item, index, type));
+      const description = this.escapeHTML(this.getDescription(item));
 
-      const favorite = this.isFavorite(
-        item,
-        type,
-        this.getId(item, index, type)
-      );
+      const rawId = this.getId(item);
+      const id = this.escapeHTML(rawId);
+
+      const favorite = this.isFavorite(item, type, rawId);
 
       return `
         <article
-          class="movie-card"
+          class="media-card"
           data-card-type="${type}"
           data-item-id="${id}"
-          tabindex="0"
-          role="button"
-          aria-label="Открыть: ${title}"
         >
-          <div class="movie-poster">
-            ${this.makePoster(item)}
+          <button
+            type="button"
+            class="card-open"
+            data-open-card
+            data-card-type="${type}"
+            data-item-id="${id}"
+            aria-label="Открыть: ${title}"
+          >
+            <div class="card-poster">
+              ${this.makePoster(item)}
 
-            <button
-              class="favorite-button ${favorite ? "is-favorite" : ""}"
-              type="button"
-              data-favorite-button
-              data-favorite-id="${id}"
-              data-favorite-type="${type}"
-              aria-label="${
-                favorite
-                  ? "Убрать из избранного"
-                  : "Добавить в избранное"
-              }"
-              aria-pressed="${favorite ? "true" : "false"}"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  d="M12 21s-8-4.8-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6.2-8 11-8 11z"
-                ></path>
-              </svg>
-            </button>
-
-            ${
-              rating
-                ? `<span class="movie-rating">★ ${rating}</span>`
-                : ""
-            }
-          </div>
-
-          <div class="movie-card-info">
-            <h3 class="movie-card-title">${title}</h3>
-
-            <div class="movie-card-meta">
-              ${year ? `<span>${year}</span>` : ""}
-              ${
-                country
-                  ? `<span class="movie-card-country">${country}</span>`
-                  : ""
-              }
+              ${year ? `
+                <span class="card-badge">${year}</span>
+              ` : ""}
             </div>
-          </div>
+
+            <div class="card-info">
+              <h3 class="card-title">${title}</h3>
+
+              <div class="card-meta">
+                ${country ? `<span>${country}</span>` : ""}
+                ${rating ? `<span class="card-rating">★ ${rating}</span>` : ""}
+              </div>
+
+              <p class="card-description">${description}</p>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            class="favorite-button ${favorite ? "is-favorite" : ""}"
+            data-favorite-button
+            data-favorite-id="${id}"
+            data-favorite-type="${type}"
+            aria-label="${favorite ? "Убрать из избранного" : "Добавить в избранное"}"
+            aria-pressed="${favorite ? "true" : "false"}"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 21s-8-4.8-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6.2-8 11-8 11z"
+              ></path>
+            </svg>
+          </button>
         </article>
       `;
     },
 
     createActorCard(actor, index) {
       const name = this.escapeHTML(
-        this.getValue(actor, ["name", "title"], "Без имени")
+        this.getValue(actor, ["name", "title", "fullName", "full_name"], "Без имени")
       );
+
+      const rawId = this.getId(actor);
+      const id = this.escapeHTML(rawId);
 
       const photoValue = this.getValue(
         actor,
@@ -270,21 +251,13 @@
         ""
       );
 
-      const photo = typeof photoValue === "string"
-        ? photoValue
-        : "";
+      const photo = typeof photoValue === "string" ? photoValue.trim() : "";
 
-      const id = this.escapeHTML(
-        this.getId(actor, index, "actor")
-      );
-
-      const fallback = `
+      let imageHTML = `
         <div class="actor-photo-placeholder">
           <span>SHOHIN</span>
         </div>
       `;
-
-      let image = fallback;
 
       if (
         /^https:\/\//i.test(photo) ||
@@ -292,19 +265,13 @@
         photo.startsWith("./assets/") ||
         photo.startsWith("../assets/")
       ) {
-        image = `
+        imageHTML = `
           <img
             src="${this.escapeHTML(photo)}"
             alt="${name}"
             loading="lazy"
-            onerror="
-              this.hidden=true;
-              if(this.nextElementSibling){
-                this.nextElementSibling.hidden=false;
-              }
-            "
+            onerror="this.hidden=true;this.nextElementSibling.hidden=false"
           >
-
           <div class="actor-photo-placeholder" hidden>
             <span>SHOHIN</span>
           </div>
@@ -321,12 +288,10 @@
           aria-label="Открыть актёра: ${name}"
         >
           <div class="actor-photo">
-            ${image}
+            ${imageHTML}
           </div>
 
-          <div class="actor-card-info">
-            <h3>${name}</h3>
-          </div>
+          <div class="actor-name">${name}</div>
         </article>
       `;
     },
@@ -336,79 +301,56 @@
 
       if (!Array.isArray(items) || items.length === 0) {
         container.innerHTML = `
-          <div class="catalog-empty">
-            <div class="catalog-empty-icon">✦</div>
+          <div class="empty-state">
+            <div class="empty-icon">✦</div>
             <h3>Пока здесь пусто</h3>
             <p>Каталог будет пополняться.</p>
           </div>
         `;
-
         return;
       }
 
       container.innerHTML = items.map((item, index) => {
-        if (type === "actor") {
-          return this.createActorCard(item, index);
-        }
-
-        return this.createMediaCard(item, index, type);
+        return type === "actor"
+          ? this.createActorCard(item, index)
+          : this.createMediaCard(item, index, type);
       }).join("");
-
-      this.bindCardEvents(container);
     },
 
-    /*
-      Главная страница:
-      фильмы и сериалы вместе, новые годы первыми.
-    */
     renderHome(movies, series) {
       const container = document.getElementById("homeCatalog");
 
       if (!container) return;
 
       const combined = [
-        ...movies.map(item => ({ ...item, type: "movie" })),
-        ...series.map(item => ({ ...item, type: "series" }))
+        ...movies.map(item => ({ item, type: "movie" })),
+        ...series.map(item => ({ item, type: "series" }))
       ].sort((a, b) => {
-        return (Number(b.year) || 0) - (Number(a.year) || 0);
+        return (Number(this.getYear(b.item)) || 0) -
+          (Number(this.getYear(a.item)) || 0);
       });
 
       if (!combined.length) {
         container.innerHTML = `
-          <div class="catalog-empty">
-            <div class="catalog-empty-icon">✦</div>
+          <div class="empty-state">
+            <div class="empty-icon">✦</div>
             <h3>Фильмы скоро появятся</h3>
             <p>Проверьте файлы каталога SHOHIN MOVIE.</p>
           </div>
         `;
-
         return;
       }
 
-      container.innerHTML = combined.map((item, index) => {
-        return this.createMediaCard(
-          item,
-          index,
-          item.type
-        );
-      }).join("");
-
-      this.bindCardEvents(container);
+      container.innerHTML = combined.map((entry, index) =>
+        this.createMediaCard(entry.item, index, entry.type)
+      ).join("");
     },
 
-    /*
-      Основной каталог.
-      Обрабатываем и старый #movieGrid,
-      и актуальный #moviesGrid.
-    */
     renderCatalog() {
       const data = window.SHOHIN_MOVIE.Data;
 
       if (!data) {
-        console.error(
-          "SHOHIN MOVIE: модуль js/data.js не найден."
-        );
-
+        console.error("SHOHIN MOVIE: модуль js/data.js не найден.");
         return;
       }
 
@@ -416,13 +358,13 @@
       const series = data.getSeries();
       const actors = data.getActors();
 
-      const sortedMovies = [...movies].sort((a, b) => {
-        return (Number(b.year) || 0) - (Number(a.year) || 0);
-      });
+      const sortedMovies = [...movies].sort((a, b) =>
+        (Number(this.getYear(b)) || 0) - (Number(this.getYear(a)) || 0)
+      );
 
-      const sortedSeries = [...series].sort((a, b) => {
-        return (Number(b.year) || 0) - (Number(a.year) || 0);
-      });
+      const sortedSeries = [...series].sort((a, b) =>
+        (Number(this.getYear(b)) || 0) - (Number(this.getYear(a)) || 0)
+      );
 
       document.querySelectorAll(
         "#movieGrid, #moviesGrid, #movie-grid, [data-movie-grid]"
@@ -443,112 +385,112 @@
       }
 
       this.renderHome(sortedMovies, sortedSeries);
-
       this.updateCounters(sortedMovies, sortedSeries, actors);
-
-      this.bindCardEvents();
     },
 
     updateCounters(movies, series, actors = []) {
-      document.querySelectorAll(
-        "#movieCount, [data-movie-count]"
-      ).forEach(element => {
-        element.textContent = movies.length;
+      document.querySelectorAll("#movieCount, [data-movie-count]").forEach(el => {
+        el.textContent = movies.length;
       });
 
-      document.querySelectorAll(
-        "#seriesCount, [data-series-count]"
-      ).forEach(element => {
-        element.textContent = series.length;
+      document.querySelectorAll("#seriesCount, [data-series-count]").forEach(el => {
+        el.textContent = series.length;
       });
 
-      document.querySelectorAll(
-        "#actorCount, [data-actor-count]"
-      ).forEach(element => {
-        element.textContent = actors.length;
+      document.querySelectorAll("#actorCount, [data-actor-count]").forEach(el => {
+        el.textContent = actors.length;
       });
     },
 
-    /*
-      Назначаем обработчики только карточкам,
-      которые ещё не были обработаны.
-    */
     bindCardEvents(root = document) {
-      root.querySelectorAll("[data-favorite-button]").forEach(button => {
-        if (button.dataset.favoriteBound === "true") return;
+      root.addEventListener("click", event => {
+        const favoriteButton = event.target.closest("[data-favorite-button]");
 
-        button.dataset.favoriteBound = "true";
-
-        button.addEventListener("click", event => {
+        if (favoriteButton && root.contains(favoriteButton)) {
           event.preventDefault();
           event.stopPropagation();
 
-          const id = button.dataset.favoriteId;
-          const type = button.dataset.favoriteType || "movie";
+          const id = favoriteButton.dataset.favoriteId;
+          const type = favoriteButton.dataset.favoriteType || "movie";
           const storage = this.getStorage();
 
-          if (
-            storage &&
-            typeof storage.toggleFavorite === "function"
-          ) {
-            storage.toggleFavorite(id, type);
+          let active;
+
+          if (storage && typeof storage.toggleFavorite === "function") {
+            active = !!storage.toggleFavorite(id, type);
           } else {
-            this.toggleFavoriteLocally(id, type);
+            active = this.toggleFavoriteLocally(id, type);
           }
 
-          const active = button.classList.toggle("is-favorite");
-
-          button.setAttribute(
-            "aria-pressed",
-            active ? "true" : "false"
-          );
-
-          button.setAttribute(
+          favoriteButton.classList.toggle("is-favorite", active);
+          favoriteButton.setAttribute("aria-pressed", String(active));
+          favoriteButton.setAttribute(
             "aria-label",
-            active
-              ? "Убрать из избранного"
-              : "Добавить в избранное"
+            active ? "Убрать из избранного" : "Добавить в избранное"
           );
-        });
-      });
 
-      root.querySelectorAll(".movie-card, .actor-card").forEach(card => {
-        if (card.dataset.cardBound === "true") return;
+          return;
+        }
 
-        card.dataset.cardBound = "true";
+        const openButton = event.target.closest("[data-open-card]");
 
-        const openCard = () => {
-          const type = card.dataset.cardType || "movie";
-          const id = card.dataset.itemId;
+        if (openButton && root.contains(openButton)) {
+          event.preventDefault();
+
+          const id = openButton.dataset.itemId;
+          const type = openButton.dataset.cardType || "movie";
 
           const details = window.SHOHIN_MOVIE.Details;
 
           if (details && typeof details.open === "function") {
-            details.open(id, type);
-            return;
-          }
+            const opened = details.open(id, type);
 
-          if (typeof window.openDetails === "function") {
+            if (!opened && window.SHOHIN_MOVIE.App) {
+              window.SHOHIN_MOVIE.App.showToast(
+                "Не удалось найти фильм. Проверь ID в data.js."
+              );
+            }
+          } else if (typeof window.openDetails === "function") {
             window.openDetails(id, type);
-          }
-        };
-
-        card.addEventListener("click", event => {
-          if (event.target.closest("[data-favorite-button]")) {
-            return;
+          } else if (window.SHOHIN_MOVIE.App) {
+            window.SHOHIN_MOVIE.App.showToast(
+              "Модуль подробностей не загружен."
+            );
           }
 
-          openCard();
-        });
+          return;
+        }
 
-        card.addEventListener("keydown", event => {
-          if (event.target !== card) return;
+        const actorCard = event.target.closest(
+          '.actor-card[data-card-type="actor"]'
+        );
 
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            openCard();
+        if (actorCard && root.contains(actorCard)) {
+          const details = window.SHOHIN_MOVIE.Details;
+
+          if (details && typeof details.open === "function") {
+            details.open(actorCard.dataset.itemId, "actor");
           }
-        });
+        }
+      });
+
+      root.addEventListener("keydown", event => {
+        const actorCard = event.target.closest(
+          '.actor-card[data-card-type="actor"]'
+        );
+
+        if (
+          actorCard &&
+          (event.key === "Enter" || event.key === " ")
+        ) {
+          event.preventDefault();
+
+          const details = window.SHOHIN_MOVIE.Details;
+
+          if (details && typeof details.open === "function") {
+            details.open(actorCard.dataset.itemId, "actor");
+          }
+        }
       });
     },
 
@@ -557,23 +499,17 @@
       let favorites = [];
 
       try {
-        favorites = JSON.parse(
-          localStorage.getItem(key) || "[]"
-        );
+        favorites = JSON.parse(localStorage.getItem(key) || "[]");
 
-        if (!Array.isArray(favorites)) {
-          favorites = [];
-        }
+        if (!Array.isArray(favorites)) favorites = [];
       } catch (error) {
         favorites = [];
       }
 
       const index = favorites.findIndex(favorite => {
         if (typeof favorite === "object" && favorite !== null) {
-          return (
-            String(favorite.id) === String(id) &&
-            favorite.type === type
-          );
+          return String(favorite.id) === String(id) &&
+            favorite.type === type;
         }
 
         return String(favorite) === String(id);
@@ -584,7 +520,7 @@
       } else {
         favorites.push({
           id: String(id),
-          type: type,
+          type,
           savedAt: Date.now()
         });
       }
@@ -592,15 +528,23 @@
       try {
         localStorage.setItem(key, JSON.stringify(favorites));
       } catch (error) {
-        console.error(
-          "SHOHIN MOVIE: не удалось сохранить избранное.",
-          error
-        );
+        console.error("SHOHIN MOVIE: не удалось сохранить избранное.", error);
       }
+
+      return index < 0;
     }
   };
 
   window.SHOHIN_MOVIE.Cards = Cards;
+
+  /*
+    Один обработчик событий на document.
+    Работает и для карточек, созданных позже.
+  */
+  if (!document.documentElement.dataset.shohinCardsEvents) {
+    document.documentElement.dataset.shohinCardsEvents = "true";
+    Cards.bindCardEvents(document);
+  }
 
   window.renderMovieCards = function () {
     Cards.renderCatalog();
@@ -617,5 +561,4 @@
   window.createActorCard = function (item, index) {
     return Cards.createActorCard(item, index);
   };
-
 })();
