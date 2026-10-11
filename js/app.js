@@ -1,348 +1,469 @@
-/* SHOHIN MOVIE — NAVIGATION
-Меню, переходы между страницами и кнопка «Назад».
+/* SHOHIN MOVIE — APP
+   Загрузка каталога и отображение фильмов.
+   SHOHIN BRAND COLORS — НЕ МЕНЯТЬ
 */
 
 (function () {
-"use strict";
+  "use strict";
 
-const Navigation = {
-initialized: false,
+  const App = {
+    initialized: false,
+    loading: false,
+    movies: [],
+    series: [],
+    actors: [],
+    searchQuery: "",
 
-pageNames: {
-  home: "Главная",
-  movies: "Фильмы",
-  series: "Сериалы",
-  actors: "Актёры",
-  countries: "Страны",
-  genres: "Жанры",
-  years: "Годы",
-  favorites: "Избранное",
-  history: "Недавно открытые",
-  details: "Информация",
-  settings: "Настройки",
-  about: "О SHOHIN MOVIE"
-},
+    escapeHTML(value) {
+      return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    },
 
-getMenu() {
-  return document.querySelector(
-    "#sideMenu, #side-menu, .side-menu"
-  );
-},
+    getElement(selectors) {
+      for (const selector of selectors) {
+        const element = document.querySelector(selector);
+        if (element) return element;
+      }
+      return null;
+    },
 
-getOverlay() {
-  return document.querySelector(
-    "#menuOverlay, #menu-overlay, .menu-overlay"
-  );
-},
+    async loadData() {
+      if (this.loading) return;
+      this.loading = true;
 
-getMenuButton() {
-  return document.querySelector(
-    "#menuButton, #menuToggle, [data-menu-toggle]"
-  );
-},
+      try {
+        const data = window.SHOHIN_MOVIE &&
+          window.SHOHIN_MOVIE.Data;
 
-getCloseButton() {
-  return document.querySelector(
-    "#closeMenuButton, #closeMenu, [data-menu-close]"
-  );
-},
+        if (!data || typeof data.loadCatalog !== "function") {
+          throw new Error(
+            "Не найден загрузчик данных. Проверь подключение js/data.js в index.html."
+          );
+        }
 
-openMenu() {
-  const menu = this.getMenu();
-  const overlay = this.getOverlay();
-  const button = this.getMenuButton();
+        await data.loadCatalog();
 
-  if (!menu) {
-    console.error(
-      "SHOHIN MOVIE: не найден элемент #sideMenu."
-    );
-    return;
-  }
+        this.movies = data.getMovies();
+        this.series = data.getSeries();
+        this.actors = data.getActors();
 
-  menu.classList.add("active", "open");
-  menu.setAttribute("aria-hidden", "false");
+        console.log(
+          "SHOHIN MOVIE: каталог загружен.",
+          "Фильмы:", this.movies.length,
+          "Сериалы:", this.series.length,
+          "Актёры:", this.actors.length
+        );
 
-  if (overlay) {
-    overlay.classList.add("active", "open");
-    overlay.hidden = false;
-    overlay.setAttribute("aria-hidden", "false");
-  }
+        this.renderAll();
 
-  if (button) {
-    button.setAttribute("aria-expanded", "true");
-  }
+        window.dispatchEvent(
+          new CustomEvent("shohin:app-ready", {
+            detail: {
+              movies: this.movies.length,
+              series: this.series.length,
+              actors: this.actors.length
+            }
+          })
+        );
 
-  document.body.classList.add("menu-open");
-},
+      } catch (error) {
+        console.error("SHOHIN MOVIE:", error);
 
-closeMenu() {
-  const menu = this.getMenu();
-  const overlay = this.getOverlay();
-  const button = this.getMenuButton();
+        this.showError(
+          "Не удалось загрузить каталог. Проверь подключение файлов данных."
+        );
+      } finally {
+        this.loading = false;
+      }
+    },
 
-  if (menu) {
-    menu.classList.remove("active", "open");
-    menu.setAttribute("aria-hidden", "true");
-  }
+    showError(message) {
+      const target = this.getElement([
+        "#moviesGrid",
+        "#catalogGrid",
+        "#featuredGrid"
+      ]);
 
-  if (overlay) {
-    overlay.classList.remove("active", "open");
-    overlay.setAttribute("aria-hidden", "true");
-    overlay.hidden = true;
-  }
+      if (!target) {
+        console.error(message);
+        return;
+      }
 
-  if (button) {
-    button.setAttribute("aria-expanded", "false");
-  }
+      target.innerHTML =
+        '<div class="shohin-data-message">' +
+          this.escapeHTML(message) +
+        "</div>";
+    },
 
-  document.body.classList.remove("menu-open");
-},
+    getPoster(item) {
+      const poster = String(item.poster || "").trim();
 
-toggleMenu() {
-  const menu = this.getMenu();
+      if (!poster) return "";
 
-  if (
-    menu &&
-    (
-      menu.classList.contains("active") ||
-      menu.classList.contains("open")
-    )
-  ) {
-    this.closeMenu();
-  } else {
-    this.openMenu();
-  }
-},
+      // Разрешаем только локальные изображения и HTTPS.
+      if (
+        !poster.startsWith("assets/") &&
+        !poster.startsWith("./assets/") &&
+        !poster.startsWith("../assets/") &&
+        !poster.startsWith("https://")
+      ) {
+        return "";
+      }
 
-getPageName(element) {
-  if (!element) return "";
+      return poster;
+    },
 
-  let name = element.dataset.page || "";
+    getGenres(item) {
+      const genres = Array.isArray(item.genres)
+        ? item.genres
+        : [];
 
-  if (!name) {
-    const href = element.getAttribute("href") || "";
+      return genres
+        .slice(0, 3)
+        .map(genre => this.escapeHTML(genre))
+        .join(" · ");
+    },
 
-    if (href.startsWith("#")) {
-      name = href.slice(1);
+    createCard(item, type) {
+      const id = this.escapeHTML(item.id || "");
+      const title = this.escapeHTML(item.title || "Без названия");
+      const year = this.escapeHTML(item.year || "");
+      const rating = Number(item.rating);
+      const validRating = Number.isFinite(rating) && rating > 0;
+      const poster = this.getPoster(item);
+      const genres = this.getGenres(item);
+
+      const posterHTML = poster
+        ? '<img class="shohin-card-poster-image" ' +
+            'src="' + this.escapeHTML(poster) + '" ' +
+            'alt="' + title + '" loading="lazy">' 
+        : '<div class="shohin-card-poster-placeholder">' +
+            '<span>SHOHIN</span>' +
+            '<small>' + (type === "series" ? "SERIES" : "MOVIE") + '</small>' +
+          '</div>';
+
+      return (
+        '<article class="shohin-card movie-card" ' +
+          'data-item-id="' + id + '" ' +
+          'data-item-type="' + type + '">' +
+
+          '<button class="shohin-card-open" ' +
+            'type="button" ' +
+            'data-open-item="' + id + '" ' +
+            'aria-label="Открыть ' + title + '">' +
+
+            '<div class="shohin-card-poster">' +
+              posterHTML +
+
+              (validRating
+                ? '<span class="shohin-card-rating">★ ' +
+                    rating.toFixed(1) +
+                  '</span>'
+                : '') +
+            '</div>' +
+
+            '<div class="shohin-card-info">' +
+              '<h3 class="shohin-card-title">' + title + '</h3>' +
+
+              '<div class="shohin-card-meta">' +
+                (year ? '<span>' + year + '</span>' : '') +
+                (genres ? '<span>' + genres + '</span>' : '') +
+              '</div>' +
+            '</div>' +
+
+          '</button>' +
+
+          '<button class="shohin-card-favorite" ' +
+            'type="button" ' +
+            'data-favorite-id="' + id + '" ' +
+            'aria-label="Добавить в избранное" ' +
+            'title="Избранное">♡</button>' +
+
+        '</article>'
+      );
+    },
+
+    renderGrid(selectors, items, type) {
+      const grid = this.getElement(selectors);
+      if (!grid) return;
+
+      const filtered = this.filterItems(items);
+
+      if (!filtered.length) {
+        grid.innerHTML =
+          '<div class="shohin-data-message">' +
+            (this.searchQuery
+              ? "Ничего не найдено."
+              : "Пока здесь нет данных.") +
+          '</div>';
+        return;
+      }
+
+      grid.innerHTML = filtered
+        .map(item => this.createCard(item, type))
+        .join("");
+    },
+
+    filterItems(items) {
+      if (!this.searchQuery) return items;
+
+      const query = this.searchQuery.toLocaleLowerCase();
+
+      return items.filter(item => {
+        const searchable = [
+          item.title,
+          item.originalTitle,
+          item.description,
+          ...(Array.isArray(item.countries) ? item.countries : []),
+          ...(Array.isArray(item.genres) ? item.genres : []),
+          ...(Array.isArray(item.actors) ? item.actors : [])
+        ].join(" ").toLocaleLowerCase();
+
+        return searchable.includes(query);
+      });
+    },
+
+    renderAll() {
+      this.renderGrid(
+        ["#moviesGrid"],
+        this.movies,
+        "movie"
+      );
+
+      this.renderGrid(
+        ["#seriesGrid"],
+        this.series,
+        "series"
+      );
+
+      this.renderGrid(
+        ["#catalogGrid"],
+        [...this.movies, ...this.series],
+        "movie"
+      );
+
+      this.renderGrid(
+        ["#featuredGrid"],
+        this.movies.slice(0, 10),
+        "movie"
+      );
+
+      this.renderGrid(
+        ["#recentGrid"],
+        this.getRecentItems(),
+        "movie"
+      );
+
+      this.renderActors();
+      this.updateCounters();
+      this.bindCardImages();
+    },
+
+    renderActors() {
+      const grid = this.getElement(["#actorsGrid"]);
+      if (!grid) return;
+
+      if (!this.actors.length) {
+        grid.innerHTML = "";
+        return;
+      }
+
+      grid.innerHTML = this.actors.map(actor => {
+        const name = this.escapeHTML(
+          actor.name || actor.title || "Актёр"
+        );
+
+        return (
+          '<article class="shohin-actor-card">' +
+            '<h3>' + name + '</h3>' +
+          '</article>'
+        );
+      }).join("");
+    },
+
+    getRecentItems() {
+      try {
+        const ids = JSON.parse(
+          localStorage.getItem("shohin_movie_history") || "[]"
+        );
+
+        if (!Array.isArray(ids)) return [];
+
+        return ids
+          .map(id => this.movies.find(item => item.id === id))
+          .filter(Boolean)
+          .slice(0, 10);
+
+      } catch (error) {
+        return [];
+      }
+    },
+
+    updateCounters() {
+      const movieCount = document.querySelector("#movieCount");
+      const seriesCount = document.querySelector("#seriesCount");
+
+      if (movieCount) {
+        movieCount.textContent = this.movies.length;
+      }
+
+      if (seriesCount) {
+        seriesCount.textContent = this.series.length;
+      }
+    },
+
+    bindCardImages() {
+      document.querySelectorAll(
+        ".shohin-card-poster-image"
+      ).forEach(image => {
+        image.addEventListener("error", function () {
+          const placeholder = document.createElement("div");
+          placeholder.className = "shohin-card-poster-placeholder";
+          placeholder.innerHTML = "<span>SHOHIN</span><small>MOVIE</small>";
+          image.replaceWith(placeholder);
+        }, { once: true });
+      });
+    },
+
+    bindSearch() {
+      const inputs = document.querySelectorAll(
+        "#searchInput, #pageSearchInput"
+      );
+
+      inputs.forEach(input => {
+        input.addEventListener("input", () => {
+          this.searchQuery = input.value.trim();
+
+          inputs.forEach(other => {
+            if (other !== input) other.value = input.value;
+          });
+
+          this.renderAll();
+        });
+      });
+    },
+
+    bindCardActions() {
+      document.addEventListener("click", event => {
+        const favoriteButton = event.target.closest(
+          "[data-favorite-id]"
+        );
+
+        if (favoriteButton) {
+          event.preventDefault();
+
+          const id = favoriteButton.dataset.favoriteId;
+          this.toggleFavorite(id, favoriteButton);
+          return;
+        }
+
+        const openButton = event.target.closest(
+          "[data-open-item]"
+        );
+
+        if (openButton) {
+          event.preventDefault();
+
+          const id = openButton.dataset.openItem;
+          const item = [...this.movies, ...this.series]
+            .find(entry => String(entry.id) === String(id));
+
+          if (!item) return;
+
+          try {
+            const history = JSON.parse(
+              localStorage.getItem("shohin_movie_history") || "[]"
+            );
+
+            const updated = [
+              id,
+              ...(Array.isArray(history) ? history.filter(value => value !== id) : [])
+            ].slice(0, 50);
+
+            localStorage.setItem(
+              "shohin_movie_history",
+              JSON.stringify(updated)
+            );
+          } catch (error) {}
+
+          window.dispatchEvent(
+            new CustomEvent("shohin:open-item", {
+              detail: { item: item }
+            })
+          );
+
+          if (typeof window.openDetail === "function") {
+            window.openDetail(id);
+          }
+        }
+      });
+    },
+
+    toggleFavorite(id, button) {
+      let favorites = [];
+
+      try {
+        favorites = JSON.parse(
+          localStorage.getItem("shohin_movie_favorites") || "[]"
+        );
+
+        if (!Array.isArray(favorites)) favorites = [];
+      } catch (error) {
+        favorites = [];
+      }
+
+      const index = favorites.indexOf(id);
+
+      if (index >= 0) {
+        favorites.splice(index, 1);
+        button.textContent = "♡";
+        button.classList.remove("active");
+      } else {
+        favorites.push(id);
+        button.textContent = "♥";
+        button.classList.add("active");
+      }
+
+      localStorage.setItem(
+        "shohin_movie_favorites",
+        JSON.stringify(favorites)
+      );
+
+      window.dispatchEvent(
+        new CustomEvent("shohin:favorites-changed")
+      );
+    },
+
+    init() {
+      if (this.initialized) return;
+      this.initialized = true;
+
+      this.bindSearch();
+      this.bindCardActions();
+      this.loadData();
+
+      console.log("SHOHIN MOVIE: приложение запускается.");
     }
-  }
-
-  const aliases = {
-    homePage: "home",
-    moviesPage: "movies",
-    seriesPage: "series",
-    actorsPage: "actors",
-    countriesPage: "countries",
-    genresPage: "genres",
-    yearsPage: "years",
-    favoritesPage: "favorites",
-    historyPage: "history",
-    detailsPage: "details",
-    settingsPage: "settings",
-    aboutPage: "about"
   };
 
-  return aliases[name] || name;
-},
+  window.SHOHIN_MOVIE = window.SHOHIN_MOVIE || {};
+  window.SHOHIN_MOVIE.App = App;
 
-getPages() {
-  return Array.from(
-    document.querySelectorAll("[data-page-content]")
-  );
-},
+  window.renderMovieCards = function () {
+    App.renderAll();
+  };
 
-showPage(pageName, updateAddress = true) {
-  if (!pageName) return;
-
-  const pages = this.getPages();
-
-  const target = pages.find(function (page) {
-    return page.dataset.pageContent === pageName;
-  });
-
-  if (!target) {
-    console.warn(
-      "SHOHIN MOVIE: страница не найдена:",
-      pageName
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => App.init(),
+      { once: true }
     );
-    return;
+  } else {
+    App.init();
   }
-
-  pages.forEach(function (page) {
-    const active =
-      page.dataset.pageContent === pageName;
-
-    page.hidden = !active;
-    page.classList.toggle("active", active);
-    page.classList.toggle("is-active", active);
-    page.setAttribute(
-      "aria-hidden",
-      active ? "false" : "true"
-    );
-  });
-
-  document.querySelectorAll("a[data-page]").forEach(
-    function (link) {
-      const active =
-        link.dataset.page === pageName;
-
-      link.classList.toggle("active", active);
-
-      if (active) {
-        link.setAttribute("aria-current", "page");
-      } else {
-        link.removeAttribute("aria-current");
-      }
-    }
-  );
-
-  const title = document.querySelector(
-    "[data-page-title], #pageTitle"
-  );
-
-  if (title && this.pageNames[pageName]) {
-    title.textContent = this.pageNames[pageName];
-  }
-
-  this.closeMenu();
-
-  if (updateAddress) {
-    const newHash = "#" + pageName;
-
-    if (window.location.hash !== newHash) {
-      window.history.pushState(
-        { page: pageName },
-        "",
-        newHash
-      );
-    }
-  }
-
-  window.dispatchEvent(
-    new CustomEvent("shohin:page-changed", {
-      detail: { page: pageName }
-    })
-  );
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-},
-
-bindEvents() {
-  const self = this;
-
-  /*
-   * Обработчик меню.
-   * Предотвращаем двойное переключение кнопки.
-   */
-  document.addEventListener("click", function (event) {
-    const openButton = event.target.closest(
-      "#menuButton, #menuToggle, [data-menu-toggle]"
-    );
-
-    if (openButton) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      self.toggleMenu();
-      return;
-    }
-
-    const closeButton = event.target.closest(
-      "#closeMenuButton, #closeMenu, [data-menu-close]"
-    );
-
-    if (closeButton) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      self.closeMenu();
-      return;
-    }
-
-    const overlay = self.getOverlay();
-
-    if (overlay && event.target === overlay) {
-      self.closeMenu();
-      return;
-    }
-
-    const pageLink = event.target.closest(
-      "a[data-page], [data-page-link]"
-    );
-
-    if (pageLink) {
-      const pageName = self.getPageName(pageLink);
-
-      if (pageName) {
-        event.preventDefault();
-        self.showPage(pageName);
-      }
-    }
-  }, true);
-
-  document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape") {
-      self.closeMenu();
-    }
-  });
-
-  window.addEventListener("popstate", function () {
-    const pageName =
-      window.location.hash.replace(/^#/, "") || "home";
-
-    self.showPage(pageName, false);
-  });
-
-  window.addEventListener("hashchange", function () {
-    const pageName =
-      window.location.hash.replace(/^#/, "") || "home";
-
-    self.showPage(pageName, false);
-  });
-},
-
-init() {
-  if (this.initialized) return;
-
-  this.initialized = true;
-  this.bindEvents();
-
-  const initialPage =
-    window.location.hash.replace(/^#/, "") || "home";
-
-  const pages = this.getPages();
-
-  if (pages.length > 0) {
-    const validPage = pages.some(function (page) {
-      return page.dataset.pageContent === initialPage;
-    });
-
-    this.showPage(
-      validPage ? initialPage : "home",
-      false
-    );
-  }
-
-  this.closeMenu();
-
-  console.log("SHOHIN MOVIE: навигация запущена.");
-}
-
-};
-
-window.SHOHIN_MOVIE = window.SHOHIN_MOVIE || {};
-window.SHOHIN_MOVIE.Navigation = Navigation;
-
-if (document.readyState === "loading") {
-document.addEventListener(
-"DOMContentLoaded",
-function () {
-Navigation.init();
-},
-{ once: true }
-);
-} else {
-Navigation.init();
-}
 })();
